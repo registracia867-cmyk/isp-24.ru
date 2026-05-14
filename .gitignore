@@ -1,0 +1,1 @@
+Nothing should be ignored based on the provided file changes. The only added file is `worship.html`, which appears to be a source file that should be tracked in version control. No build artifacts, dependencies, temporary files, or other items requiring exclusion are present in the changes.
