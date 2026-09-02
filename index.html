@@ -1,1 +1,2017 @@
-<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=yes"><title>ИСП-24 | Группа программистов</title><link rel="manifest" href="/manifest.json"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"><style>*{margin:0;padding:0;box-sizing:border-box}body{font-family:Inter,sans-serif;background-color:#f9fafc;color:#1e293b;line-height:1.3;-webkit-tap-highlight-color:transparent}.container{width:100%;padding:0 .9rem;margin:0 auto}:root{--primary:#2563eb;--primary-dark:#1d4ed8;--secondary:#64748b;--dark:#0f172a;--light:#f8fafc;--border:#e2e8f0;--danger:#ef4444;--schedule:#8b5cf6;--success:#10b981;--gossip:#ec4899}h1{font-size:1.9rem;line-height:1.2;letter-spacing:-.02em}h2{font-size:1.4rem;margin-bottom:.6rem}h2 i{color:var(--primary);margin-right:.3rem}.section-subhead{font-size:.8rem;color:var(--secondary);border-left:3px solid var(--primary);padding-left:.8rem;margin-bottom:1.2rem}.navbar{background-color:#1e293b;padding:.4rem 0;position:sticky;top:0;z-index:100;box-shadow:0 2px 6px rgba(0,0,0,.1)}.nav-container{display:flex;justify-content:space-between;align-items:center}.logo{font-size:1rem;font-weight:700;color:#fff;text-decoration:none}.logo span{color:var(--primary);background:rgba(255,255,255,.15);padding:.1rem .3rem;border-radius:5px;margin-left:.15rem;font-size:.85rem}.nav-links{display:flex;gap:.4rem;align-items:center;flex-wrap:wrap;justify-content:flex-end}.chat-nav-btn,.schedule-nav-btn,.attendance-nav-btn,.gossip-nav-btn{padding:.3rem .7rem;border-radius:30px;font-weight:600;font-size:.7rem;text-decoration:none;white-space:nowrap;display:inline-flex;align-items:center;gap:.2rem;border:none;cursor:pointer}.chat-nav-btn{background-color:var(--success);color:#fff}.schedule-nav-btn{background-color:var(--schedule);color:#fff}.attendance-nav-btn{background-color:var(--danger);color:#fff}.gossip-nav-btn{background-color:var(--gossip);color:#fff}.hero{padding:1.5rem 0 1.2rem;background:linear-gradient(135deg,#fff 0,#f1f5f9 100%);border-bottom:1px solid var(--border)}.hero-grid{display:flex;flex-direction:column;gap:1.2rem}.hero-badge{display:inline-block;background:rgba(37,99,235,.1);color:var(--primary-dark);font-weight:600;font-size:.65rem;padding:.2rem .6rem;border-radius:30px;margin-bottom:.5rem;border:1px solid rgba(37,99,235,.3)}.hero p{font-size:.85rem;color:var(--secondary);margin:.4rem 0 .8rem}.hero-buttons{display:flex;flex-direction:column;gap:.4rem;margin:.8rem 0 1.2rem}.primary-btn{background-color:var(--primary);color:#fff;padding:.6rem 1rem;border-radius:40px;font-weight:600;font-size:.8rem;text-decoration:none;text-align:center;display:block;border:none;width:100%;cursor:pointer}.stats{display:flex;flex-wrap:wrap;gap:.8rem;justify-content:space-between}.stat-item{flex:1 0 auto}.stat-number{font-size:1.1rem;font-weight:700;display:block}.stat-label{font-size:.65rem;color:var(--secondary)}.hero-image{background:#fff;border-radius:16px;padding:.8rem;box-shadow:0 12px 20px -12px rgba(0,0,0,.1);border:1px solid var(--border)}.code-preview{background:var(--dark);color:#a5f3fc;padding:.8rem;border-radius:12px;font-family:'Courier New',monospace;font-size:.65rem;line-height:1.4;overflow-x:auto;white-space:nowrap}.code-preview .keyword{color:#f472b6}.code-preview .function{color:#fde047}.about,.students,.attendance-section,.contact{padding:2rem 0}.about{background:#fff}.features{display:flex;flex-direction:column;gap:.8rem}.feature-card{background:var(--light);padding:1.1rem 1rem;border-radius:18px;border:1px solid var(--border)}.feature-icon{background:#fff;width:38px;height:38px;border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:.7rem;border:1px solid var(--border);color:var(--primary);font-size:1.2rem;transition:all .2s}.feature-card h3{font-size:.95rem;margin-bottom:.3rem}.feature-card p{color:var(--secondary);font-size:.75rem}.gossip-link{text-decoration:none;color:inherit;display:block}.students{background:#f1f5f9}.student-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:.8rem}.student-card{background:#fff;border-radius:18px;padding:1rem .4rem;text-align:center;border:1px solid var(--border)}.student-avatar{width:60px;height:60px;border-radius:50%;background:linear-gradient(135deg,#dbeafe,#ede9fe);margin:0 auto .6rem;display:flex;align-items:center;justify-content:center;font-size:1.4rem;font-weight:600;color:var(--primary-dark);border:2px solid #fff;box-shadow:0 3px 6px rgba(0,0,0,.05)}.student-name{font-size:.85rem;font-weight:600}.student-role{color:var(--primary);font-weight:500;font-size:.65rem;margin:.15rem 0 .4rem}.student-links a{color:var(--secondary);margin:0 .3rem;font-size:.85rem;display:inline-block}.attendance-grid{display:flex;flex-direction:column;gap:.6rem}.attendance-item{display:flex;gap:.8rem;align-items:center;background:var(--light);padding:1rem;border-radius:16px;border:1px solid var(--border)}.attendance-icon{background:var(--danger);min-width:40px;height:40px;border-radius:30px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:1.2rem}.attendance-text h3{font-size:.85rem;margin-bottom:.1rem}.attendance-text p{color:var(--secondary);font-size:.75rem}.attendance-cta{text-align:center;margin-top:1.5rem}.big-attendance-btn{background:var(--danger);color:#fff;padding:.7rem 1.2rem;border-radius:50px;font-weight:700;font-size:.95rem;width:100%;border:none;display:inline-flex;align-items:center;justify-content:center;gap:.5rem;cursor:pointer;box-shadow:0 5px 12px -5px var(--danger)}.big-gossip-btn{background:var(--gossip);color:#fff;padding:.7rem 1.2rem;border-radius:50px;font-weight:700;font-size:.95rem;width:100%;border:none;display:inline-flex;align-items:center;justify-content:center;gap:.5rem;cursor:pointer;box-shadow:0 5px 12px -5px var(--gossip);margin-top:.8rem;text-decoration:none}.contact{background:var(--dark);color:#fff;padding:2rem 0}.contact h2{color:#fff}.contact .section-subhead{color:#a0afc0;border-left-color:#3b82f6}.contact-container{display:flex;flex-direction:column;gap:1.5rem}.contact-info p{margin:.7rem 0;display:flex;align-items:center;gap:.6rem;font-size:.8rem;word-break:break-word}.contact-info i{width:18px;color:#3b82f6}.social-links{display:flex;gap:.8rem;margin-top:1rem}.social-links a{color:#fff;background:rgba(255,255,255,.1);width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1rem}.contact-form{display:flex;flex-direction:column;gap:.6rem}.contact-form input,.contact-form textarea{padding:.6rem .8rem;border-radius:40px;border:none;background:#1e293b;color:#fff;font-family:Inter,sans-serif;border:1px solid #334155;font-size:.8rem}.contact-form textarea{border-radius:20px}.contact-form button{background:var(--primary);color:#fff;padding:.6rem 1.2rem;border-radius:40px;font-weight:600;border:none;font-size:.8rem;align-self:flex-start}.footer{background:#0f172a;color:#94a3b8;text-align:center;padding:1rem 0;font-size:.7rem}.footer i{color:#ef4444}.password-modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.8);backdrop-filter:blur(3px);z-index:10000;justify-content:center;align-items:center;padding:1rem}.password-modal.active{display:flex}.modal-content{background:#fff;padding:1.2rem;border-radius:24px;max-width:280px;width:100%;text-align:center}.modal-content h3{font-size:1.2rem;margin:.2rem 0 .1rem}.modal-content p{color:var(--secondary);margin-bottom:1rem;font-size:.75rem}.modal-content input{width:100%;padding:.6rem;border-radius:40px;border:2px solid var(--border);font-size:.8rem;text-align:center;letter-spacing:3px;margin-bottom:.8rem;outline:none}.modal-content input:focus{border-color:var(--primary)}.password-error{color:#ef4444;font-size:.7rem;margin:-.4rem 0 .8rem 0;display:none}.password-error.show{display:block}.modal-buttons{display:flex;gap:.5rem}.modal-btn{flex:1;padding:.6rem;border-radius:40px;font-weight:600;border:none;cursor:pointer;font-size:.8rem}.modal-btn.submit{background:var(--primary);color:#fff}.modal-btn.cancel{background:#f1f5f9;color:var(--dark)}@media (min-width:480px){.hero-buttons{flex-direction:row}.hero-buttons .primary-btn{flex:1}}</style></head><body><div class="password-modal" id="a1"><div class="modal-content"><i class="fas fa-lock" style="font-size:2rem;color:var(--primary)"></i><h3>Введите пароль</h3><p>Доступ к таблице прогулов</p><input type="password" id="a2" placeholder="•••••••••" maxlength="9" inputmode="numeric"><div class="password-error" id="a3">Неверный пароль</div><div class="modal-buttons"><button class="modal-btn cancel" onclick="b1()">Отмена</button><button class="modal-btn submit" onclick="b2()">Войти</button></div></div></div><nav class="navbar"><div class="container nav-container"><a href="#" class="logo">ИСП-24<span>.ru</span></a><div class="nav-links"><a href="chat.html" class="chat-nav-btn"><i class="fas fa-comment-dots"></i> Чат</a> <a href="schedule.html" class="schedule-nav-btn"><i class="fas fa-calendar-alt"></i> Расписание</a> <button class="attendance-nav-btn" onclick="b3()"><i class="fas fa-calendar-times"></i> Прогулы</button></div></div></nav><section class="hero"><div class="container hero-grid"><div><span class="hero-badge"><i class="fas fa-code"></i> Будущие продавцы в КБ</span><h1>ИСП-24<br>Информационные системы и программирование</h1><p>Группа целеустремлённых программистов, которые создают (не)надёжный код, интересные веб-сервисы и глупые решения.</p><div class="hero-buttons"><button class="primary-btn" onclick="b3()"><i class="fas fa-calendar-times"></i> Смотреть прогулы</button> <a href="chat.html" class="primary-btn" style="background:#10b981"><i class="fas fa-comment-dots"></i> Общий чат</a> <a href="schedule.html" class="primary-btn" style="background:#8b5cf6"><i class="fas fa-calendar-alt"></i> Расписание</a></div><div class="stats"><div class="stat-item"><span class="stat-number">24 и засланец</span><span class="stat-label">студентов</span></div><div class="stat-item"><span class="stat-number">≈73%</span><span class="stat-label">посещаемость</span></div><div class="stat-item"><span class="stat-number">Яковлев В.С.</span><span class="stat-label">староста</span></div></div></div><div class="hero-image"><div class="code-preview"><span class="keyword">class</span> <span class="function">ISP_24</span> {<br>&nbsp;&nbsp;<span class="keyword">constructor</span>() {<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">this</span>.name = <span style="color:#b0f0b0">"Неликаева Нина Сергеевна лучшая!"</span>;<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">this</span>.goals = [<span style="color:#b0f0b0">"Никита"</span>,<span style="color:#b0f0b0">"Вадим"</span>,<span style="color:#b0f0b0">"Максим"</span>];<br>&nbsp;&nbsp;}<br>&nbsp;&nbsp;<span class="function">develop</span>() {<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span> <span style="color:#fde047">'🚀 крутейшая группа в мире'</span>;<br>&nbsp;&nbsp;}<br>}</div><p style="text-align:center;margin-top:.6rem;color:var(--secondary);font-size:.7rem"><i class="fas fa-terminal"></i> терминал группы: всегда в деле</p></div></div></section><section class="about" id="about"><div class="container"><h2><i class="fas fa-users"></i> О группе ИСП-24</h2><div class="section-subhead">Нас объединяет страсть к программированию, сплетням и постоянному росту :Ъ</div><div class="features"><div class="feature-card"><div class="feature-icon"><i class="fas fa-laptop-code"></i></div><h3>Победители</h3><p>1 место в конкурсе "Разрешите представиться"</p></div><a href="anonim.html" class="gossip-link"><div class="feature-card"><div class="feature-icon"><i class="fas fa-comment-slash"></i></div><h3>Сплетни</h3><p>Сплетней больше, чем у остальной части колледжа. Будьте осторожны. Нажмите чтобы перейти →</p></div></a><div class="feature-card"><div class="feature-icon"><i class="fas fa-medal"></i></div><h3>Хакатоны & олимпиады</h3><p>Постоянные участники и призёры студенческих чемпионатов.</p></div></div></div></section><section class="students" id="students"><div class="container"><h2><i class="fas fa-user-graduate"></i> Актив группы</h2><div class="section-subhead">Знакомьтесь — авторитеты группы (малая часть)</div><div class="student-grid"><div class="student-card"><div class="student-avatar">ЯВ</div><h3 class="student-name">Яковлев Вадим</h3><div class="student-role">Староста / 1С</div><div class="student-links"><a href="https://vk.com/vadimyakovlev4"><i class="fab fa-vk"></i></a> <a href="https://t.me/Threedaysofrain2"><i class="fab fa-telegram-plane"></i></a></div></div><div class="student-card"><div class="student-avatar">МН</div><h3 class="student-name">Мирошниченко Никита</h3><div class="student-role">1С / Guitar</div><div class="student-links"><a href="https://vk.ru/n_i_k_i_t_o_s_i_k8"><i class="fab fa-vk"></i></a> <a href="https://t.me/nikita_guitar9"><i class="fab fa-telegram-plane"></i></a></div></div><div class="student-card"><div class="student-avatar">ВИ</div><h3 class="student-name">Возгрин Иван</h3><div class="student-role">Python Dev / ML</div><div class="student-links"><a href="https://vk.ru/xlopecss"><i class="fab fa-vk"></i></a> <a href="https://t.me/Ko1l_l"><i class="fab fa-telegram-plane"></i></a></div></div><div class="student-card"><div class="student-avatar">АМ</div><h3 class="student-name">Абрамцов Максим</h3><div class="student-role">C# / Gemini</div><div class="student-links"><a href="https://vk.ru/maksonchik0001"><i class="fab fa-vk"></i></a> <a href="https://t.me/MaksonchikNN69"><i class="fab fa-telegram-plane"></i></a></div></div></div></div></section><section class="attendance-section" id="attendance"><div class="container"><h2><i class="fas fa-calendar-times"></i> Прогулы</h2><div class="section-subhead">Статистика пропусков и опозданий нашей группы</div><div class="attendance-grid"><div class="attendance-item"><div class="attendance-icon"><i class="fas fa-user-slash"></i></div><div class="attendance-text"><h3>Самый частый прогульщик</h3><p>Бородин</p></div></div><div class="attendance-item"><div class="attendance-icon"><i class="fas fa-clock"></i></div><div class="attendance-text"><h3>Средний показатель</h3><p>72% посещаемости по группе</p></div></div><div class="attendance-item"><div class="attendance-icon"><i class="fas fa-bed"></i></div><div class="attendance-text"><h3>Самый популярный день</h3><p>Каждый — 18% пропусков</p></div></div><div class="attendance-item"><div class="attendance-icon"><i class="fas fa-check-circle"></i></div><div class="attendance-text"><h3>Идеальная посещаемость</h3><p>Софа — ни одного пропуска</p></div></div></div><div class="attendance-cta"><button class="big-attendance-btn" onclick="b3()"><i class="fas fa-table"></i> Полная таблица прогулов</button> <small style="color:var(--secondary);display:block;margin-top:.5rem">Введите пароль для доступа к прогулам</small></div></div></section><section class="contact" id="contact"><div class="container"><h2><i class="fas fa-paper-plane"></i> Свяжитесь с нами</h2><div class="section-subhead">Хотите посплетничать? Напишите нам!</div><div class="contact-container"><div class="contact-info"><p><i class="fas fa-envelope"></i> zhgmk.ru</p><p><i class="fas fa-map-marker-alt"></i> Курская обл., г. Железногорск, ул. Л. Голенькова, д. 2</p><p><i class="fas fa-phone-alt"></i> +7 (995) 586-00-25 (староста)</p><div class="social-links"><a href="https://t.me/s/zhgmk_professionalitet"><i class="fab fa-telegram-plane"></i></a> <a href="https://vk.com/wall-113103317"><i class="fab fa-vk"></i></a></div></div><form class="contact-form" id="a4"><input type="text" placeholder="Ваше имя" required> <input type="email" placeholder="Email" required> <textarea rows="3" placeholder="Ваше сообщение..."></textarea> <button type="submit">Отправить <i class="fas fa-arrow-right"></i></button></form></div></div></section><footer class="footer"><div class="container"><p>© 2026 ИСП-24 | Учебная группа программистов. Сделано с <i class="fas fa-heart"></i></p></div></footer><script>const a5=document.getElementById('a1'),a6=document.getElementById('a2'),a7=document.getElementById('a3'),a8='09877';window.b3=function(){a5.classList.add('active'),a6.value='',a7.classList.remove('show'),setTimeout(()=>a6.focus(),100)};window.b1=function(){a5.classList.remove('active')};window.b2=function(){if(a6.value===a8){a7.classList.remove('show'),b1(),window.location.href="progultel.html"}else a7.classList.add('show'),a6.value='',a6.focus()};a6.addEventListener('keypress',function(b4){b4.key==='Enter'&&b2()});a5.addEventListener('click',function(b5){b5.target===a5&&b1()});document.querySelectorAll('a[href^="#"]').forEach(b6=>{b6.addEventListener('click',function(b7){const b8=this.getAttribute('href');if(b8==="#")return;b7.preventDefault();const b9=document.querySelector(b8);b9&&b9.scrollIntoView({behavior:'smooth'})})});document.getElementById('a4').addEventListener('submit',function(b10){b10.preventDefault(),alert('Спасибо за сообщение! Мы свяжемся с вами в ближайшее время.'),this.reset()});</script></body></html>
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Расписание ИСП-24 | 1 семестр 2026-2027</title>
+    <link href="https://cdn.jsdelivr.net/fontsource/fonts/inter@latest/latin-400-normal.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/fontsource/fonts/inter@latest/latin-600-normal.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/fontsource/fonts/inter@latest/latin-700-normal.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --primary-light: #60a5fa;
+            --secondary: #f97316;
+            --secondary-light: #fb923c;
+            --accent: #f59e0b;
+            --bg: #f1f5f9;
+            --bg-card: #ffffff;
+            --bg-card-hover: #f8fafc;
+            --text: #0f172a;
+            --text-muted: #64748b;
+            --text-light: #1e293b;
+            --border: #e2e8f0;
+            --border-light: #cbd5e1;
+            --active-glow: rgba(37, 99, 235, 0.2);
+            --numerator-color: #2563eb;
+            --denominator-color: #f97316;
+            --numerator-bg: rgba(37, 99, 235, 0.08);
+            --denominator-bg: rgba(249, 115, 22, 0.08);
+            --shadow: rgba(37, 99, 235, 0.12);
+            --shadow-orange: rgba(249, 115, 22, 0.12);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* ===== АНИМАЦИИ ДЛЯ ИКОНОК ===== */
+        @keyframes iconPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        @keyframes iconFloat {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-3px); }
+        }
+
+        @keyframes iconSpin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes iconBounce {
+            0%, 100% { transform: scale(1) rotate(0deg); }
+            25% { transform: scale(1.05) rotate(-3deg); }
+            75% { transform: scale(1.05) rotate(3deg); }
+        }
+
+        @keyframes iconShine {
+            0% { opacity: 0.7; }
+            50% { opacity: 1; }
+            100% { opacity: 0.7; }
+        }
+
+        .animate-pulse { animation: iconPulse 2s ease-in-out infinite; }
+        .animate-float { animation: iconFloat 3s ease-in-out infinite; }
+        .animate-spin-slow { animation: iconSpin 4s linear infinite; }
+        .animate-bounce-soft { animation: iconBounce 2.5s ease-in-out infinite; }
+        .animate-shine { animation: iconShine 1.5s ease-in-out infinite; }
+
+        /* Статичные иконки (без анимации) */
+        .icon-static {
+            display: inline-block;
+        }
+
+        /* ===== ЗАГРУЗОЧНЫЙ ЭКРАН ===== */
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--bg);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            transition: opacity 0.6s ease, visibility 0.6s ease;
+        }
+
+        .loading-screen.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .loader {
+            position: relative;
+            width: 120px;
+            height: 120px;
+        }
+
+        .loader-ring {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            border: 3px solid transparent;
+            animation: spin 1.5s linear infinite;
+        }
+
+        .loader-ring:nth-child(1) {
+            border-top-color: var(--primary);
+            animation-duration: 1.5s;
+        }
+
+        .loader-ring:nth-child(2) {
+            width: 80%;
+            height: 80%;
+            top: 10%;
+            left: 10%;
+            border-right-color: var(--secondary);
+            animation-duration: 1.2s;
+            animation-direction: reverse;
+        }
+
+        .loader-ring:nth-child(3) {
+            width: 60%;
+            height: 60%;
+            top: 20%;
+            left: 20%;
+            border-bottom-color: var(--accent);
+            animation-duration: 0.9s;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            margin-top: 40px;
+            font-size: 1.2rem;
+            color: var(--text-muted);
+            letter-spacing: 2px;
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        .loading-progress {
+            margin-top: 20px;
+            width: 200px;
+            height: 3px;
+            background: var(--border);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .loading-progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--secondary), var(--accent));
+            border-radius: 3px;
+            animation: progress 2s ease-in-out;
+            width: 100%;
+        }
+
+        @keyframes progress {
+            0% { width: 0%; }
+            100% { width: 100%; }
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
+        }
+
+        /* ===== ОСНОВНОЙ КОНТЕЙНЕР ===== */
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+
+        .container.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* ===== ШАПКА ===== */
+        .header {
+            text-align: center;
+            padding: 40px 20px;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 200px;
+            height: 200px;
+            background: radial-gradient(circle, rgba(37, 99, 235, 0.08) 0%, transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary), var(--secondary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+            animation: fadeInDown 0.8s ease;
+        }
+
+        .header .subtitle {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            animation: fadeInDown 0.8s ease 0.2s both;
+        }
+
+        .header .group-badge {
+            display: inline-block;
+            margin-top: 15px;
+            padding: 8px 24px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 1rem;
+            animation: fadeInDown 0.8s ease 0.4s both;
+            box-shadow: 0 4px 20px var(--shadow);
+            color: white;
+        }
+
+        .header .group-badge i {
+            margin-right: 8px;
+            color: white;
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ===== БЕЙДЖ НЕДЕЛИ ===== */
+        .week-type-badge {
+            display: inline-block;
+            margin: 10px 0;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            animation: fadeIn 0.5s ease 0.3s both;
+        }
+
+        .week-type-badge i {
+            margin-right: 6px;
+        }
+
+        .week-type-numerator {
+            background: var(--numerator-bg);
+            color: var(--numerator-color);
+            border: 2px solid rgba(37, 99, 235, 0.3);
+            box-shadow: 0 0 20px rgba(37, 99, 235, 0.08);
+        }
+
+        .week-type-denominator {
+            background: var(--denominator-bg);
+            color: var(--denominator-color);
+            border: 2px solid rgba(249, 115, 22, 0.3);
+            box-shadow: 0 0 20px rgba(249, 115, 22, 0.08);
+        }
+
+        /* ===== ТЕКУЩАЯ ИНФОРМАЦИЯ ===== */
+        .current-info {
+            text-align: center;
+            margin: 10px auto 20px;
+            padding: 16px 24px;
+            background: white;
+            border-radius: 20px;
+            border: 1px solid var(--border);
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            animation: fadeIn 0.5s ease;
+            max-width: 600px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+        }
+
+        .current-info::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary), var(--accent));
+            opacity: 0.6;
+        }
+
+        .current-info .time-display {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--text);
+            display: block;
+            margin-bottom: 4px;
+            letter-spacing: 2px;
+        }
+
+        .current-info .time-display i {
+            color: var(--primary);
+        }
+
+        .current-info .date-display {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            display: block;
+            margin-bottom: 8px;
+            letter-spacing: 0.5px;
+        }
+
+        .current-info .date-display i {
+            color: var(--text-muted);
+        }
+
+        .current-info .pair-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: var(--bg);
+            border-radius: 12px;
+            font-weight: 500;
+            font-size: 0.9rem;
+            color: var(--text);
+            border: 1px solid var(--border);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
+        }
+
+        .current-info .pair-indicator .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #22c55e;
+            box-shadow: 0 0 10px rgba(34, 197, 94, 0.4);
+            animation: dot-pulse 1.5s ease-in-out infinite;
+        }
+
+        .current-info .pair-indicator .dot.inactive {
+            background: var(--text-muted);
+            box-shadow: none;
+            animation: none;
+        }
+
+        @keyframes dot-pulse {
+            0%, 100% { transform: scale(1); box-shadow: 0 0 10px rgba(34, 197, 94, 0.4); }
+            50% { transform: scale(1.3); box-shadow: 0 0 20px rgba(34, 197, 94, 0.6); }
+        }
+
+        .current-info .pair-indicator i {
+            color: var(--text-muted);
+        }
+
+        .current-info .pair-indicator i.text-green-500 {
+            color: #22c55e;
+        }
+
+        .current-info .pair-indicator i.text-orange-500 {
+            color: var(--secondary);
+        }
+
+        /* ===== ВКЛАДКИ ===== */
+        .tabs {
+            display: flex;
+            justify-content: center;
+            gap: 6px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            padding: 0 10px;
+        }
+
+        .tab {
+            padding: 8px 14px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            background: white;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.8rem;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+
+        .tab:hover {
+            border-color: var(--primary);
+            color: var(--text);
+            transform: translateY(-1px);
+            box-shadow: 0 2px 10px var(--shadow);
+        }
+
+        .tab.active {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: white;
+            box-shadow: 0 4px 15px var(--shadow);
+        }
+
+        .tab i {
+            margin-right: 4px;
+        }
+
+        /* ===== СПИСОК ПАР ===== */
+        .schedule-list {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .schedule-list.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .lesson-item {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 14px 18px;
+            margin-bottom: 10px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            cursor: default;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+        }
+
+        .lesson-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            width: 3px;
+            background: linear-gradient(180deg, var(--primary), var(--secondary));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .lesson-item:hover {
+            transform: translateX(3px);
+            border-color: var(--primary);
+            box-shadow: 0 4px 20px var(--shadow);
+            background: var(--bg-card-hover);
+        }
+
+        .lesson-item:hover::before {
+            opacity: 1;
+        }
+
+        .lesson-item.current {
+            border-color: var(--primary);
+            box-shadow: 0 0 15px var(--active-glow), 0 4px 20px var(--shadow);
+            background: linear-gradient(135deg, rgba(37, 99, 235, 0.04), white);
+        }
+
+        .lesson-number {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-width: 40px;
+            height: 40px;
+            background: var(--bg);
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 1rem;
+            color: var(--primary);
+            flex-shrink: 0;
+            transition: all 0.3s ease;
+        }
+
+        .lesson-number small {
+            font-size: 0.6rem;
+            font-weight: 500;
+            color: var(--text-muted);
+        }
+
+        .lesson-details {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .lesson-subject-row {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 4px;
+        }
+
+        .lesson-subject {
+            font-size: 1.05rem;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .lesson-week-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.6rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            white-space: nowrap;
+        }
+
+        .badge-numerator {
+            background: var(--numerator-bg);
+            color: var(--numerator-color);
+            border: 1px solid rgba(37, 99, 235, 0.2);
+        }
+
+        .badge-denominator {
+            background: var(--denominator-bg);
+            color: var(--denominator-color);
+            border: 1px solid rgba(249, 115, 22, 0.2);
+        }
+
+        .lesson-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .lesson-meta span {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            transition: color 0.3s ease;
+        }
+
+        .lesson-meta span:hover {
+            color: var(--text-light);
+        }
+
+        .lesson-meta i {
+            font-size: 0.85rem;
+            color: var(--primary);
+            transition: all 0.3s ease;
+        }
+
+        .lesson-meta span:hover i {
+            color: var(--secondary);
+            transform: scale(1.1);
+        }
+
+        .lesson-time-badge {
+            font-weight: 600;
+            color: var(--secondary);
+            background: rgba(249, 115, 22, 0.06);
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            white-space: nowrap;
+            flex-shrink: 0;
+            text-align: center;
+            border: 1px solid rgba(249, 115, 22, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .lesson-item:hover .lesson-time-badge {
+            border-color: var(--secondary);
+            box-shadow: 0 0 15px var(--shadow-orange);
+        }
+
+        .no-lessons {
+            text-align: center;
+            padding: 30px 20px;
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            background: white;
+            border-radius: 16px;
+            border: 1px dashed var(--border);
+        }
+
+        .no-lessons i {
+            font-size: 2rem;
+            display: block;
+            margin-bottom: 10px;
+            color: var(--text-muted);
+        }
+
+        /* ===== ПОДВАЛ ===== */
+        .footer {
+            text-align: center;
+            padding: 25px 20px;
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            margin-top: 10px;
+            border-top: 1px solid var(--border);
+        }
+
+        .footer i {
+            color: var(--secondary);
+            display: inline-block;
+        }
+
+        /* ===== АДМИН-ПАНЕЛЬ ===== */
+        .admin-toggle {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            padding: 12px 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 20px var(--shadow);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .admin-toggle:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 30px var(--shadow);
+        }
+
+        .admin-toggle i {
+            font-size: 1rem;
+            animation: iconSpin 4s linear infinite;
+        }
+
+        .admin-toggle.active {
+            background: var(--secondary);
+            box-shadow: 0 4px 20px var(--shadow-orange);
+        }
+
+        .admin-toggle.active i {
+            animation: iconBounce 1.5s ease-in-out infinite;
+        }
+
+        .admin-panel-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.4);
+            z-index: 998;
+            display: none;
+            backdrop-filter: blur(4px);
+        }
+
+        .admin-panel-overlay.open {
+            display: block;
+        }
+
+        .admin-panel {
+            position: fixed;
+            bottom: 80px;
+            right: 20px;
+            z-index: 999;
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 24px;
+            max-width: 420px;
+            width: calc(100% - 40px);
+            max-height: 70vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+            transform: scale(0.9) translateY(20px);
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.3s ease;
+        }
+
+        .admin-panel.open {
+            transform: scale(1) translateY(0);
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .admin-panel::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .admin-panel::-webkit-scrollbar-track {
+            background: var(--bg);
+            border-radius: 4px;
+        }
+
+        .admin-panel::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 4px;
+        }
+
+        .admin-panel h2 {
+            font-size: 1.1rem;
+            margin-bottom: 12px;
+            color: var(--text);
+            text-align: center;
+        }
+
+        .admin-panel h2 i {
+            color: var(--secondary);
+            display: inline-block;
+        }
+
+        .admin-panel .admin-section {
+            margin-bottom: 14px;
+            padding-bottom: 14px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .admin-panel .admin-section:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .admin-panel .admin-section label {
+            display: block;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin-bottom: 4px;
+        }
+
+        .admin-panel .admin-section select,
+        .admin-panel .admin-section input {
+            width: 100%;
+            padding: 8px 12px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Inter', sans-serif;
+            font-size: 0.9rem;
+            transition: border 0.3s ease;
+        }
+
+        .admin-panel .admin-section select:focus,
+        .admin-panel .admin-section input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .admin-panel .admin-section select option {
+            background: white;
+        }
+
+        .admin-panel .admin-section .admin-btn {
+            padding: 6px 14px;
+            border-radius: 8px;
+            border: none;
+            background: var(--primary);
+            color: white;
+            font-weight: 600;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Inter', sans-serif;
+            margin-top: 4px;
+        }
+
+        .admin-panel .admin-section .admin-btn:hover {
+            background: var(--primary-dark);
+            transform: scale(1.02);
+        }
+
+        .admin-panel .admin-section .admin-btn.danger {
+            background: #dc2626;
+        }
+
+        .admin-panel .admin-section .admin-btn.danger:hover {
+            background: #b91c1c;
+        }
+
+        .admin-panel .admin-section .admin-btn.success {
+            background: #16a34a;
+        }
+
+        .admin-panel .admin-section .admin-btn.success:hover {
+            background: #15803d;
+        }
+
+        .admin-panel .admin-section .week-switch-btns {
+            display: flex;
+            gap: 8px;
+        }
+
+        .admin-panel .admin-section .week-switch-btns button {
+            flex: 1;
+            padding: 6px 12px;
+            border-radius: 8px;
+            border: 2px solid var(--border);
+            background: var(--bg);
+            color: var(--text-muted);
+            font-weight: 600;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .admin-panel .admin-section .week-switch-btns button i {
+            margin-right: 4px;
+        }
+
+        .admin-panel .admin-section .week-switch-btns button.active-num {
+            border-color: var(--numerator-color);
+            background: var(--numerator-bg);
+            color: var(--numerator-color);
+        }
+
+        .admin-panel .admin-section .week-switch-btns button.active-den {
+            border-color: var(--denominator-color);
+            background: var(--denominator-bg);
+            color: var(--denominator-color);
+        }
+
+        .admin-panel .admin-section .week-switch-btns button.active-auto {
+            border-color: var(--accent);
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--accent);
+        }
+
+        .admin-panel .admin-section .lesson-edit-item {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            background: var(--bg);
+            padding: 8px;
+            border-radius: 8px;
+            margin-bottom: 6px;
+            align-items: center;
+            border: 1px solid var(--border);
+        }
+
+        .admin-panel .admin-section .lesson-edit-item input {
+            flex: 1;
+            min-width: 60px;
+            padding: 4px 8px;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            background: white;
+            color: var(--text);
+            font-size: 0.8rem;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .admin-panel .admin-section .lesson-edit-item .lesson-edit-actions {
+            display: flex;
+            gap: 4px;
+        }
+
+        .admin-panel .admin-section .lesson-edit-item .lesson-edit-actions button {
+            padding: 4px 10px;
+            border-radius: 6px;
+            border: none;
+            font-size: 0.7rem;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.2s ease;
+        }
+
+        .admin-panel .admin-section .lesson-edit-item .lesson-edit-actions .move-up {
+            background: var(--primary);
+            color: white;
+        }
+
+        .admin-panel .admin-section .lesson-edit-item .lesson-edit-actions .move-down {
+            background: var(--secondary);
+            color: white;
+        }
+
+        .admin-panel .admin-section .lesson-edit-item .lesson-edit-actions .delete-lesson {
+            background: #dc2626;
+            color: white;
+        }
+
+        .admin-panel .admin-section .lesson-edit-item .lesson-edit-actions .save-lesson {
+            background: #16a34a;
+            color: white;
+        }
+
+        .admin-panel .admin-section .lesson-edit-item .lesson-edit-actions button:hover {
+            transform: scale(1.05);
+        }
+
+        .admin-panel .admin-section .add-lesson-form {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 6px;
+        }
+
+        .admin-panel .admin-section .add-lesson-form input {
+            flex: 1;
+            min-width: 60px;
+            padding: 4px 8px;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            background: white;
+            color: var(--text);
+            font-size: 0.8rem;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .admin-panel .admin-section .add-lesson-form button {
+            padding: 4px 12px;
+            border-radius: 6px;
+            border: none;
+            background: var(--primary);
+            color: white;
+            font-weight: 600;
+            font-size: 0.7rem;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.3s ease;
+        }
+
+        .admin-panel .admin-section .add-lesson-form button:hover {
+            background: var(--primary-dark);
+            transform: scale(1.05);
+        }
+
+        .admin-panel .admin-section .day-selector {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+            margin-bottom: 8px;
+        }
+
+        .admin-panel .admin-section .day-selector button {
+            padding: 4px 12px;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            background: var(--bg);
+            color: var(--text-muted);
+            font-size: 0.7rem;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.3s ease;
+        }
+
+        .admin-panel .admin-section .day-selector button.active-day {
+            border-color: var(--primary);
+            background: rgba(37, 99, 235, 0.08);
+            color: var(--primary);
+        }
+
+        .admin-panel .admin-section .day-selector button:hover {
+            border-color: var(--primary);
+        }
+
+        .admin-panel .admin-section .week-selector {
+            display: flex;
+            gap: 8px;
+        }
+
+        .admin-panel .admin-section .week-selector button {
+            flex: 1;
+            padding: 4px 12px;
+            border-radius: 6px;
+            border: 2px solid var(--border);
+            background: var(--bg);
+            color: var(--text-muted);
+            font-size: 0.7rem;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.3s ease;
+        }
+
+        .admin-panel .admin-section .week-selector button.active-week-num {
+            border-color: var(--numerator-color);
+            background: var(--numerator-bg);
+            color: var(--numerator-color);
+        }
+
+        .admin-panel .admin-section .week-selector button.active-week-den {
+            border-color: var(--denominator-color);
+            background: var(--denominator-bg);
+            color: var(--denominator-color);
+        }
+
+        .admin-panel .admin-section .week-selector button:hover {
+            border-color: var(--primary);
+        }
+
+        .admin-panel .admin-section .admin-help {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        /* ===== МОДАЛКА ВВОДА ПАРОЛЯ ===== */
+        .password-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 10000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(4px);
+        }
+
+        .password-modal.open {
+            display: flex;
+        }
+
+        .password-modal-content {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 32px;
+            max-width: 380px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.15);
+            animation: modalAppear 0.3s ease;
+        }
+
+        @keyframes modalAppear {
+            from { opacity: 0; transform: scale(0.9) translateY(20px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+
+        .password-modal-content .lock-icon {
+            font-size: 3rem;
+            margin-bottom: 12px;
+            display: inline-block;
+            animation: iconPulse 2s ease-in-out infinite;
+        }
+
+        .password-modal-content h2 {
+            font-size: 1.3rem;
+            color: var(--text);
+            margin-bottom: 4px;
+        }
+
+        .password-modal-content p {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            margin-bottom: 20px;
+        }
+
+        .password-modal-content input {
+            width: 100%;
+            padding: 12px 16px;
+            border-radius: 12px;
+            border: 2px solid var(--border);
+            background: var(--bg);
+            color: var(--text);
+            font-size: 1rem;
+            font-family: 'Inter', sans-serif;
+            text-align: center;
+            letter-spacing: 4px;
+            margin-bottom: 16px;
+            transition: border 0.3s ease;
+        }
+
+        .password-modal-content input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .password-modal-content .password-error {
+            color: #dc2626;
+            font-size: 0.8rem;
+            margin-bottom: 12px;
+            display: none;
+        }
+
+        .password-modal-content .password-error.show {
+            display: block;
+        }
+
+        .password-modal-content .modal-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .password-modal-content .modal-buttons button {
+            flex: 1;
+            padding: 10px;
+            border-radius: 12px;
+            border: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.3s ease;
+        }
+
+        .password-modal-content .modal-buttons .submit-btn {
+            background: var(--primary);
+            color: white;
+        }
+
+        .password-modal-content .modal-buttons .submit-btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px var(--shadow);
+        }
+
+        .password-modal-content .modal-buttons .cancel-btn {
+            background: var(--bg);
+            color: var(--text-muted);
+        }
+
+        .password-modal-content .modal-buttons .cancel-btn:hover {
+            background: var(--border);
+        }
+
+        /* ===== ЧАСТИЦЫ ===== */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .particle {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: var(--primary);
+            border-radius: 50%;
+            opacity: 0.15;
+            animation: float linear infinite;
+        }
+
+        .particle:nth-child(odd) {
+            background: var(--secondary);
+        }
+
+        .particle:nth-child(3n) {
+            background: var(--accent);
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 0;
+            }
+            10% { opacity: 0.15; }
+            90% { opacity: 0.15; }
+            100% {
+                transform: translateY(-100px) rotate(720deg);
+                opacity: 0;
+            }
+        }
+
+        .content-wrapper {
+            position: relative;
+            z-index: 1;
+        }
+
+        /* ===== АДАПТИВ ===== */
+        @media (max-width: 600px) {
+            .header h1 { font-size: 1.6rem; }
+            .lesson-item { flex-wrap: wrap; gap: 10px; padding: 12px 14px; }
+            .lesson-number { min-width: 35px; height: 35px; font-size: 0.9rem; }
+            .lesson-time-badge { margin-left: 0; }
+            .tabs { gap: 4px; }
+            .tab { padding: 6px 9px; font-size: 0.7rem; }
+            .current-info { padding: 12px 16px; }
+            .current-info .time-display { font-size: 1.1rem; }
+            .admin-panel { max-width: 100%; right: 10px; bottom: 70px; padding: 16px; }
+            .admin-toggle { padding: 10px 16px; font-size: 0.8rem; bottom: 10px; right: 10px; }
+            .password-modal-content { padding: 24px 20px; }
+        }
+    </style>
+    <!-- Подключаем Font Awesome для иконок -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div class="loading-screen" id="loadingScreen">
+        <div class="loader">
+            <div class="loader-ring"></div>
+            <div class="loader-ring"></div>
+            <div class="loader-ring"></div>
+        </div>
+        <div class="loading-text"><i class="fas fa-spinner animate-spin-slow"></i> ЗАГРУЗКА РАСПИСАНИЯ</div>
+        <div class="loading-progress">
+            <div class="loading-progress-bar"></div>
+        </div>
+    </div>
+
+    <!-- Particles -->
+    <div class="particles" id="particles"></div>
+
+    <!-- Main Content -->
+    <div class="content-wrapper">
+        <div class="container" id="mainContent">
+            <header class="header">
+                <h1><i class="fas fa-calendar-alt animate-pulse" style="color: var(--secondary); margin-right: 8px;"></i> Расписание занятий</h1>
+                <p class="subtitle"><i class="fas fa-graduation-cap" style="color: var(--primary); margin-right: 6px;"></i> Железногорский горно-металлургический колледж</p>
+                <div class="group-badge">
+                    <i class="fas fa-users"></i> ИСП-24 • 1 семестр 2026-2027
+                </div>
+            </header>
+
+            <!-- Week type indicator -->
+            <div style="text-align: center; margin-bottom: 10px;">
+                <span class="week-type-badge" id="weekTypeBadge"><i class="fas fa-calendar-week"></i> Числитель</span>
+            </div>
+
+            <!-- Current time indicator -->
+            <div class="current-info" id="currentInfo">
+                <span class="date-display" id="currentDate"><i class="far fa-calendar-alt icon-static"></i> </span>
+                <span class="time-display" id="currentTime"><i class="fas fa-clock animate-spin-slow"></i> </span>
+                <span class="pair-indicator" id="currentPairIndicator">
+                    <span class="dot" id="pairDot"></span>
+                    <span id="pairText"><i class="fas fa-spinner animate-spin-slow"></i> Загрузка...</span>
+                </span>
+            </div>
+
+            <!-- Tabs -->
+            <div class="tabs" id="tabsContainer">
+                <div class="tab active" data-day="mon"><i class="fas fa-sun"></i> Пн</div>
+                <div class="tab" data-day="tue"><i class="fas fa-fire"></i> Вт</div>
+                <div class="tab" data-day="wed"><i class="fas fa-cloud"></i> Ср</div>
+                <div class="tab" data-day="thu"><i class="fas fa-moon"></i> Чт</div>
+                <div class="tab" data-day="fri"><i class="fas fa-star"></i> Пт</div>
+                <div class="tab" data-day="sat"><i class="fas fa-calendar-weekend"></i> Сб</div>
+            </div>
+
+            <!-- Schedule Lists -->
+            <div id="scheduleContainer">
+                <div class="schedule-list active" id="list-mon"></div>
+                <div class="schedule-list" id="list-tue"></div>
+                <div class="schedule-list" id="list-wed"></div>
+                <div class="schedule-list" id="list-thu"></div>
+                <div class="schedule-list" id="list-fri"></div>
+                <div class="schedule-list" id="list-sat"></div>
+            </div>
+
+            <footer class="footer">
+                <p><i class="fas fa-check-circle animate-shine"></i> Утверждено директором «31» августа 2026 г.</p>
+                <p style="margin-top: 5px;"><i class="fas fa-user-tie animate-float"></i> Зам. директора по УР: Л.В. Косенкова</p>
+            </footer>
+        </div>
+    </div>
+
+    <!-- Модалка ввода пароля -->
+    <div class="password-modal" id="passwordModal">
+        <div class="password-modal-content">
+            <div class="lock-icon"><i class="fas fa-lock"></i></div>
+            <h2><i class="fas fa-shield-alt" style="color: var(--secondary);"></i> Введите пароль</h2>
+            <p>Доступ к панели администратора</p>
+            <input type="password" id="adminPasswordInput" placeholder="••••••••" maxlength="20">
+            <div class="password-error" id="adminPasswordError"><i class="fas fa-exclamation-circle"></i> Неверный пароль. Попробуйте снова.</div>
+            <div class="modal-buttons">
+                <button class="cancel-btn" onclick="closePasswordModal()"><i class="fas fa-times"></i> Отмена</button>
+                <button class="submit-btn" onclick="checkAdminPassword()"><i class="fas fa-sign-in-alt"></i> Войти</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Panel -->
+    <button class="admin-toggle" id="adminToggle" onclick="openPasswordModal()">
+        <i class="fas fa-cog"></i> Админ
+    </button>
+
+    <div class="admin-panel-overlay" id="adminOverlay" onclick="closeAdminPanel()"></div>
+
+    <div class="admin-panel" id="adminPanel">
+        <h2><i class="fas fa-cogs"></i> Панель администратора</h2>
+        
+        <div class="admin-section">
+            <label><i class="fas fa-calendar-week" style="color: var(--primary);"></i> Управление неделями</label>
+            <div class="week-switch-btns">
+                <button id="setNumWeek" onclick="setWeekType('numerator')"><i class="fas fa-sun"></i> Числитель</button>
+                <button id="setDenWeek" onclick="setWeekType('denominator')"><i class="fas fa-moon"></i> Знаменатель</button>
+                <button id="setAutoWeek" onclick="setWeekType('auto')" style="flex:0.7;"><i class="fas fa-rotate"></i> Авто</button>
+            </div>
+            <div style="margin-top: 8px;">
+                <label style="font-size:0.7rem; color:var(--text-muted);"><i class="far fa-calendar-alt"></i> Дата начала семестра</label>
+                <div style="display:flex; gap:8px; margin-top:4px;">
+                    <input type="date" id="semesterStart" style="flex:1; padding:4px 8px; border-radius:6px; border:1px solid var(--border); background:var(--bg); color:var(--text); font-size:0.8rem;">
+                    <button class="admin-btn success" onclick="setSemesterStart()"><i class="fas fa-check"></i></button>
+                </div>
+                <div class="admin-help"><i class="fas fa-info-circle"></i> Недели считаются автоматически от этой даты.</div>
+            </div>
+        </div>
+
+        <div class="admin-section">
+            <label><i class="fas fa-pen" style="color: var(--secondary);"></i> Редактирование пар</label>
+            <div class="day-selector" id="adminDaySelector">
+                <button data-day="mon" class="active-day">Пн</button>
+                <button data-day="tue">Вт</button>
+                <button data-day="wed">Ср</button>
+                <button data-day="thu">Чт</button>
+                <button data-day="fri">Пт</button>
+                <button data-day="sat">Сб</button>
+            </div>
+            <div class="week-selector" id="adminWeekSelector">
+                <button data-week="constant" class="active-week-num">Все</button>
+                <button data-week="numerator">Числитель</button>
+                <button data-week="denominator">Знаменатель</button>
+            </div>
+            <div id="lessonEditList" style="margin-top:8px; max-height:200px; overflow-y:auto;"></div>
+            <div class="add-lesson-form" id="addLessonForm">
+                <input type="text" id="newLessonSubject" placeholder="Название" style="flex:2;">
+                <input type="text" id="newLessonTeacher" placeholder="Преп." style="flex:1;">
+                <input type="text" id="newLessonRoom" placeholder="Ауд." style="flex:0.8;">
+                <input type="time" id="newLessonStart" style="flex:0.6;">
+                <input type="time" id="newLessonEnd" style="flex:0.6;">
+                <button><i class="fas fa-plus"></i></button>
+            </div>
+        </div>
+
+        <div class="admin-section">
+            <label><i class="fas fa-tools" style="color: var(--accent);"></i> Действия</label>
+            <button class="admin-btn danger" onclick="resetSchedule()" style="width:100%;"><i class="fas fa-trash"></i> Сбросить расписание к исходному</button>
+            <button class="admin-btn" onclick="closeAdminPanel()" style="width:100%; margin-top:6px;"><i class="fas fa-lock"></i> Закрыть панель</button>
+        </div>
+    </div>
+
+    <script>
+        // ============================================
+        // ПАРОЛЬ АДМИНИСТРАТОРА
+        // ============================================
+        const ADMIN_PASSWORD = 'admin123';
+
+        // ============================================
+        // ДАННЫЕ РАСПИСАНИЯ
+        // ============================================
+        const DEFAULT_SCHEDULE = {
+            mon: {
+                name: 'Понедельник',
+                lessons: [
+                    { num: 1, subject: 'МДК 01.01', teacher: 'Кирпан Р.Г.', room: '2 корп. №28', timeStart: '08:30', timeEnd: '10:00', week: 'constant' },
+                    { num: 2, subject: 'МДК 01.03', teacher: 'Локтионова М.В.', room: '2 корп. №33', timeStart: '10:10', timeEnd: '11:40', week: 'constant' },
+                    { num: 3, subject: 'МДК 01.03', teacher: 'Локтионова М.В.', room: '2 корп. №33', timeStart: '12:10', timeEnd: '13:40', week: 'constant' },
+                    { num: 4, subject: 'МДК 01.04', teacher: 'Мулюкина А.И.', room: '2 корп. №20', timeStart: '13:50', timeEnd: '15:20', week: 'constant' }
+                ]
+            },
+            tue: {
+                name: 'Вторник',
+                lessons: [
+                    { num: 1, subject: 'БЖД', teacher: 'Белоусова А.П.', room: '103', timeStart: '08:30', timeEnd: '10:00', week: 'constant' },
+                    { num: 2, subject: 'МДК 01.04', teacher: 'Локтионова М.В.', room: '2 корп. №33', timeStart: '10:10', timeEnd: '11:40', week: 'constant' },
+                    { num: 3, subject: 'МДК 01.03', teacher: 'Локтионова М.В.', room: '2 корп. №33', timeStart: '12:10', timeEnd: '13:40', week: 'constant' },
+                    { num: 4, subject: 'МДК 01.04', teacher: 'Мулюкина А.И.', room: '2 корп. №20', timeStart: '13:50', timeEnd: '15:20', week: 'constant' }
+                ]
+            },
+            wed: {
+                name: 'Среда',
+                lessons: [
+                    { num: 1, subject: 'ИТ в ПД', teacher: 'Горбатенкова И.П.', room: '2 корп. №30', timeStart: '08:30', timeEnd: '10:00', week: 'numerator' },
+                    { num: 1, subject: 'ОИБ', teacher: 'Отбеткина С.П.', room: '2 корп. №24', timeStart: '08:30', timeEnd: '10:00', week: 'denominator' },
+                    { num: 2, subject: 'ОИБ', teacher: 'Отбеткина С.П.', room: '2 корп. №24', timeStart: '10:10', timeEnd: '11:40', week: 'constant' },
+                    { num: 3, subject: 'МДК 01.03', teacher: 'Локтионова М.В.', room: '2 корп. №33', timeStart: '12:10', timeEnd: '13:40', week: 'constant' },
+                    { num: 4, subject: 'МДК 01.03', teacher: 'Локтионова М.В.', room: '2 корп. №33', timeStart: '13:50', timeEnd: '15:20', week: 'constant' }
+                ]
+            },
+            thu: {
+                name: 'Четверг',
+                lessons: [
+                    { num: 1, subject: 'ИТ', teacher: 'Карпинская А.В.', room: '112', timeStart: '08:30', timeEnd: '10:00', week: 'constant' },
+                    { num: 2, subject: 'ОА и П', teacher: 'Дедю А-В.С.', room: '545', timeStart: '10:10', timeEnd: '11:40', week: 'constant' },
+                    { num: 3, subject: 'МДК 01.03', teacher: 'Локтионова М.В.', room: '2 корп. №33', timeStart: '12:10', timeEnd: '13:40', week: 'constant' },
+                    { num: 4, subject: 'МДК 01.04', teacher: 'Мулюкина А.И.', room: '2 корп. №20', timeStart: '13:50', timeEnd: '15:20', week: 'constant' }
+                ]
+            },
+            fri: {
+                name: 'Пятница',
+                lessons: [
+                    { num: 1, subject: 'Проц. форм. и instr.', teacher: 'Головин М.Е.', room: '2 корп. №1', timeStart: '08:30', timeEnd: '10:00', week: 'constant' },
+                    { num: 2, subject: 'МДК 01.03', teacher: 'Локтионова М.В.', room: '2 корп. №33', timeStart: '10:10', timeEnd: '11:40', week: 'constant' },
+                    { num: 3, subject: 'МДК 01.04', teacher: 'Мулюкина А.И.', room: '2 корп. №20', timeStart: '12:10', timeEnd: '13:40', week: 'constant' },
+                    { num: 4, subject: 'МДК 01.06', teacher: 'Испирян А.Л.', room: '463', timeStart: '13:50', timeEnd: '15:20', week: 'constant' }
+                ]
+            },
+            sat: {
+                name: 'Суббота',
+                lessons: [
+                    { num: 1, subject: 'ИТ в ПД', teacher: 'Горбатенкова И.П.', room: '2 корп. №30', timeStart: '08:30', timeEnd: '10:00', week: 'constant' },
+                    { num: 2, subject: 'МДК 01.01', teacher: 'Кирпан Р.Г.', room: '2 корп. №28', timeStart: '10:10', timeEnd: '11:40', week: 'constant' },
+                    { num: 3, subject: 'МДК 01.04', teacher: 'Мулюкина А.И.', room: '2 корп. №20', timeStart: '12:10', timeEnd: '13:40', week: 'constant' },
+                    { num: 4, subject: 'ИТ в ПД', teacher: 'Новикова Ю.А.', room: '512', timeStart: '13:50', timeEnd: '15:20', week: 'constant' }
+                ]
+            }
+        };
+
+        // ============================================
+        // РАБОТА С ДАННЫМИ
+        // ============================================
+        function getScheduleData() {
+            const saved = localStorage.getItem('scheduleData');
+            if (saved) {
+                try {
+                    return JSON.parse(saved);
+                } catch(e) {
+                    return JSON.parse(JSON.stringify(DEFAULT_SCHEDULE));
+                }
+            }
+            return JSON.parse(JSON.stringify(DEFAULT_SCHEDULE));
+        }
+
+        function saveScheduleData(data) {
+            localStorage.setItem('scheduleData', JSON.stringify(data));
+        }
+
+        function getSemesterStart() {
+            const saved = localStorage.getItem('semesterStart');
+            if (saved) return saved;
+            return '2026-09-01';
+        }
+
+        function setSemesterStart() {
+            const date = document.getElementById('semesterStart').value;
+            if (date) {
+                localStorage.setItem('semesterStart', date);
+                renderAllLists();
+                updateDateTime();
+            }
+        }
+
+        // ============================================
+        // ОПРЕДЕЛЕНИЕ ТЕКУЩЕЙ НЕДЕЛИ
+        // ============================================
+        function getCurrentWeekType() {
+            const startDate = new Date(getSemesterStart());
+            const now = new Date();
+            startDate.setHours(0, 0, 0, 0);
+            now.setHours(0, 0, 0, 0);
+            
+            const diffDays = Math.floor((now - startDate) / (1000 * 60 * 60 * 24));
+            if (diffDays < 0) return 'numerator';
+            const weekNumber = Math.floor(diffDays / 7);
+            return weekNumber % 2 === 0 ? 'numerator' : 'denominator';
+        }
+
+        function getWeekTypeFromSettings() {
+            const saved = localStorage.getItem('forceWeekType');
+            if (saved && saved !== 'auto') return saved;
+            if (saved === 'auto') localStorage.removeItem('forceWeekType');
+            return getCurrentWeekType();
+        }
+
+        function setWeekType(type) {
+            if (type === 'auto') {
+                localStorage.removeItem('forceWeekType');
+            } else {
+                localStorage.setItem('forceWeekType', type);
+            }
+            renderAllLists();
+            updateDateTime();
+            updateAdminUI();
+        }
+
+        // ============================================
+        // ФИЛЬТРАЦИЯ ПАР
+        // ============================================
+        function getFilteredLessons(dayLessons, weekType) {
+            if (!dayLessons || dayLessons.length === 0) return [];
+            return dayLessons.filter(lesson => 
+                lesson.week === 'constant' || lesson.week === weekType
+            );
+        }
+
+        // ============================================
+        // ОТРИСОВКА РАСПИСАНИЯ
+        // ============================================
+        function renderAllLists() {
+            const days = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
+            const weekType = getWeekTypeFromSettings();
+            const data = getScheduleData();
+            
+            const badge = document.getElementById('weekTypeBadge');
+            if (weekType === 'numerator') {
+                badge.innerHTML = '<i class="fas fa-sun"></i> Числитель';
+                badge.className = 'week-type-badge week-type-numerator';
+            } else {
+                badge.innerHTML = '<i class="fas fa-moon"></i> Знаменатель';
+                badge.className = 'week-type-badge week-type-denominator';
+            }
+            
+            days.forEach(day => {
+                const list = document.getElementById(`list-${day}`);
+                const dayData = data[day];
+                if (!dayData) return;
+                const filteredLessons = getFilteredLessons(dayData.lessons, weekType);
+                let html = '';
+
+                if (filteredLessons.length === 0) {
+                    html = `<div class="no-lessons"><i class="fas fa-coffee"></i> Нет занятий</div>`;
+                } else {
+                    filteredLessons.forEach((lesson, idx) => {
+                        let weekBadge = '';
+                        let weekClass = '';
+                        if (lesson.week === 'numerator') {
+                            weekBadge = 'Числ';
+                            weekClass = 'badge-numerator';
+                        } else if (lesson.week === 'denominator') {
+                            weekBadge = 'Знам';
+                            weekClass = 'badge-denominator';
+                        }
+
+                        html += `
+                            <div class="lesson-item" data-day="${day}" data-num="${lesson.num}" data-start="${lesson.timeStart}" data-end="${lesson.timeEnd}" data-week="${lesson.week}" data-idx="${idx}">
+                                <div class="lesson-number">
+                                    ${lesson.num}
+                                    <small>пара</small>
+                                </div>
+                                <div class="lesson-details">
+                                    <div class="lesson-subject-row">
+                                        <span class="lesson-subject">${lesson.subject}</span>
+                                        ${weekBadge ? `<span class="lesson-week-badge ${weekClass}">${weekBadge}</span>` : ''}
+                                    </div>
+                                    <div class="lesson-meta">
+                                        <span>
+                                            <i class="fas fa-user-tie"></i> ${lesson.teacher}
+                                        </span>
+                                        <span>
+                                            <i class="fas fa-map-pin"></i> Ауд. ${lesson.room}
+                                        </span>
+                                        <span>
+                                            <i class="fas fa-clock"></i> ${lesson.timeStart} – ${lesson.timeEnd}
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="lesson-time-badge"><i class="far fa-clock"></i> ${lesson.timeStart}<br>–<br>${lesson.timeEnd}</div>
+                            </div>
+                        `;
+                    });
+                }
+
+                list.innerHTML = html;
+            });
+
+            updateDateTime();
+        }
+
+        // ============================================
+        // ТЕКУЩЕЕ ВРЕМЯ И ПАРА
+        // ============================================
+        function updateDateTime() {
+            const now = new Date();
+            const dateStr = now.toLocaleDateString('ru-RU', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+            const timeStr = now.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+            
+            // Календарь статичный (без анимации)
+            document.getElementById('currentDate').innerHTML = `<i class="far fa-calendar-alt icon-static"></i> ${dateStr}`;
+            document.getElementById('currentTime').innerHTML = `<i class="fas fa-clock animate-spin-slow"></i> ${timeStr}`;
+
+            const dayMap = { 0: 'sun', 1: 'mon', 2: 'tue', 3: 'wed', 4: 'thu', 5: 'fri', 6: 'sat' };
+            const currentDayKey = dayMap[now.getDay()];
+            const currentHour = now.getHours();
+            const currentMinute = now.getMinutes();
+            const currentMinutesTotal = currentHour * 60 + currentMinute;
+            const weekType = getWeekTypeFromSettings();
+            const data = getScheduleData();
+
+            let currentIndicator = '';
+            let currentPairNum = null;
+            let isActivePair = false;
+
+            if (data[currentDayKey]) {
+                const filteredLessons = getFilteredLessons(data[currentDayKey].lessons, weekType);
+                
+                for (let i = 0; i < filteredLessons.length; i++) {
+                    const lesson = filteredLessons[i];
+                    const [startH, startM] = lesson.timeStart.split(':').map(Number);
+                    const [endH, endM] = lesson.timeEnd.split(':').map(Number);
+                    const startTotal = startH * 60 + startM;
+                    const endTotal = endH * 60 + endM;
+                    
+                    if (currentMinutesTotal >= startTotal && currentMinutesTotal < endTotal) {
+                        currentPairNum = lesson.num;
+                        currentIndicator = `${lesson.subject} • ${lesson.teacher} • ауд. ${lesson.room}`;
+                        isActivePair = true;
+                        break;
+                    } else if (currentMinutesTotal < startTotal && currentPairNum === null) {
+                        currentIndicator = `Следующая: ${lesson.subject} (${lesson.timeStart})`;
+                        break;
+                    }
+                }
+
+                if (!currentIndicator && filteredLessons.length > 0) {
+                    currentIndicator = 'Пары закончились';
+                } else if (filteredLessons.length === 0) {
+                    currentIndicator = 'Сегодня нет занятий';
+                }
+            } else {
+                currentIndicator = 'Сегодня выходной';
+            }
+
+            const pairText = document.getElementById('pairText');
+            const pairDot = document.getElementById('pairDot');
+            
+            if (isActivePair) {
+                // Иконка плей статичная (без анимации)
+                pairText.innerHTML = `<i class="fas fa-play icon-static" style="color: #22c55e;"></i> Сейчас: ${currentIndicator}`;
+                pairDot.className = 'dot';
+            } else if (currentIndicator.includes('Следующая')) {
+                pairText.innerHTML = `<i class="fas fa-hourglass-half icon-static" style="color: var(--secondary);"></i> ${currentIndicator}`;
+                pairDot.className = 'dot inactive';
+            } else {
+                pairText.textContent = currentIndicator;
+                pairDot.className = 'dot inactive';
+            }
+
+            highlightCurrentLesson(currentDayKey, currentPairNum, weekType);
+        }
+
+        function highlightCurrentLesson(dayKey, currentPairNum, weekType) {
+            document.querySelectorAll('.lesson-item.current').forEach(el => el.classList.remove('current'));
+            
+            if (currentPairNum !== null) {
+                const activeList = document.querySelector('.schedule-list.active');
+                if (activeList) {
+                    const items = activeList.querySelectorAll('.lesson-item');
+                    items.forEach(item => {
+                        if (parseInt(item.dataset.num) === currentPairNum) {
+                            item.classList.add('current');
+                        }
+                    });
+                }
+            }
+        }
+
+        // ============================================
+        // ВКЛАДКИ
+        // ============================================
+        function setupTabs() {
+            const tabs = document.querySelectorAll('.tab');
+            tabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    const dayKey = this.dataset.day;
+                    
+                    tabs.forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    document.querySelectorAll('.schedule-list').forEach(list => list.classList.remove('active'));
+                    document.getElementById(`list-${dayKey}`).classList.add('active');
+                    
+                    const now = new Date();
+                    const dayMap = { 0: 'sun', 1: 'mon', 2: 'tue', 3: 'wed', 4: 'thu', 5: 'fri', 6: 'sat' };
+                    const currentDayKey = dayMap[now.getDay()];
+                    const weekType = getWeekTypeFromSettings();
+                    const data = getScheduleData();
+                    let currentPairNum = null;
+                    
+                    if (dayKey === currentDayKey && data[dayKey]) {
+                        const filteredLessons = getFilteredLessons(data[dayKey].lessons, weekType);
+                        const currentHour = now.getHours();
+                        const currentMinute = now.getMinutes();
+                        const currentMinutesTotal = currentHour * 60 + currentMinute;
+                        for (let lesson of filteredLessons) {
+                            const [startH, startM] = lesson.timeStart.split(':').map(Number);
+                            const [endH, endM] = lesson.timeEnd.split(':').map(Number);
+                            if (currentMinutesTotal >= startH * 60 + startM && currentMinutesTotal < endH * 60 + endM) {
+                                currentPairNum = lesson.num;
+                                break;
+                            }
+                        }
+                    }
+                    
+                    highlightCurrentLesson(dayKey, currentPairNum, weekType);
+                });
+            });
+        }
+
+        // ============================================
+        // АДМИН-ПАНЕЛЬ
+        // ============================================
+        let adminOpen = false;
+
+        function openPasswordModal() {
+            document.getElementById('passwordModal').classList.add('open');
+            document.getElementById('adminPasswordInput').value = '';
+            document.getElementById('adminPasswordError').classList.remove('show');
+            setTimeout(() => document.getElementById('adminPasswordInput').focus(), 100);
+        }
+
+        function closePasswordModal() {
+            document.getElementById('passwordModal').classList.remove('open');
+        }
+
+        function checkAdminPassword() {
+            const input = document.getElementById('adminPasswordInput');
+            const error = document.getElementById('adminPasswordError');
+            
+            if (input.value === ADMIN_PASSWORD) {
+                closePasswordModal();
+                openAdminPanel();
+            } else {
+                error.classList.add('show');
+                input.value = '';
+                input.focus();
+            }
+        }
+
+        document.getElementById('adminPasswordInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                checkAdminPassword();
+            }
+        });
+
+        function openAdminPanel() {
+            adminOpen = true;
+            document.getElementById('adminPanel').classList.add('open');
+            document.getElementById('adminOverlay').classList.add('open');
+            document.getElementById('adminToggle').classList.add('active');
+            renderAdminEditList();
+            updateAdminUI();
+        }
+
+        function closeAdminPanel() {
+            adminOpen = false;
+            document.getElementById('adminPanel').classList.remove('open');
+            document.getElementById('adminOverlay').classList.remove('open');
+            document.getElementById('adminToggle').classList.remove('active');
+        }
+
+        function updateAdminUI() {
+            const weekType = getWeekTypeFromSettings();
+            const saved = localStorage.getItem('forceWeekType');
+            const numBtn = document.getElementById('setNumWeek');
+            const denBtn = document.getElementById('setDenWeek');
+            const autoBtn = document.getElementById('setAutoWeek');
+            
+            document.querySelectorAll('.week-switch-btns button').forEach(b => {
+                b.classList.remove('active-num', 'active-den', 'active-auto');
+            });
+            
+            if (!saved || saved === 'auto') {
+                autoBtn.classList.add('active-auto');
+            } else if (weekType === 'numerator') {
+                numBtn.classList.add('active-num');
+            } else {
+                denBtn.classList.add('active-den');
+            }
+            
+            document.getElementById('semesterStart').value = getSemesterStart();
+        }
+
+        let adminEditDay = 'mon';
+        let adminEditWeek = 'constant';
+
+        function renderAdminEditList() {
+            const data = getScheduleData();
+            const dayData = data[adminEditDay];
+            const container = document.getElementById('lessonEditList');
+            
+            if (!dayData || !dayData.lessons) {
+                container.innerHTML = '<div class="admin-help">Нет данных</div>';
+                return;
+            }
+
+            let filtered = dayData.lessons;
+            if (adminEditWeek !== 'constant') {
+                filtered = dayData.lessons.filter(l => l.week === adminEditWeek);
+            }
+
+            let html = '';
+            if (filtered.length === 0) {
+                html = '<div class="admin-help">Нет пар для выбранной недели</div>';
+            } else {
+                filtered.forEach((lesson, idx) => {
+                    const realIdx = dayData.lessons.indexOf(lesson);
+                    html += `
+                        <div class="lesson-edit-item" data-idx="${realIdx}">
+                            <input type="text" value="${lesson.num}" class="edit-num" style="width:30px; min-width:30px;" placeholder="№">
+                            <input type="text" value="${lesson.subject}" class="edit-subject" placeholder="Название">
+                            <input type="text" value="${lesson.teacher}" class="edit-teacher" placeholder="Преп." style="flex:0.8;">
+                            <input type="text" value="${lesson.room}" class="edit-room" placeholder="Ауд." style="flex:0.6;">
+                            <input type="time" value="${lesson.timeStart}" class="edit-start" style="flex:0.5;">
+                            <input type="time" value="${lesson.timeEnd}" class="edit-end" style="flex:0.5;">
+                            <select class="edit-week" style="flex:0.5; padding:2px 4px; border-radius:4px; border:1px solid var(--border); background:var(--bg); color:var(--text); font-size:0.7rem;">
+                                <option value="constant" ${lesson.week === 'constant' ? 'selected' : ''}>Все</option>
+                                <option value="numerator" ${lesson.week === 'numerator' ? 'selected' : ''}>Числ</option>
+                                <option value="denominator" ${lesson.week === 'denominator' ? 'selected' : ''}>Знам</option>
+                            </select>
+                            <div class="lesson-edit-actions">
+                                <button class="move-up" onclick="moveLesson('${adminEditDay}', ${realIdx}, -1)"><i class="fas fa-chevron-up"></i></button>
+                                <button class="move-down" onclick="moveLesson('${adminEditDay}', ${realIdx}, 1)"><i class="fas fa-chevron-down"></i></button>
+                                <button class="save-lesson" onclick="saveLesson('${adminEditDay}', ${realIdx})"><i class="fas fa-check"></i></button>
+                                <button class="delete-lesson" onclick="deleteLesson('${adminEditDay}', ${realIdx})"><i class="fas fa-trash"></i></button>
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+            container.innerHTML = html;
+            updateAdminUI();
+        }
+
+        function saveLesson(day, idx) {
+            const data = getScheduleData();
+            const item = document.querySelector(`.lesson-edit-item[data-idx="${idx}"]`);
+            if (!item) return;
+            
+            const num = parseInt(item.querySelector('.edit-num').value) || 1;
+            const subject = item.querySelector('.edit-subject').value || 'Без названия';
+            const teacher = item.querySelector('.edit-teacher').value || '';
+            const room = item.querySelector('.edit-room').value || '';
+            const timeStart = item.querySelector('.edit-start').value || '08:30';
+            const timeEnd = item.querySelector('.edit-end').value || '10:00';
+            const week = item.querySelector('.edit-week').value || 'constant';
+            
+            data[day].lessons[idx] = { num, subject, teacher, room, timeStart, timeEnd, week };
+            saveScheduleData(data);
+            renderAllLists();
+            renderAdminEditList();
+        }
+
+        function deleteLesson(day, idx) {
+            if (!confirm('Удалить эту пару?')) return;
+            const data = getScheduleData();
+            data[day].lessons.splice(idx, 1);
+            saveScheduleData(data);
+            renderAllLists();
+            renderAdminEditList();
+        }
+
+        function moveLesson(day, idx, direction) {
+            const data = getScheduleData();
+            const lessons = data[day].lessons;
+            const newIdx = idx + direction;
+            if (newIdx < 0 || newIdx >= lessons.length) return;
+            
+            [lessons[idx], lessons[newIdx]] = [lessons[newIdx], lessons[idx]];
+            saveScheduleData(data);
+            renderAllLists();
+            renderAdminEditList();
+        }
+
+        function addLesson() {
+            const subject = document.getElementById('newLessonSubject').value.trim();
+            const teacher = document.getElementById('newLessonTeacher').value.trim();
+            const room = document.getElementById('newLessonRoom').value.trim();
+            const timeStart = document.getElementById('newLessonStart').value || '08:30';
+            const timeEnd = document.getElementById('newLessonEnd').value || '10:00';
+            
+            if (!subject) {
+                alert('Введите название предмета');
+                return;
+            }
+            
+            const data = getScheduleData();
+            const lessons = data[adminEditDay].lessons;
+            const maxNum = lessons.length > 0 ? Math.max(...lessons.map(l => l.num)) + 1 : 1;
+            
+            lessons.push({
+                num: maxNum,
+                subject: subject,
+                teacher: teacher || 'Преподаватель',
+                room: room || '—',
+                timeStart: timeStart,
+                timeEnd: timeEnd,
+                week: adminEditWeek
+            });
+            
+            saveScheduleData(data);
+            renderAllLists();
+            renderAdminEditList();
+            
+            document.getElementById('newLessonSubject').value = '';
+            document.getElementById('newLessonTeacher').value = '';
+            document.getElementById('newLessonRoom').value = '';
+        }
+
+        function resetSchedule() {
+            if (!confirm('Сбросить расписание к исходному? Все изменения будут потеряны!')) return;
+            localStorage.removeItem('scheduleData');
+            localStorage.removeItem('forceWeekType');
+            localStorage.removeItem('semesterStart');
+            renderAllLists();
+            renderAdminEditList();
+            updateAdminUI();
+        }
+
+        // ============================================
+        // ИНИЦИАЛИЗАЦИЯ
+        // ============================================
+        function initAdminControls() {
+            document.querySelectorAll('#adminDaySelector button').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('#adminDaySelector button').forEach(b => b.classList.remove('active-day'));
+                    this.classList.add('active-day');
+                    adminEditDay = this.dataset.day;
+                    renderAdminEditList();
+                });
+            });
+            
+            document.querySelectorAll('#adminWeekSelector button').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('#adminWeekSelector button').forEach(b => b.classList.remove('active-week-num', 'active-week-den'));
+                    this.classList.add('active-week-num');
+                    adminEditWeek = this.dataset.week;
+                    renderAdminEditList();
+                });
+            });
+
+            document.querySelector('.add-lesson-form button').addEventListener('click', addLesson);
+        }
+
+        function createParticles() {
+            const container = document.getElementById('particles');
+            const colors = ['#2563eb', '#f97316', '#f59e0b', '#60a5fa', '#fb923c'];
+            for (let i = 0; i < 40; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDuration = (Math.random() * 20 + 10) + 's';
+                particle.style.animationDelay = Math.random() * 15 + 's';
+                const size = Math.random() * 3 + 1;
+                particle.style.width = size + 'px';
+                particle.style.height = size + 'px';
+                particle.style.background = colors[Math.floor(Math.random() * colors.length)];
+                particle.style.opacity = Math.random() * 0.12 + 0.04;
+                container.appendChild(particle);
+            }
+        }
+
+        // ============================================
+        // ЗАПУСК
+        // ============================================
+        window.addEventListener('load', () => {
+            createParticles();
+            renderAllLists();
+            setupTabs();
+            initAdminControls();
+            updateAdminUI();
+            
+            const now = new Date();
+            const dayMap = { 0: 'sun', 1: 'mon', 2: 'tue', 3: 'wed', 4: 'thu', 5: 'fri', 6: 'sat' };
+            const todayKey = dayMap[now.getDay()];
+            const data = getScheduleData();
+            if (data[todayKey]) {
+                const tabToActivate = document.querySelector(`.tab[data-day="${todayKey}"]`);
+                if (tabToActivate) {
+                    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                    tabToActivate.classList.add('active');
+                    document.querySelectorAll('.schedule-list').forEach(list => list.classList.remove('active'));
+                    document.getElementById(`list-${todayKey}`).classList.add('active');
+                }
+            }
+            
+            updateDateTime();
+            setInterval(updateDateTime, 1000);
+            
+            setTimeout(() => {
+                document.getElementById('loadingScreen').classList.add('hidden');
+                setTimeout(() => {
+                    document.getElementById('mainContent').classList.add('visible');
+                }, 300);
+            }, 1500);
+        });
+    </script>
+</body>
+  </html>
