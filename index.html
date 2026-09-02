@@ -7,6 +7,9 @@
     <link href="https://cdn.jsdelivr.net/fontsource/fonts/inter@latest/latin-400-normal.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/fontsource/fonts/inter@latest/latin-600-normal.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/fontsource/fonts/inter@latest/latin-700-normal.css" rel="stylesheet">
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
     <style>
         * {
             margin: 0;
@@ -36,6 +39,8 @@
             --denominator-bg: rgba(249, 115, 22, 0.08);
             --shadow: rgba(37, 99, 235, 0.12);
             --shadow-orange: rgba(249, 115, 22, 0.12);
+            --sync-success: #22c55e;
+            --sync-error: #ef4444;
         }
 
         body {
@@ -74,15 +79,57 @@
             100% { opacity: 0.7; }
         }
 
+        @keyframes syncPulse {
+            0%, 100% { opacity: 0.6; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.05); }
+        }
+
         .animate-pulse { animation: iconPulse 2s ease-in-out infinite; }
         .animate-float { animation: iconFloat 3s ease-in-out infinite; }
         .animate-spin-slow { animation: iconSpin 4s linear infinite; }
         .animate-bounce-soft { animation: iconBounce 2.5s ease-in-out infinite; }
         .animate-shine { animation: iconShine 1.5s ease-in-out infinite; }
+        .animate-sync { animation: syncPulse 1.5s ease-in-out infinite; }
+        .icon-static { display: inline-block; }
 
-        /* Статичные иконки (без анимации) */
-        .icon-static {
-            display: inline-block;
+        /* ===== СТАТУС СИНХРОНИЗАЦИИ ===== */
+        .sync-status {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin: 0 auto 10px;
+            max-width: 250px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            transition: all 0.3s ease;
+        }
+
+        .sync-status .sync-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--text-muted);
+            transition: all 0.3s ease;
+        }
+
+        .sync-status .sync-dot.success {
+            background: var(--sync-success);
+            box-shadow: 0 0 10px rgba(34, 197, 94, 0.4);
+        }
+
+        .sync-status .sync-dot.error {
+            background: var(--sync-error);
+            box-shadow: 0 0 10px rgba(239, 68, 68, 0.4);
+        }
+
+        .sync-status .sync-dot.syncing {
+            background: var(--accent);
+            animation: syncPulse 1s ease-in-out infinite;
         }
 
         /* ===== ЗАГРУЗОЧНЫЙ ЭКРАН ===== */
@@ -1228,6 +1275,7 @@
             .admin-panel { max-width: 100%; right: 10px; bottom: 70px; padding: 16px; }
             .admin-toggle { padding: 10px 16px; font-size: 0.8rem; bottom: 10px; right: 10px; }
             .password-modal-content { padding: 24px 20px; }
+            .sync-status { font-size: 0.65rem; padding: 4px 12px; max-width: 200px; }
         }
     </style>
     <!-- Подключаем Font Awesome для иконок -->
@@ -1241,7 +1289,7 @@
             <div class="loader-ring"></div>
             <div class="loader-ring"></div>
         </div>
-        <div class="loading-text"><i class="fas fa-spinner animate-spin-slow"></i> ЗАГРУЗКА РАСПИСАНИЯ</div>
+        <div class="loading-text"><i class="fas fa-spinner animate-spin-slow"></i> ПОДКЛЮЧЕНИЕ К БАЗЕ ДАННЫХ</div>
         <div class="loading-progress">
             <div class="loading-progress-bar"></div>
         </div>
@@ -1260,6 +1308,12 @@
                     <i class="fas fa-users"></i> ИСП-24 • 1 семестр 2026-2027
                 </div>
             </header>
+
+            <!-- Sync Status -->
+            <div class="sync-status" id="syncStatus">
+                <span class="sync-dot" id="syncDot"></span>
+                <span id="syncText">Синхронизация...</span>
+            </div>
 
             <!-- Week type indicator -->
             <div style="text-align: center; margin-bottom: 10px;">
@@ -1367,7 +1421,7 @@
                 <input type="text" id="newLessonRoom" placeholder="Ауд." style="flex:0.8;">
                 <input type="time" id="newLessonStart" style="flex:0.6;">
                 <input type="time" id="newLessonEnd" style="flex:0.6;">
-                <button><i class="fas fa-plus"></i></button>
+                <button onclick="addLesson()"><i class="fas fa-plus"></i></button>
             </div>
         </div>
 
@@ -1380,12 +1434,67 @@
 
     <script>
         // ============================================
-        // ПАРОЛЬ АДМИНИСТРАТОРА
+        // НАСТРОЙКИ FIREBASE (ваши параметры)
         // ============================================
-        const ADMIN_PASSWORD = 'admin123';
+        const firebaseConfig = {
+            apiKey: "AIzaSyBd7G1DkH7fH5q7QkGm7kH5q7QkGm7kH5",
+            authDomain: "isp-24-schedule.firebaseapp.com",
+            databaseURL: "https://isp-24-schedule-default-rtdb.firebaseio.com",
+            projectId: "isp-24-schedule",
+            storageBucket: "isp-24-schedule.firebasestorage.app",
+            messagingSenderId: "123456789012",
+            appId: "1:123456789012:web:abcdef1234567890"
+        };
 
         // ============================================
-        // ДАННЫЕ РАСПИСАНИЯ
+        // ИНИЦИАЛИЗАЦИЯ FIREBASE
+        // ============================================
+        let firebaseInitialized = false;
+        let db = null;
+        let isSyncing = false;
+        let syncListeners = [];
+
+        function initFirebase() {
+            if (firebaseInitialized) return true;
+            try {
+                firebase.initializeApp(firebaseConfig);
+                db = firebase.database();
+                firebaseInitialized = true;
+                return true;
+            } catch (e) {
+                console.error('Ошибка инициализации Firebase:', e);
+                return false;
+            }
+        }
+
+        // ============================================
+        // СТАТУС СИНХРОНИЗАЦИИ
+        // ============================================
+        function setSyncStatus(status, message) {
+            const dot = document.getElementById('syncDot');
+            const text = document.getElementById('syncText');
+            
+            dot.className = 'sync-dot';
+            if (status === 'success') {
+                dot.classList.add('success');
+                text.textContent = message || 'Синхронизировано';
+                text.style.color = '#22c55e';
+            } else if (status === 'error') {
+                dot.classList.add('error');
+                text.textContent = message || 'Ошибка синхронизации';
+                text.style.color = '#ef4444';
+            } else if (status === 'syncing') {
+                dot.classList.add('syncing');
+                text.textContent = message || 'Синхронизация...';
+                text.style.color = 'var(--text-muted)';
+            } else {
+                text.textContent = message || 'Ожидание';
+                text.style.color = 'var(--text-muted)';
+            }
+        }
+
+        // ============================================
+        // РАБОТА С ДАННЫМИ (Firebase + локальный кеш)
         // ============================================
         const DEFAULT_SCHEDULE = {
             mon: {
@@ -1445,45 +1554,133 @@
             }
         };
 
-        // ============================================
-        // РАБОТА С ДАННЫМИ
-        // ============================================
+        let cachedScheduleData = null;
+
+        // Получение данных с приоритетом: Firebase > локальный кеш > дефолт
         function getScheduleData() {
+            if (cachedScheduleData) return cachedScheduleData;
+            
+            // Пробуем получить из localStorage
             const saved = localStorage.getItem('scheduleData');
             if (saved) {
                 try {
-                    return JSON.parse(saved);
-                } catch(e) {
-                    return JSON.parse(JSON.stringify(DEFAULT_SCHEDULE));
-                }
+                    cachedScheduleData = JSON.parse(saved);
+                    return cachedScheduleData;
+                } catch(e) {}
             }
-            return JSON.parse(JSON.stringify(DEFAULT_SCHEDULE));
+            
+            cachedScheduleData = JSON.parse(JSON.stringify(DEFAULT_SCHEDULE));
+            return cachedScheduleData;
         }
 
-        function saveScheduleData(data) {
+        function saveScheduleDataLocally(data) {
+            cachedScheduleData = data;
             localStorage.setItem('scheduleData', JSON.stringify(data));
         }
 
-        function getSemesterStart() {
-            const saved = localStorage.getItem('semesterStart');
-            if (saved) return saved;
-            return '2026-09-01';
+        // Загрузка данных из Firebase
+        function loadFromFirebase() {
+            if (!firebaseInitialized) {
+                if (!initFirebase()) {
+                    setSyncStatus('error', 'Не удалось подключиться к Firebase');
+                    return Promise.reject('Firebase not initialized');
+                }
+            }
+            
+            setSyncStatus('syncing', 'Загрузка данных...');
+            
+            return db.ref('schedule').once('value')
+                .then(snapshot => {
+                    const data = snapshot.val();
+                    if (data) {
+                        cachedScheduleData = data;
+                        localStorage.setItem('scheduleData', JSON.stringify(data));
+                        setSyncStatus('success', 'Данные загружены');
+                        return data;
+                    } else {
+                        // Если в Firebase нет данных, сохраняем дефолтные
+                        const defaultData = JSON.parse(JSON.stringify(DEFAULT_SCHEDULE));
+                        return db.ref('schedule').set(defaultData)
+                            .then(() => {
+                                cachedScheduleData = defaultData;
+                                localStorage.setItem('scheduleData', JSON.stringify(defaultData));
+                                setSyncStatus('success', 'Данные созданы');
+                                return defaultData;
+                            });
+                    }
+                })
+                .catch(error => {
+                    console.error('Ошибка загрузки из Firebase:', error);
+                    setSyncStatus('error', 'Ошибка загрузки данных');
+                    // Возвращаем локальные данные
+                    return getScheduleData();
+                });
         }
 
-        function setSemesterStart() {
-            const date = document.getElementById('semesterStart').value;
-            if (date) {
-                localStorage.setItem('semesterStart', date);
-                renderAllLists();
-                updateDateTime();
+        // Сохранение в Firebase
+        function saveToFirebase(data) {
+            if (!firebaseInitialized) {
+                if (!initFirebase()) {
+                    setSyncStatus('error', 'Не удалось подключиться к Firebase');
+                    return Promise.reject('Firebase not initialized');
+                }
             }
+            
+            setSyncStatus('syncing', 'Сохранение...');
+            
+            return db.ref('schedule').set(data)
+                .then(() => {
+                    saveScheduleDataLocally(data);
+                    setSyncStatus('success', 'Сохранено');
+                    return data;
+                })
+                .catch(error => {
+                    console.error('Ошибка сохранения в Firebase:', error);
+                    setSyncStatus('error', 'Ошибка сохранения');
+                    // Сохраняем локально
+                    saveScheduleDataLocally(data);
+                    return data;
+                });
+        }
+
+        // Настройка прослушивания изменений в реальном времени
+        function listenFirebaseChanges() {
+            if (!firebaseInitialized) {
+                if (!initFirebase()) return;
+            }
+            
+            // Отключаем старые слушатели
+            syncListeners.forEach(listener => listener());
+            syncListeners = [];
+            
+            const listener = db.ref('schedule').on('value', snapshot => {
+                const data = snapshot.val();
+                if (data) {
+                    cachedScheduleData = data;
+                    localStorage.setItem('scheduleData', JSON.stringify(data));
+                    setSyncStatus('success', 'Обновлено');
+                    // Перерисовываем расписание
+                    renderAllLists();
+                    updateDateTime();
+                    if (adminOpen) renderAdminEditList();
+                }
+            }, error => {
+                console.error('Ошибка слушателя Firebase:', error);
+                setSyncStatus('error', 'Ошибка соединения');
+            });
+            
+            // Сохраняем функцию отключения
+            syncListeners.push(() => {
+                db.ref('schedule').off('value', listener);
+            });
         }
 
         // ============================================
         // ОПРЕДЕЛЕНИЕ ТЕКУЩЕЙ НЕДЕЛИ
         // ============================================
         function getCurrentWeekType() {
-            const startDate = new Date(getSemesterStart());
+            const savedStart = localStorage.getItem('semesterStart');
+            const startDate = new Date(savedStart || '2026-09-01');
             const now = new Date();
             startDate.setHours(0, 0, 0, 0);
             now.setHours(0, 0, 0, 0);
@@ -1510,6 +1707,19 @@
             renderAllLists();
             updateDateTime();
             updateAdminUI();
+        }
+
+        function setSemesterStart() {
+            const date = document.getElementById('semesterStart').value;
+            if (date) {
+                localStorage.setItem('semesterStart', date);
+                renderAllLists();
+                updateDateTime();
+            }
+        }
+
+        function getSemesterStart() {
+            return localStorage.getItem('semesterStart') || '2026-09-01';
         }
 
         // ============================================
@@ -1603,7 +1813,6 @@
             const dateStr = now.toLocaleDateString('ru-RU', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
             const timeStr = now.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
             
-            // Календарь статичный (без анимации)
             document.getElementById('currentDate').innerHTML = `<i class="far fa-calendar-alt icon-static"></i> ${dateStr}`;
             document.getElementById('currentTime').innerHTML = `<i class="fas fa-clock animate-spin-slow"></i> ${timeStr}`;
 
@@ -1653,7 +1862,6 @@
             const pairDot = document.getElementById('pairDot');
             
             if (isActivePair) {
-                // Иконка плей статичная (без анимации)
                 pairText.innerHTML = `<i class="fas fa-play icon-static" style="color: #22c55e;"></i> Сейчас: ${currentIndicator}`;
                 pairDot.className = 'dot';
             } else if (currentIndicator.includes('Следующая')) {
@@ -1726,7 +1934,7 @@
         }
 
         // ============================================
-        // АДМИН-ПАНЕЛЬ
+        // АДМИН-ПАНЕЛЬ (с синхронизацией с Firebase)
         // ============================================
         let adminOpen = false;
 
@@ -1740,6 +1948,8 @@
         function closePasswordModal() {
             document.getElementById('passwordModal').classList.remove('open');
         }
+
+        const ADMIN_PASSWORD = 'admin123';
 
         function checkAdminPassword() {
             const input = document.getElementById('adminPasswordInput');
@@ -1850,6 +2060,7 @@
             updateAdminUI();
         }
 
+        // Сохранение урока с синхронизацией в Firebase
         function saveLesson(day, idx) {
             const data = getScheduleData();
             const item = document.querySelector(`.lesson-edit-item[data-idx="${idx}"]`);
@@ -1864,18 +2075,22 @@
             const week = item.querySelector('.edit-week').value || 'constant';
             
             data[day].lessons[idx] = { num, subject, teacher, room, timeStart, timeEnd, week };
-            saveScheduleData(data);
-            renderAllLists();
-            renderAdminEditList();
+            
+            // Сохраняем в Firebase и локально
+            saveToFirebase(data).then(() => {
+                renderAllLists();
+                renderAdminEditList();
+            });
         }
 
         function deleteLesson(day, idx) {
             if (!confirm('Удалить эту пару?')) return;
             const data = getScheduleData();
             data[day].lessons.splice(idx, 1);
-            saveScheduleData(data);
-            renderAllLists();
-            renderAdminEditList();
+            saveToFirebase(data).then(() => {
+                renderAllLists();
+                renderAdminEditList();
+            });
         }
 
         function moveLesson(day, idx, direction) {
@@ -1885,9 +2100,10 @@
             if (newIdx < 0 || newIdx >= lessons.length) return;
             
             [lessons[idx], lessons[newIdx]] = [lessons[newIdx], lessons[idx]];
-            saveScheduleData(data);
-            renderAllLists();
-            renderAdminEditList();
+            saveToFirebase(data).then(() => {
+                renderAllLists();
+                renderAdminEditList();
+            });
         }
 
         function addLesson() {
@@ -1916,9 +2132,10 @@
                 week: adminEditWeek
             });
             
-            saveScheduleData(data);
-            renderAllLists();
-            renderAdminEditList();
+            saveToFirebase(data).then(() => {
+                renderAllLists();
+                renderAdminEditList();
+            });
             
             document.getElementById('newLessonSubject').value = '';
             document.getElementById('newLessonTeacher').value = '';
@@ -1927,12 +2144,15 @@
 
         function resetSchedule() {
             if (!confirm('Сбросить расписание к исходному? Все изменения будут потеряны!')) return;
-            localStorage.removeItem('scheduleData');
-            localStorage.removeItem('forceWeekType');
-            localStorage.removeItem('semesterStart');
-            renderAllLists();
-            renderAdminEditList();
-            updateAdminUI();
+            
+            const defaultData = JSON.parse(JSON.stringify(DEFAULT_SCHEDULE));
+            saveToFirebase(defaultData).then(() => {
+                localStorage.removeItem('forceWeekType');
+                localStorage.removeItem('semesterStart');
+                renderAllLists();
+                renderAdminEditList();
+                updateAdminUI();
+            });
         }
 
         // ============================================
@@ -1956,8 +2176,6 @@
                     renderAdminEditList();
                 });
             });
-
-            document.querySelector('.add-lesson-form button').addEventListener('click', addLesson);
         }
 
         function createParticles() {
@@ -1983,35 +2201,63 @@
         // ============================================
         window.addEventListener('load', () => {
             createParticles();
-            renderAllLists();
-            setupTabs();
-            initAdminControls();
-            updateAdminUI();
             
-            const now = new Date();
-            const dayMap = { 0: 'sun', 1: 'mon', 2: 'tue', 3: 'wed', 4: 'thu', 5: 'fri', 6: 'sat' };
-            const todayKey = dayMap[now.getDay()];
-            const data = getScheduleData();
-            if (data[todayKey]) {
-                const tabToActivate = document.querySelector(`.tab[data-day="${todayKey}"]`);
-                if (tabToActivate) {
-                    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-                    tabToActivate.classList.add('active');
-                    document.querySelectorAll('.schedule-list').forEach(list => list.classList.remove('active'));
-                    document.getElementById(`list-${todayKey}`).classList.add('active');
-                }
-            }
+            // Инициализация Firebase и загрузка данных
+            initFirebase();
             
-            updateDateTime();
-            setInterval(updateDateTime, 1000);
-            
-            setTimeout(() => {
-                document.getElementById('loadingScreen').classList.add('hidden');
-                setTimeout(() => {
-                    document.getElementById('mainContent').classList.add('visible');
-                }, 300);
-            }, 1500);
+            // Загружаем данные
+            loadFromFirebase()
+                .then(() => {
+                    // Настраиваем реальное время
+                    listenFirebaseChanges();
+                    
+                    // Отрисовываем расписание
+                    renderAllLists();
+                    setupTabs();
+                    initAdminControls();
+                    updateAdminUI();
+                    
+                    // Выбираем сегодняшний день
+                    const now = new Date();
+                    const dayMap = { 0: 'sun', 1: 'mon', 2: 'tue', 3: 'wed', 4: 'thu', 5: 'fri', 6: 'sat' };
+                    const todayKey = dayMap[now.getDay()];
+                    const data = getScheduleData();
+                    if (data[todayKey]) {
+                        const tabToActivate = document.querySelector(`.tab[data-day="${todayKey}"]`);
+                        if (tabToActivate) {
+                            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                            tabToActivate.classList.add('active');
+                            document.querySelectorAll('.schedule-list').forEach(list => list.classList.remove('active'));
+                            document.getElementById(`list-${todayKey}`).classList.add('active');
+                        }
+                    }
+                    
+                    updateDateTime();
+                    setInterval(updateDateTime, 1000);
+                    
+                    // Скрываем загрузку
+                    setTimeout(() => {
+                        document.getElementById('loadingScreen').classList.add('hidden');
+                        setTimeout(() => {
+                            document.getElementById('mainContent').classList.add('visible');
+                        }, 300);
+                    }, 800);
+                })
+                .catch(() => {
+                    // Если ошибка, всё равно показываем с локальными данными
+                    renderAllLists();
+                    setupTabs();
+                    initAdminControls();
+                    updateAdminUI();
+                    
+                    setTimeout(() => {
+                        document.getElementById('loadingScreen').classList.add('hidden');
+                        setTimeout(() => {
+                            document.getElementById('mainContent').classList.add('visible');
+                        }, 300);
+                    }, 800);
+                });
         });
     </script>
 </body>
-  </html>
+</html>
