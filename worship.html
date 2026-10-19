@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=yes">
+    <title>Христианская Молодёжь | Песни и Аккорды</title>
+    <link rel="manifest" href="/manifest.json">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{font-family:Inter,sans-serif;background-color:#f9fafc;color:#1e293b;line-height:1.3;-webkit-tap-highlight-color:transparent}
+        .container{width:100%;padding:0 .9rem;margin:0 auto}
+        :root{
+            --primary:#7c3aed;
+            --primary-dark:#6d28d9;
+            --secondary:#64748b;
+            --dark:#0f172a;
+            --light:#f8fafc;
+            --border:#e2e8f0;
+            --success:#10b981;
+            --danger:#ef4444;
+            --worship:#f59e0b;
+            --folder:#3b82f6;
+            --heart:#ec4899
+        }
+        h1{font-size:1.9rem;line-height:1.2;letter-spacing:-.02em}
+        h2{font-size:1.4rem;margin-bottom:.6rem}
+        h2 i{color:var(--primary);margin-right:.3rem}
+        .section-subhead{font-size:.8rem;color:var(--secondary);border-left:3px solid var(--primary);padding-left:.8rem;margin-bottom:1.2rem}
+        
+        /* Navbar */
+        .navbar{background-color:#1e293b;padding:.4rem 0;position:sticky;top:0;z-index:100;box-shadow:0 2px 6px rgba(0,0,0,.1)}
+        .nav-container{display:flex;justify-content:space-between;align-items:center}
+        .logo{font-size:1rem;font-weight:700;color:#fff;text-decoration:none}
+        .logo span{color:var(--primary);background:rgba(255,255,255,.15);padding:.1rem .3rem;border-radius:5px;margin-left:.15rem;font-size:.85rem}
+        .nav-links{display:flex;gap:.4rem;align-items:center;flex-wrap:wrap;justify-content:flex-end}
+        .nav-btn{padding:.3rem .7rem;border-radius:30px;font-weight:600;font-size:.7rem;text-decoration:none;white-space:nowrap;display:inline-flex;align-items:center;gap:.2rem;border:none;cursor:pointer}
+        .chat-nav-btn{background-color:var(--success);color:#fff}
+        .songs-nav-btn{background-color:var(--primary);color:#fff}
+        .folders-nav-btn{background-color:var(--folder);color:#fff}
+        .favorites-nav-btn{background-color:var(--heart);color:#fff}
+        .auth-nav-btn{background-color:var(--worship);color:#fff}
+        
+        /* Hero */
+        .hero{padding:1.5rem 0 1.2rem;background:linear-gradient(135deg,#fff 0,#f1f5f9 100%);border-bottom:1px solid var(--border)}
+        .hero-grid{display:flex;flex-direction:column;gap:1.2rem}
+        .hero-badge{display:inline-block;background:rgba(124,58,237,.1);color:var(--primary-dark);font-weight:600;font-size:.65rem;padding:.2rem .6rem;border-radius:30px;margin-bottom:.5rem;border:1px solid rgba(124,58,237,.3)}
+        .hero p{font-size:.85rem;color:var(--secondary);margin:.4rem 0 .8rem}
+        .hero-buttons{display:flex;flex-direction:column;gap:.4rem;margin:.8rem 0 1.2rem}
+        .primary-btn{background-color:var(--primary);color:#fff;padding:.6rem 1rem;border-radius:40px;font-weight:600;font-size:.8rem;text-decoration:none;text-align:center;display:block;border:none;width:100%;cursor:pointer}
+        .stats{display:flex;flex-wrap:wrap;gap:.8rem;justify-content:space-between}
+        .stat-item{flex:1 0 auto}
+        .stat-number{font-size:1.1rem;font-weight:700;display:block}
+        .stat-label{font-size:.65rem;color:var(--secondary)}
+        
+        /* Songs Section */
+        .songs-section,.folders-section,.favorites-section{padding:2rem 0}
+        .songs-section{background:#fff}
+        .song-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:.8rem}
+        .song-card{background:var(--light);padding:1rem;border-radius:18px;border:1px solid var(--border);cursor:pointer;transition:all .2s;text-decoration:none;color:inherit;display:block}
+        .song-card:hover{transform:translateY(-2px);box-shadow:0 4px 12px rgba(0,0,0,.1)}
+        .song-icon{width:50px;height:50px;border-radius:12px;background:linear-gradient(135deg,var(--primary),var(--primary-dark));display:flex;align-items:center;justify-content:center;margin-bottom:.6rem;font-size:1.2rem;color:#fff}
+        .song-title{font-size:.9rem;font-weight:600;margin-bottom:.2rem}
+        .song-preview{font-size:.7rem;color:var(--secondary);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+        .song-meta{display:flex;justify-content:space-between;align-items:center;margin-top:.5rem}
+        .song-chords{font-size:.65rem;background:rgba(124,58,237,.1);color:var(--primary-dark);padding:.15rem .4rem;border-radius:20px}
+        .song-audio{font-size:.7rem;color:var(--success);display:flex;align-items:center;gap:.2rem}
+        
+        /* Features */
+        .features{display:flex;flex-direction:column;gap:.8rem}
+        .feature-card{background:var(--light);padding:1.1rem 1rem;border-radius:18px;border:1px solid var(--border)}
+        .feature-icon{background:#fff;width:38px;height:38px;border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:.7rem;border:1px solid var(--border);color:var(--primary);font-size:1.2rem;transition:all .2s}
+        .feature-card h3{font-size:.95rem;margin-bottom:.3rem}
+        .feature-card p{color:var(--secondary);font-size:.75rem}
+        
+        /* Folders */
+        .folders-section{background:#f1f5f9}
+        .folder-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:.8rem}
+        .folder-card{background:#fff;border-radius:18px;padding:1rem;text-align:center;border:1px solid var(--border);cursor:pointer;transition:all .2s;text-decoration:none;color:inherit;display:block}
+        .folder-card:hover{transform:translateY(-2px);box-shadow:0 4px 12px rgba(0,0,0,.1)}
+        .folder-icon{width:60px;height:60px;border-radius:16px;background:linear-gradient(135deg,var(--folder),#2563eb);display:flex;align-items:center;justify-content:center;margin:0 auto .6rem;font-size:1.5rem;color:#fff}
+        .folder-name{font-size:.85rem;font-weight:600}
+        .folder-count{color:var(--secondary);font-size:.65rem;margin-top:.2rem}
+        
+        /* Favorites */
+        .favorites-section{background:#fff}
+        .favorite-card{background:var(--light);padding:1rem;border-radius:18px;border:1px solid var(--border);display:flex;align-items:center;gap:.8rem;cursor:pointer;transition:all .2s}
+        .favorite-card:hover{transform:translateX(4px)}
+        .fav-icon{width:45px;height:45px;border-radius:12px;background:linear-gradient(135deg,var(--heart),#db2777);display:flex;align-items:center;justify-content:center;font-size:1.1rem;color:#fff;flex-shrink:0}
+        .fav-info{flex:1}
+        .fav-title{font-size:.85rem;font-weight:600}
+        .fav-preview{font-size:.7rem;color:var(--secondary)}
+        .fav-remove{color:var(--danger);font-size:.9rem;padding:.3rem;cursor:pointer}
+        
+        /* Contact/Dark Section */
+        .contact{background:var(--dark);color:#fff;padding:2rem 0}
+        .contact h2{color:#fff}
+        .contact .section-subhead{color:#a0afc0;border-left-color:#7c3aed}
+        .contact-container{display:flex;flex-direction:column;gap:1.5rem}
+        .contact-info p{margin:.7rem 0;display:flex;align-items:center;gap:.6rem;font-size:.8rem}
+        .contact-info i{width:18px;color:#7c3aed}
+        .social-links{display:flex;gap:.8rem;margin-top:1rem}
+        .social-links a{color:#fff;background:rgba(255,255,255,.1);width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1rem}
+        
+        /* Footer */
+        .footer{background:#0f172a;color:#94a3b8;text-align:center;padding:1rem 0;font-size:.7rem}
+        .footer i{color:#ef4444}
+        
+        /* Modal */
+        .modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.8);backdrop-filter:blur(3px);z-index:10000;justify-content:center;align-items:center;padding:1rem}
+        .modal.active{display:flex}
+        .modal-content{background:#fff;padding:1.5rem;border-radius:24px;max-width:350px;width:100%}
+        .modal-content h3{font-size:1.2rem;margin:.2rem 0 .5rem;text-align:center}
+        .modal-content p{color:var(--secondary);margin-bottom:1rem;font-size:.8rem;text-align:center}
+        .modal-content input,.modal-content textarea{width:100%;padding:.7rem;border-radius:12px;border:2px solid var(--border);font-size:.85rem;margin-bottom:.6rem;outline:none}
+        .modal-content input:focus,.modal-content textarea:focus{border-color:var(--primary)}
+        .modal-buttons{display:flex;gap:.5rem}
+        .modal-btn{flex:1;padding:.7rem;border-radius:12px;font-weight:600;border:none;cursor:pointer;font-size:.85rem}
+        .modal-btn.submit{background:var(--primary);color:#fff}
+        .modal-btn.cancel{background:#f1f5f9;color:var(--dark)}
+        
+        /* Auth Form */
+        .auth-form{display:flex;flex-direction:column;gap:.5rem}
+        .auth-form input{width:100%;padding:.7rem;border-radius:12px;border:2px solid var(--border);font-size:.85rem;outline:none}
+        .auth-form input:focus{border-color:var(--primary)}
+        .auth-error{color:#ef4444;font-size:.75rem;display:none}
+        .auth-error.show{display:block}
+        .auth-success{color:var(--success);font-size:.75rem;display:none}
+        .auth-success.show{display:block}
+        
+        @media (min-width:480px){
+            .hero-buttons{flex-direction:row}
+            .hero-buttons .primary-btn{flex:1}
+            .song-grid{grid-template-columns:repeat(3,1fr)}
+            .folder-grid{grid-template-columns:repeat(3,1fr)}
+        }
+    </style>
+</head>
+<body>
+    <!-- Auth Modal -->
+    <div class="modal" id="authModal">
+        <div class="modal-content">
+            <i class="fas fa-user-circle" style="font-size:2.5rem;color:var(--primary);display:block;text-align:center;margin-bottom:.5rem"></i>
+            <h3 id="authTitle">Вход</h3>
+            <p id="authSubtitle">Войдите для доступа ко всем функциям</p>
+            <form class="auth-form" id="authForm">
+                <input type="text" id="authLogin" placeholder="Логин" required>
+                <input type="password" id="authPassword" placeholder="Пароль" required>
+                <input type="email" id="authEmail" placeholder="Email" style="display:none">
+                <div class="auth-error" id="authError">Неверный логин или пароль</div>
+                <div class="auth-success" id="authSuccess">Успешно!</div>
+                <button type="submit" class="primary-btn" id="authSubmitBtn">Войти</button>
+            </form>
+            <div class="modal-buttons" style="margin-top:.8rem">
+                <button class="modal-btn cancel" onclick="toggleAuthMode()" id="authToggleBtn">Нет аккаунта? Регистрация</button>
+                <button class="modal-btn" style="background:#f1f5f9;color:var(--dark)" onclick="closeAuthModal()">Закрыть</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container nav-container">
+            <a href="#" class="logo">Worship<span>.team</span></a>
+            <div class="nav-links">
+                <a href="chat.html" class="nav-btn chat-nav-btn"><i class="fas fa-comments"></i> Чат</a>
+                <a href="#songs" class="nav-btn songs-nav-btn"><i class="fas fa-music"></i> Песни</a>
+                <a href="#folders" class="nav-btn folders-nav-btn"><i class="fas fa-folder"></i> Папки</a>
+                <a href="#favorites" class="nav-btn favorites-nav-btn"><i class="fas fa-heart"></i> Избранное</a>
+                <button class="nav-btn auth-nav-btn" onclick="openAuthModal()"><i class="fas fa-user"></i> <span id="navAuthText">Войти</span></button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container hero-grid">
+            <div>
+                <span class="hero-badge"><i class="fas fa-praying-hands"></i> Славим вместе</span>
+                <h1>Христианская Молодёжь<br>Песни поклонения</h1>
+                <p>Сборник христианских песен с аккордами и аудио. Создавайте папки, добавляйте в избранное, обсуждайте в чате.</p>
+                <div class="hero-buttons">
+                    <a href="#songs" class="primary-btn"><i class="fas fa-music"></i> Все песни</a>
+                    <a href="#folders" class="primary-btn" style="background:#3b82f6"><i class="fas fa-folder"></i> Мои папки</a>
+                    <a href="#favorites" class="primary-btn" style="background:#ec4899"><i class="fas fa-heart"></i> Избранное</a>
+                    <a href="chat.html" class="primary-btn" style="background:#10b981"><i class="fas fa-comments"></i> Общий чат</a>
+                </div>
+                <div class="stats">
+                    <div class="stat-item">
+                        <span class="stat-number" id="songCount">50+</span>
+                        <span class="stat-label">песен</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number" id="userCount">25+</span>
+                        <span class="stat-label">участников</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">Ежедневно</span>
+                        <span class="stat-label">встречи</span>
+                    </div>
+                </div>
+            </div>
+            <div style="background:#fff;border-radius:16px;padding:1rem;box-shadow:0 12px 20px -12px rgba(0,0,0,.1);border:1px solid var(--border)">
+                <div style="background:var(--dark);color:#a5f3fc;padding:1rem;border-radius:12px;font-family:'Courier New',monospace;font-size:.7rem;line-height:1.6">
+                    <span style="color:#f472b6">const</span> <span style="color:#fde047">worship</span> = {<br>
+                    &nbsp;&nbsp;name: <span style="color:#b0f0b0">"Иисус"</span>,<br>
+                    &nbsp;&nbsp;songs: [<span style="color:#b0f0b0">"Аллилуия"</span>, <span style="color:#b0f0b0">"Благодать"</span>],<br>
+                    &nbsp;&nbsp;chords: [<span style="color:#b0f0b0">"Am"</span>, <span style="color:#b0f0b0">"F"</span>, <span style="color:#b0f0b0">"C"</span>, <span style="color:#b0f0b0">"G"</span>],<br>
+                    &nbsp;&nbsp;<span style="color:#fde047">praise</span>: () => {<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#f472b6">return</span> <span style="color:#b0f0b0">'🙌 Слава Богу!'</span>;<br>
+                    &nbsp;&nbsp;}<br>
+                    };
+                </div>
+                <p style="text-align:center;margin-top:.6rem;color:var(--secondary);font-size:.7rem"><i class="fas fa-guitar"></i> Играйте и пойте вместе</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Songs Section -->
+    <section class="songs-section" id="songs">
+        <div class="container">
+            <h2><i class="fas fa-music"></i> Песни с аккордами</h2>
+            <div class="section-subhead">Все песни нашей общины с текстами, аккордами и аудио</div>
+            <div class="song-grid" id="songsGrid">
+                <!-- Songs will be loaded here -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Features -->
+    <section class="about" style="background:#f1f5f9;padding:2rem 0">
+        <div class="container">
+            <h2><i class="fas fa-star"></i> Возможности сайта</h2>
+            <div class="section-subhead">Всё для удобного изучения и обсуждения песен</div>
+            <div class="features">
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fas fa-book-open"></i></div>
+                    <h3>Тексты с аккордами</h3>
+                    <p>Все песни с удобными аккордами для гитары и фортепиано</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fas fa-headphones"></i></div>
+                    <h3>Аудиоверсии</h3>
+                    <p>Слушайте песни онлайн или скачивайте для офлайн воспроизведения</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fas fa-folder-open"></i></div>
+                    <h3>Папки и коллекции</h3>
+                    <p>Создавайте тематические папки для разных событий и встреч</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fas fa-heart"></i></div>
+                    <h3>Избранное</h3>
+                    <p>Добавляйте любимые песни в избранное для быстрого доступа</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fas fa-comments"></i></div>
+                    <h3>Чат и комментарии</h3>
+                    <p>Обсуждайте песни, делитесь опытом и задавайте вопросы</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fas fa-user-shield"></i></div>
+                    <h3>Только админы добавляют</h3>
+                    <p>Контент модерируется для качества и соответствия учению</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Folders Section -->
+    <section class="folders-section" id="folders">
+        <div class="container">
+            <h2><i class="fas fa-folder"></i> Мои папки</h2>
+            <div class="section-subhead">Организуйте песни по темам и событиям</div>
+            <div class="folder-grid" id="foldersGrid">
+                <div class="folder-card" onclick="openFolder('Воскресное богослужение')">
+                    <div class="folder-icon"><i class="fas fa-church"></i></div>
+                    <div class="folder-name">Воскресное богослужение</div>
+                    <div class="folder-count">12 песен</div>
+                </div>
+                <div class="folder-card" onclick="openFolder('Молодёжная встреча')">
+                    <div class="folder-icon"><i class="fas fa-users"></i></div>
+                    <div class="folder-name">Молодёжная встреча</div>
+                    <div class="folder-count">8 песен</div>
+                </div>
+                <div class="folder-card" onclick="openFolder('Рождество')">
+                    <div class="folder-icon"><i class="fas fa-star"></i></div>
+                    <div class="folder-name">Рождество</div>
+                    <div class="folder-count">6 песен</div>
+                </div>
+                <div class="folder-card" onclick="openFolder('Пасха')">
+                    <div class="folder-icon"><i class="fas fa-cross"></i></div>
+                    <div class="folder-name">Пасха</div>
+                    <div class="folder-count">10 песен</div>
+                </div>
+                <div class="folder-card" onclick="createNewFolder()">
+                    <div class="folder-icon" style="background:linear-gradient(135deg,#94a3b8,#64748b)"><i class="fas fa-plus"></i></div>
+                    <div class="folder-name">Новая папка</div>
+                    <div class="folder-count">Создать</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Favorites Section -->
+    <section class="favorites-section" id="favorites">
+        <div class="container">
+            <h2><i class="fas fa-heart"></i> Избранное</h2>
+            <div class="section-subhead">Ваши любимые песни в одном месте</div>
+            <div id="favoritesList">
+                <p style="text-align:center;color:var(--secondary);padding:2rem 0">Здесь будут ваши избранные песни. Нажмите на ❤️ у любой песни, чтобы добавить её сюда.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section class="contact" id="contact">
+        <div class="container">
+            <h2><i class="fas fa-envelope"></i> Свяжитесь с нами</h2>
+            <div class="section-subhead">Есть вопросы или предложения? Напишите нам!</div>
+            <div class="contact-container">
+                <div class="contact-info">
+                    <p><i class="fas fa-church"></i> Церковь "Живая Вера"</p>
+                    <p><i class="fas fa-map-marker-alt"></i> г. Ваш Город, ул. Примерная, д. 1</p>
+                    <p><i class="fas fa-phone-alt"></i> +7 (XXX) XXX-XX-XX (лидер молодёжи)</p>
+                    <p><i class="fas fa-clock"></i> Встречи: Каждую пятницу в 18:00</p>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-telegram-plane"></i></a>
+                        <a href="#"><i class="fab fa-vk"></i></a>
+                        <a href="#"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>Сделано с <i class="fas fa-heart"></i> для христианской молодёжи</p>
+            <p style="margin-top:.3rem">© 2024 Worship.team</p>
+        </div>
+    </footer>
+
+    <script>
+        // Sample songs data (in real app, this would come from a backend/database)
+        const songsData = [
+            {id: 1, title: "Аллилуия", preview: "Аллилуия, аллилуия, слава Богу...", chords: "Am, F, C, G", audio: true},
+            {id: 2, title: "Благодать", preview: "Твоя благодать льётся как река...", chords: "G, D, Em, C", audio: true},
+            {id: 3, title: "Иисус - имя выше всех", preview: "Иисус, имя выше всех имён...", chords: "D, A, Bm, G", audio: true},
+            {id: 4, title: "Святой Дух", preview: "Святой Дух, приди и наполни нас...", chords: "Em, C, G, D", audio: false},
+            {id: 5, title: "Ты мой Бог", preview: "Ты мой Бог, и я буду славить Тебя...", chords: "C, Am, F, G", audio: true},
+            {id: 6, title: "Величие Твоё", preview: "Величие Твоё безгранично...", chords: "A, E, F#m, D", audio: true}
+        ];
+
+        // Current user state
+        let currentUser = null;
+        let isLoginMode = true;
+        let favorites = [];
+        let isAdmin = false;
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            loadSongs();
+            checkAuth();
+        });
+
+        // Load songs grid
+        function loadSongs() {
+            const grid = document.getElementById('songsGrid');
+            grid.innerHTML = songsData.map(song => `
+                <a href="song.html?id=${song.id}" class="song-card">
+                    <div class="song-icon"><i class="fas fa-music"></i></div>
+                    <div class="song-title">${song.title}</div>
+                    <div class="song-preview">${song.preview}</div>
+                    <div class="song-meta">
+                        <span class="song-chords"><i class="fas fa-guitar"></i> ${song.chords}</span>
+                        ${song.audio ? '<span class="song-audio"><i class="fas fa-headphones"></i> Аудио</span>' : ''}
+                    </div>
+                    <div style="margin-top:.5rem;display:flex;justify-content:space-between;align-items:center">
+                        <span style="font-size:.7rem;color:var(--secondary)"><i class="far fa-comment"></i> Комментарии</span>
+                        <button onclick="event.preventDefault(); toggleFavorite(${song.id})" style="background:none;border:none;font-size:1.2rem;color:${favorites.includes(song.id) ? 'var(--heart)' : 'var(--secondary)'};cursor:pointer"><i class="${favorites.includes(song.id) ? 'fas' : 'far'} fa-heart"></i></button>
+                    </div>
+                </a>
+            `).join('');
+        }
+
+        // Auth functions
+        function openAuthModal() {
+            document.getElementById('authModal').classList.add('active');
+        }
+
+        function closeAuthModal() {
+            document.getElementById('authModal').classList.remove('active');
+        }
+
+        function toggleAuthMode() {
+            isLoginMode = !isLoginMode;
+            document.getElementById('authTitle').textContent = isLoginMode ? 'Вход' : 'Регистрация';
+            document.getElementById('authSubtitle').textContent = isLoginMode ? 'Войдите для доступа ко всем функциям' : 'Создайте аккаунт бесплатно';
+            document.getElementById('authSubmitBtn').textContent = isLoginMode ? 'Войти' : 'Зарегистрироваться';
+            document.getElementById('authToggleBtn').textContent = isLoginMode ? 'Нет аккаунта? Регистрация' : 'Уже есть аккаунт? Войти';
+            document.getElementById('authEmail').style.display = isLoginMode ? 'none' : 'block';
+        }
+
+        // Auth form submit
+        document.getElementById('authForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const login = document.getElementById('authLogin').value;
+            const password = document.getElementById('authPassword').value;
+            
+            // Simulate auth (in real app, this would call Firebase/backend)
+            if (login && password) {
+                currentUser = {login: login, isAdmin: login === 'admin'};
+                isAdmin = login === 'admin';
+                document.getElementById('navAuthText').textContent = currentUser.login;
+                document.getElementById('authSuccess').classList.add('show');
+                setTimeout(() => {
+                    closeAuthModal();
+                    document.getElementById('authSuccess').classList.remove('show');
+                }, 1000);
+            } else {
+                document.getElementById('authError').classList.add('show');
+            }
+        });
+
+        function checkAuth() {
+            // Check if user is logged in (from localStorage in real app)
+            const savedUser = localStorage.getItem('currentUser');
+            if (savedUser) {
+                currentUser = JSON.parse(savedUser);
+                document.getElementById('navAuthText').textContent = currentUser.login;
+            }
+        }
+
+        // Favorites
+        function toggleFavorite(songId) {
+            const index = favorites.indexOf(songId);
+            if (index > -1) {
+                favorites.splice(index, 1);
+            } else {
+                favorites.push(songId);
+            }
+            loadSongs();
+            updateFavoritesList();
+        }
+
+        function updateFavoritesList() {
+            const list = document.getElementById('favoritesList');
+            if (favorites.length === 0) {
+                list.innerHTML = '<p style="text-align:center;color:var(--secondary);padding:2rem 0">Здесь будут ваши избранные песни. Нажмите на ❤️ у любой песни, чтобы добавить её сюда.</p>';
+            } else {
+                const favSongs = songsData.filter(s => favorites.includes(s.id));
+                list.innerHTML = favSongs.map(song => `
+                    <div class="favorite-card" onclick="window.location.href='song.html?id=${song.id}'">
+                        <div class="fav-icon"><i class="fas fa-heart"></i></div>
+                        <div class="fav-info">
+                            <div class="fav-title">${song.title}</div>
+                            <div class="fav-preview">${song.preview}</div>
+                        </div>
+                        <button onclick="event.stopPropagation(); toggleFavorite(${song.id})" class="fav-remove"><i class="fas fa-trash"></i></button>
+                    </div>
+                `).join('');
+            }
+        }
+
+        // Folder functions
+        function openFolder(folderName) {
+            alert('Открытие папки: ' + folderName + '\n(В полной версии здесь будет список песен из этой папки)');
+        }
+
+        function createNewFolder() {
+            if (!currentUser) {
+                openAuthModal();
+                return;
+            }
+            const name = prompt('Введите название новой папки:');
+            if (name) {
+                alert('Папка "' + name + '" создана!\n(В полной версии она появится в списке папок)');
+            }
+        }
+
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({behavior: 'smooth'});
+                }
+            });
+        });
+    </script>
+</body>
+</html>
