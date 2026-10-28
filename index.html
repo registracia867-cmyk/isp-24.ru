@@ -22,7 +22,7 @@
             slate: {
               850: '#151e2e',
               900: '#0f172a',
-              950: '#080d1a',
+              950: '#060913',
             }
           }
         }
@@ -30,270 +30,431 @@
     }
   </script>
   <style>
+    :root {
+      --bg-deep: #060913;
+      --spring-easing: cubic-bezier(0.34, 1.56, 0.64, 1);
+      --smooth-out: cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
     body {
-      background-color: #080d1a;
+      background-color: var(--bg-deep);
       color: #f1f5f9;
       overflow-x: hidden;
+      scroll-behavior: smooth;
     }
+
+    /* Фоновая сетка и аврора-свечение в стиле Linear / Vercel */
+    .bg-grid-pattern {
+      background-size: 36px 36px;
+      background-image: 
+        linear-gradient(to right, rgba(148, 163, 184, 0.04) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(148, 163, 184, 0.04) 1px, transparent 1px);
+      mask-image: radial-gradient(ellipse 90% 80% at 50% 25%, #000 65%, transparent 100%);
+      -webkit-mask-image: radial-gradient(ellipse 90% 80% at 50% 25%, #000 65%, transparent 100%);
+    }
+
+    @keyframes float-aurora {
+      0%, 100% { transform: translate(0px, 0px) scale(1) rotate(0deg); }
+      33% { transform: translate(40px, -35px) scale(1.1) rotate(4deg); }
+      66% { transform: translate(-30px, 25px) scale(0.92) rotate(-4deg); }
+    }
+    .aurora-blob-1 { animation: float-aurora 16s ease-in-out infinite; }
+    .aurora-blob-2 { animation: float-aurora 22s ease-in-out infinite reverse; }
+    .aurora-blob-3 { animation: float-aurora 19s ease-in-out 3s infinite; }
 
     /* Кастомный скроллбар */
-    ::-webkit-scrollbar { width: 8px; height: 8px; }
-    ::-webkit-scrollbar-track { background: #0f172a; }
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #060913;
+    }
     ::-webkit-scrollbar-thumb {
-      background: linear-gradient(180deg, #475569, #334155);
-      border-radius: 4px;
+      background: #1e293b;
+      border-radius: 9999px;
+      border: 2px solid #060913;
     }
-    ::-webkit-scrollbar-thumb:hover { background: #475569; }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #475569;
+    }
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
 
-    /* Чекбокс + pop-анимация галочки */
-    .checkbox-custom:checked + div {
-      background: linear-gradient(135deg, #10b981, #059669);
-      border-color: #10b981;
-      box-shadow: 0 0 12px rgba(16, 185, 129, 0.5);
-    }
-    .checkbox-custom:checked + div svg {
-      display: block;
-      animation: checkmark-bounce 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
-    }
-
-    /* Стеклянная карточка + плавный hover */
+    /* Интерактивные стеклянные карточки с отслеживанием курсора (Spotlight Effect) */
     .glass-card {
-      background: rgba(15, 23, 42, 0.85);
-      backdrop-filter: blur(12px);
-      border: 1px solid rgba(51, 65, 85, 0.6);
-      transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
-    }
-    .glass-card:hover {
-      border-color: rgba(99, 102, 241, 0.35);
-      box-shadow: 0 8px 32px rgba(99, 102, 241, 0.08);
-    }
-
-    /* Keyframes */
-    @keyframes pulse-subtle {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.75; }
-    }
-    @keyframes fade-in-up {
-      from { opacity: 0; transform: translateY(14px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-    @keyframes fade-in {
-      from { opacity: 0; } to { opacity: 1; }
-    }
-    @keyframes scale-in {
-      from { opacity: 0; transform: scale(0.94); }
-      to   { opacity: 1; transform: scale(1); }
-    }
-    @keyframes slide-in-right {
-      from { opacity: 0; transform: translateX(24px); }
-      to   { opacity: 1; transform: translateX(0); }
-    }
-    @keyframes slide-out-right {
-      from { opacity: 1; transform: translateX(0); }
-      to   { opacity: 0; transform: translateX(24px); }
-    }
-    @keyframes shimmer {
-      0%   { transform: translateX(-120%); }
-      100% { transform: translateX(220%); }
-    }
-    @keyframes checkmark-bounce {
-      0%   { transform: scale(0) rotate(-15deg); }
-      60%  { transform: scale(1.25) rotate(3deg); }
-      100% { transform: scale(1) rotate(0); }
-    }
-    @keyframes glow-pulse {
-      0%, 100% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.25); }
-      50%      { box-shadow: 0 0 22px 2px rgba(99, 102, 241, 0.25); }
-    }
-    @keyframes float-soft {
-      0%, 100% { transform: translateY(0); }
-      50%      { transform: translateY(-3px); }
-    }
-    @keyframes bump {
-      0%   { transform: scale(1); }
-      40%  { transform: scale(1.08); }
-      100% { transform: scale(1); }
-    }
-    @keyframes ring-pulse {
-      0%   { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.6); }
-      70%  { box-shadow: 0 0 0 8px rgba(16, 185, 129, 0); }
-      100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
-    }
-    @keyframes shine-sweep {
-      0%   { transform: translateX(-100%) skewX(-20deg); }
-      100% { transform: translateX(250%) skewX(-20deg); }
+      background: linear-gradient(165deg, rgba(15, 23, 42, 0.80) 0%, rgba(9, 13, 24, 0.90) 100%);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(51, 65, 85, 0.55);
+      box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5), inset 0 1px 0 0 rgba(255, 255, 255, 0.06);
+      position: relative;
+      transition: transform 0.3s var(--smooth-out), border-color 0.3s ease, box-shadow 0.3s ease;
     }
 
-    /* Утилиты анимаций */
-    .animate-pulse-subtle { animation: pulse-subtle 2.5s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
-    .animate-fade-in-up   { animation: fade-in-up 0.55s cubic-bezier(0.16, 1, 0.3, 1) both; }
-    .animate-fade-in      { animation: fade-in 0.4s ease-out both; }
-    .animate-scale-in     { animation: scale-in 0.35s cubic-bezier(0.16, 1, 0.3, 1) both; }
-    .animate-float-soft   { animation: float-soft 3.5s ease-in-out infinite; }
-    .animate-glow-pulse   { animation: glow-pulse 3s ease-in-out infinite; }
-
-    /* Stagger для секций */
-    .stagger > * { animation: fade-in-up 0.55s cubic-bezier(0.16, 1, 0.3, 1) both; }
-    .stagger > *:nth-child(1) { animation-delay: 0.04s; }
-    .stagger > *:nth-child(2) { animation-delay: 0.10s; }
-    .stagger > *:nth-child(3) { animation-delay: 0.16s; }
-    .stagger > *:nth-child(4) { animation-delay: 0.22s; }
-    .stagger > *:nth-child(5) { animation-delay: 0.28s; }
-
-    /* Градиентный текст для крупных чисел */
-    .stat-number {
-      background: linear-gradient(135deg, #ffffff 0%, #c7d2fe 60%, #a5b4fc 100%);
-      -webkit-background-clip: text;
-      background-clip: text;
-      -webkit-text-fill-color: transparent;
-      transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
-      display: inline-block;
-    }
-    .stat-number.bump { animation: bump 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); }
-
-    /* Shimmer на прогресс-барах */
-    .progress-shimmer { position: relative; overflow: hidden; }
-    .progress-shimmer::after {
-      content: '';
+    .spotlight-card::before {
+      content: "";
       position: absolute;
-      top: 0;
-      left: 0;
-      width: 40%;
-      height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.28), transparent);
-      animation: shimmer 2.8s ease-in-out infinite;
+      inset: 0;
+      border-radius: inherit;
+      background: radial-gradient(
+        600px circle at var(--mouse-x, -500px) var(--mouse-y, -500px),
+        rgba(99, 102, 241, 0.11),
+        transparent 40%
+      );
       pointer-events: none;
+      z-index: 0;
+      transition: opacity 0.3s ease;
+    }
+    .spotlight-card > * {
+      position: relative;
+      z-index: 1;
     }
 
-    /* Плавные переходы для прогресс-баров */
-    #main-progress-bar { transition: width 0.8s cubic-bezier(0.16, 1, 0.3, 1); }
-    #today-progress-bar { transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1); }
-    #bar-lec, #bar-quiz, #bar-hw { transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1); }
-
-    /* Строки заданий */
-    .item-row {
-      transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1),
-                  background-color 0.2s ease,
-                  border-color 0.2s ease;
+    /* ==========================================================================
+       СУПЕР-АНИМАЦИЯ ОТМЕТКИ И СНЯТИЯ ОТМЕТКИ ЗАДАНИЙ
+       ========================================================================== */
+    .checkbox-custom + .checkbox-box {
+      transition: all 0.28s var(--spring-easing);
+      position: relative;
     }
-    .item-row:hover { transform: translateX(3px); }
-
-    /* Кнопки — микро press */
-    button:active:not(:disabled), label:active {
-      transform: scale(0.97);
-      transition: transform 0.08s ease;
+    .checkbox-custom:checked + .checkbox-box {
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      border-color: #34d399;
+      transform: scale(1.06);
+      box-shadow: 0 0 14px rgba(16, 185, 129, 0.45);
+    }
+    .checkbox-custom:active + .checkbox-box {
+      transform: scale(0.84);
+    }
+    .checkbox-custom + .checkbox-box svg path {
+      stroke-dasharray: 24;
+      stroke-dashoffset: 24;
+      transition: stroke-dashoffset 0.32s var(--smooth-out) 0.04s;
+    }
+    .checkbox-custom:checked + .checkbox-box svg {
+      display: block;
+    }
+    .checkbox-custom:checked + .checkbox-box svg path {
+      stroke-dashoffset: 0;
     }
 
-    /* Кнопка со sweep-блеском */
-    .btn-shine {
+    /* 1. Анимация строки при ВЫПОЛНЕНИИ задачи (Check) */
+    @keyframes task-check-bounce {
+      0% {
+        transform: scale(1);
+        border-color: rgba(52, 211, 153, 0.95);
+        box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.6), inset 0 0 25px rgba(16, 185, 129, 0.25);
+        background-color: rgba(6, 78, 59, 0.45);
+      }
+      35% {
+        transform: scale(1.016) translateX(6px);
+        border-color: #34d399;
+        box-shadow: 0 0 28px -2px rgba(16, 185, 129, 0.45), inset 0 0 30px rgba(16, 185, 129, 0.2);
+      }
+      70% {
+        transform: scale(0.996) translateX(0px);
+      }
+      100% {
+        transform: scale(1);
+      }
+    }
+
+    /* Лазерный энергетический луч вдоль карточки при отметке */
+    @keyframes laser-sweep-check {
+      0% { transform: translateX(-110%) skewX(-20deg); opacity: 0.95; }
+      100% { transform: translateX(210%) skewX(-20deg); opacity: 0; }
+    }
+
+    .task-just-checked {
+      animation: task-check-bounce 0.65s var(--spring-easing) forwards;
       position: relative;
       overflow: hidden;
     }
-    .btn-shine::before {
-      content: '';
+    .task-just-checked::after {
+      content: "";
       position: absolute;
-      top: 0; left: 0;
-      width: 40%; height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.22), transparent);
-      transform: translateX(-100%) skewX(-20deg);
+      inset: 0;
+      width: 55%;
+      background: linear-gradient(90deg, transparent, rgba(52, 211, 153, 0.28), rgba(167, 243, 208, 0.45), transparent);
       pointer-events: none;
-    }
-    .btn-shine:hover::before {
-      animation: shine-sweep 0.7s ease forwards;
+      animation: laser-sweep-check 0.65s var(--smooth-out) forwards;
     }
 
-    /* Toast */
-    .toast-item {
-      animation: slide-in-right 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
+    /* Пружинный взрыв самого чекбокса при отметке */
+    @keyframes checkbox-pop-in {
+      0% { transform: scale(0.5) rotate(-18deg); box-shadow: 0 0 0 0 rgba(52, 211, 153, 0.8); }
+      55% { transform: scale(1.32) rotate(6deg); box-shadow: 0 0 24px 6px rgba(16, 185, 129, 0.65); }
+      80% { transform: scale(0.94) rotate(-2deg); }
+      100% { transform: scale(1.06) rotate(0deg); box-shadow: 0 0 14px rgba(16, 185, 129, 0.45); }
     }
-    .toast-item.leaving {
-      animation: slide-out-right 0.3s cubic-bezier(0.4, 0, 1, 1) both;
-    }
-
-    /* Модалка */
-    #modal-overlay:not(.hidden) > div {
-      animation: scale-in 0.3s cubic-bezier(0.16, 1, 0.3, 1) both;
+    .task-just-checked .checkbox-box {
+      animation: checkbox-pop-in 0.55s var(--spring-easing) forwards !important;
     }
 
-    /* Индикатор облака — пульс в online */
-    #cloud-dot.online {
-      box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.6);
-      animation: ring-pulse 2s infinite;
+    @keyframes checkmark-draw-anim {
+      0% { stroke-dashoffset: 24; }
+      100% { stroke-dashoffset: 0; }
+    }
+    .task-just-checked .checkbox-box svg path {
+      animation: checkmark-draw-anim 0.38s var(--smooth-out) 0.1s both !important;
     }
 
-    /* Табы */
-    .tab-btn { transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1); }
-    .tab-btn:hover { transform: translateY(-1px); }
-
-    /* Мини-карточки курсов */
-    .mini-card {
-      transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1),
-                  background-color 0.25s ease,
-                  border-color 0.25s ease;
+    /* Лазерное зачеркивание текста при отметке */
+    @keyframes strike-laser-grow {
+      0% { width: 0%; opacity: 1; box-shadow: 0 0 10px #34d399; }
+      75% { width: 100%; opacity: 1; box-shadow: 0 0 12px #34d399; }
+      100% { width: 100%; opacity: 0; }
     }
-    .mini-card:hover {
-      transform: translateY(-2px);
-      border-color: rgba(99, 102, 241, 0.4);
+    .task-just-checked .task-title-text {
+      position: relative;
+      display: inline-block;
+    }
+    .task-just-checked .task-title-text::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 52%;
+      height: 2px;
+      background: linear-gradient(90deg, #10b981, #6ee7b7, #38bdf8);
+      border-radius: 999px;
+      animation: strike-laser-grow 0.55s var(--smooth-out) forwards;
     }
 
-    /* Бейдж выполненной нормы дня */
-    #today-status-pill.goal-hit { animation: ring-pulse 2s infinite; }
+    /* 2. Анимация строки при СНЯТИИ ОТМЕТКИ (Uncheck / Rewind) */
+    @keyframes task-uncheck-rewind {
+      0% {
+        transform: scale(0.98);
+        border-color: rgba(251, 191, 36, 0.9);
+        background-color: rgba(120, 53, 15, 0.35);
+        box-shadow: 0 0 22px -2px rgba(245, 158, 11, 0.4);
+      }
+      30% {
+        transform: translateX(-6px) scale(1.008);
+        border-color: rgba(99, 102, 241, 0.85);
+      }
+      65% {
+        transform: translateX(4px) scale(1.002);
+      }
+      100% {
+        transform: translateX(0) scale(1);
+      }
+    }
 
-    /* Иконка в шапке — лёгкий флоат */
-    .header-badge { animation: float-soft 4s ease-in-out infinite; }
+    @keyframes laser-sweep-uncheck {
+      0% { transform: translateX(180%) skewX(20deg); opacity: 0.85; }
+      100% { transform: translateX(-120%) skewX(20deg); opacity: 0; }
+    }
 
-    /* Убираем скроллбар у табов */
-    .no-scrollbar::-webkit-scrollbar { display: none; }
-    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    .task-just-unchecked {
+      animation: task-uncheck-rewind 0.55s var(--spring-easing) forwards;
+      position: relative;
+      overflow: hidden;
+    }
+    .task-just-unchecked::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      width: 50%;
+      background: linear-gradient(90deg, transparent, rgba(251, 191, 36, 0.22), rgba(99, 102, 241, 0.28), transparent);
+      pointer-events: none;
+      animation: laser-sweep-uncheck 0.55s var(--smooth-out) forwards;
+    }
+
+    @keyframes checkbox-pop-out {
+      0% { transform: scale(1.25) rotate(10deg); border-color: #fbbf24; background-color: rgba(245, 158, 11, 0.35); box-shadow: 0 0 18px rgba(245, 158, 11, 0.6); }
+      45% { transform: scale(0.75) rotate(-10deg); border-color: #818cf8; }
+      100% { transform: scale(1) rotate(0deg); }
+    }
+    .task-just-unchecked .checkbox-box {
+      animation: checkbox-pop-out 0.48s var(--spring-easing) forwards !important;
+    }
+
+    /* Обратное втягивание зачеркивания при снятии галочки */
+    @keyframes strike-laser-retract {
+      0% { width: 100%; opacity: 0.95; background: #fbbf24; box-shadow: 0 0 8px #fbbf24; }
+      100% { width: 0%; opacity: 0; background: #6366f1; }
+    }
+    .task-just-unchecked .task-title-text {
+      position: relative;
+      display: inline-block;
+    }
+    .task-just-unchecked .task-title-text::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 52%;
+      height: 2px;
+      border-radius: 999px;
+      animation: strike-laser-retract 0.42s var(--smooth-out) forwards;
+    }
+
+    /* Микро-интерактивность строк заданий */
+    .task-row {
+      transition: transform 0.22s var(--smooth-out), background-color 0.22s ease, border-color 0.22s ease, box-shadow 0.22s ease;
+    }
+    .task-row:hover {
+      transform: translateX(4px);
+    }
+    .task-row.task-done:hover {
+      transform: translateX(2px);
+    }
+
+    /* Подсветка найденной следующей задачи */
+    @keyframes highlight-pulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0); border-color: rgba(99, 102, 241, 0.8); }
+      50% { box-shadow: 0 0 0 6px rgba(99, 102, 241, 0.28); border-color: #818cf8; }
+    }
+    .highlight-target {
+      animation: highlight-pulse 1.2s ease-in-out 3;
+      background: rgba(49, 46, 129, 0.35) !important;
+    }
+
+    /* Жидкий блик для прогресс-баров */
+    .shimmer-bar {
+      position: relative;
+      overflow: hidden;
+    }
+    .shimmer-bar::after {
+      content: "";
+      position: absolute;
+      top: 0; right: 0; bottom: 0; left: 0;
+      background: linear-gradient(
+        90deg,
+        rgba(255,255,255,0) 0%,
+        rgba(255,255,255,0.28) 50%,
+        rgba(255,255,255,0) 100%
+      );
+      transform: translateX(-100%);
+      animation: shimmer-slide 3s infinite;
+    }
+    @keyframes shimmer-slide {
+      100% { transform: translateX(100%); }
+    }
+
+    /* Плавное появление элементов при рендере */
+    @keyframes fadeSlideUp {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .animate-section-in {
+      animation: fadeSlideUp 0.35s var(--smooth-out) both;
+    }
+
+    /* Стилизация ползунка Range */
+    input[type=range] {
+      -webkit-appearance: none;
+      appearance: none;
+      background: transparent;
+    }
+    input[type=range]::-webkit-slider-runnable-track {
+      height: 6px;
+      border-radius: 999px;
+      background: #1e293b;
+    }
+    input[type=range]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      height: 18px;
+      width: 18px;
+      border-radius: 50%;
+      background: #6366f1;
+      border: 2px solid #e0e7ff;
+      margin-top: -6px;
+      box-shadow: 0 0 12px rgba(99, 102, 241, 0.6);
+      transition: transform 0.15s var(--spring-easing), background-color 0.15s ease;
+    }
+    input[type=range]::-webkit-slider-thumb:hover {
+      transform: scale(1.2);
+      background: #818cf8;
+    }
+
+    /* Круговой индикатор прогресса */
+    .progress-ring-circle {
+      transition: stroke-dashoffset 0.7s var(--smooth-out);
+      transform: rotate(-90deg);
+      transform-origin: 50% 50%;
+    }
   </style>
 </head>
-<body class="min-h-screen flex flex-col selection:bg-indigo-500 selection:text-white">
+<body class="min-h-screen flex flex-col selection:bg-indigo-500 selection:text-white relative">
+
+  <!-- Живой интерактивный Кибер-Фон (Созвездия + Световые импульсы по сетке + Аврора) -->
+  <div class="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+    <div class="absolute inset-0 bg-grid-pattern"></div>
+    <canvas id="bg-canvas" class="absolute inset-0 w-full h-full opacity-90"></canvas>
+    <div class="aurora-blob-1 absolute -top-28 left-1/4 w-96 h-96 bg-indigo-600/15 rounded-full blur-[110px]"></div>
+    <div class="aurora-blob-2 absolute top-1/3 -right-20 w-96 h-96 bg-purple-600/12 rounded-full blur-[120px]"></div>
+    <div class="aurora-blob-3 absolute -bottom-28 left-1/3 w-96 h-96 bg-emerald-500/10 rounded-full blur-[120px]"></div>
+  </div>
+
+  <!-- Холст для микро-частиц, ударных волн и всплывающих бейджей при отметке/снятии задач -->
+  <canvas id="fx-canvas" class="fixed inset-0 pointer-events-none z-50 w-full h-full"></canvas>
 
   <!-- Уведомления (Тосты) -->
-  <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
+  <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2.5 pointer-events-none"></div>
 
-  <!-- Модальное окно подтверждения -->
-  <div id="modal-overlay" class="fixed inset-0 bg-black/75 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
-    <div class="glass-card max-w-md w-full rounded-2xl p-6 shadow-2xl border border-slate-700">
+  <!-- Модальное окно подтверждения сброса / импорта -->
+  <div id="modal-overlay" class="fixed inset-0 bg-black/75 backdrop-blur-md z-50 hidden items-center justify-center p-4 transition-opacity">
+    <div class="glass-card max-w-md w-full rounded-2xl p-6 shadow-2xl border border-slate-700/80 animate-section-in">
+      <div class="w-11 h-11 rounded-xl bg-rose-500/15 border border-rose-500/30 flex items-center justify-center text-rose-400 mb-4">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+      </div>
       <h3 id="modal-title" class="text-lg font-bold text-white mb-2">Подтверждение</h3>
-      <p id="modal-desc" class="text-sm text-slate-300 mb-6"></p>
+      <p id="modal-desc" class="text-sm text-slate-300 mb-6 leading-relaxed"></p>
       <div class="flex justify-end gap-3">
         <button id="modal-cancel" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-sm font-medium transition">Отмена</button>
-        <button id="modal-confirm" class="px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-sm font-semibold transition">Подтвердить</button>
+        <button id="modal-confirm" class="px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-sm font-semibold shadow-lg shadow-rose-600/25 transition">Подтвердить</button>
       </div>
     </div>
   </div>
 
   <!-- Шапка -->
-  <header class="border-b border-slate-800/80 bg-slate-950/90 sticky top-0 z-40 backdrop-blur-md">
+  <header class="border-b border-slate-800/70 bg-slate-950/80 sticky top-0 z-40 backdrop-blur-xl">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex flex-wrap items-center justify-between gap-4">
-      <div class="flex items-center gap-3">
-        <div class="header-badge w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 via-purple-500 to-emerald-500 flex items-center justify-center shadow-lg shadow-indigo-500/20">
-          <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
-          </svg>
+      <div class="flex items-center gap-3.5">
+        <div class="relative group">
+          <div class="absolute -inset-1 rounded-xl bg-gradient-to-r from-indigo-500 via-purple-500 to-emerald-500 opacity-60 blur group-hover:opacity-100 transition duration-500"></div>
+          <div class="relative w-10 h-10 rounded-xl bg-slate-900 border border-white/10 flex items-center justify-center shadow-lg">
+            <svg class="w-6 h-6 text-indigo-400 group-hover:scale-110 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+            </svg>
+          </div>
         </div>
         <div>
-          <div class="flex items-center gap-2">
-            <h1 class="text-lg sm:text-xl font-extrabold tracking-tight text-white">QA Automation Roadmap</h1>
-            <span class="px-2 py-0.5 text-[11px] font-mono font-semibold uppercase rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">Цель: Новый Год</span>
+          <div class="flex items-center gap-2.5 flex-wrap">
+            <h1 class="text-lg sm:text-xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-white via-slate-100 to-slate-400">QA Automation Roadmap</h1>
+            <span class="px-2.5 py-0.5 text-[11px] font-mono font-semibold uppercase rounded-full bg-indigo-500/15 text-indigo-300 border border-indigo-500/30 shadow-[0_0_12px_rgba(99,102,241,0.2)]">Цель: Новый Год</span>
           </div>
-          <p class="text-xs text-slate-400">Все задания открыты для чтения и выполнения • Автосохранение прогресса</p>
+          <p class="text-xs text-slate-400 mt-0.5">Интерактивная панель прогресса • Cloud Sync & Автосохранение</p>
         </div>
       </div>
 
       <!-- Кнопки управления данными -->
       <div class="flex items-center gap-2 flex-wrap">
+        <!-- Быстрый переход к следующему невыполненному заданию -->
+        <button onclick="scrollToNextTask()" class="px-3 py-1.5 rounded-xl bg-indigo-500/15 hover:bg-indigo-500/25 text-indigo-300 border border-indigo-500/30 text-xs font-semibold flex items-center gap-1.5 transition hover:-translate-y-0.5 active:translate-y-0" title="Найти и подсветить следующее невыполненное задание">
+          <svg class="w-3.5 h-3.5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 5l7 7-7 7M5 5l7 7-7 7"/></svg>
+          <span class="hidden sm:inline">Следующий шаг</span>
+        </button>
+
         <!-- Индикатор облачной синхронизации -->
-        <div id="cloud-status" class="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-800/90 border border-slate-700 text-xs font-medium text-slate-400">
-          <span id="cloud-dot" class="w-2 h-2 rounded-full bg-slate-500"></span>
+        <div id="cloud-status" class="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-900/90 border border-slate-700/80 text-xs font-medium text-slate-300 shadow-inner">
+          <span id="cloud-dot" class="w-2 h-2 rounded-full bg-slate-500 transition-all duration-300"></span>
           <span id="cloud-text">Локальный режим</span>
         </div>
-        <button onclick="exportProgress()" class="px-3 py-1.5 rounded-xl bg-slate-800/90 hover:bg-slate-700 text-slate-200 text-xs font-medium border border-slate-700 flex items-center gap-1.5 transition" title="Скачать резервную копию прогресса">
+
+        <button onclick="exportProgress()" class="px-3 py-1.5 rounded-xl bg-slate-900/90 hover:bg-slate-800 text-slate-200 text-xs font-medium border border-slate-700/80 flex items-center gap-1.5 transition hover:-translate-y-0.5 active:translate-y-0" title="Скачать резервную копию прогресса">
           <svg class="w-4 h-4 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
           <span>Экспорт</span>
         </button>
-        <label class="px-3 py-1.5 rounded-xl bg-slate-800/90 hover:bg-slate-700 text-slate-200 text-xs font-medium border border-slate-700 flex items-center gap-1.5 cursor-pointer transition" title="Загрузить сохраненный прогресс">
+
+        <label class="px-3 py-1.5 rounded-xl bg-slate-900/90 hover:bg-slate-800 text-slate-200 text-xs font-medium border border-slate-700/80 flex items-center gap-1.5 cursor-pointer transition hover:-translate-y-0.5 active:translate-y-0" title="Загрузить сохраненный прогресс">
           <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
           <span>Импорт</span>
           <input type="file" id="import-file" accept=".json" class="hidden" onchange="importProgress(event)">
@@ -302,144 +463,180 @@
     </div>
   </header>
 
-  <main class="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6 flex-1 stagger">
+  <main class="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6 flex-1 relative z-10">
 
     <!-- ВЕРХНИЙ БЛОК: Глобальный прогресс и Калькулятор темпа -->
     <section class="grid grid-cols-1 lg:grid-cols-12 gap-5">
       
-      <!-- Карточка 1: Общая статистика (7 колонок) -->
-      <div class="lg:col-span-7 glass-card rounded-2xl p-5 sm:p-6 flex flex-col justify-between relative overflow-hidden">
-        <div class="absolute -right-12 -top-12 w-44 h-44 bg-indigo-600/10 rounded-full blur-2xl pointer-events-none"></div>
+      <!-- Карточка 1: Общая статистика с круговой диаграммой (7 колонок) -->
+      <div class="lg:col-span-7 glass-card spotlight-card rounded-2xl p-5 sm:p-6 flex flex-col justify-between relative overflow-hidden">
+        <div class="absolute -right-12 -top-12 w-52 h-52 bg-indigo-600/10 rounded-full blur-3xl pointer-events-none"></div>
         
         <div>
-          <div class="flex flex-wrap items-baseline justify-between gap-2 mb-3">
-            <div>
-              <span class="text-xs font-semibold uppercase tracking-wider text-indigo-400">Общий прогресс программы</span>
-              <div class="flex items-baseline gap-3 mt-1">
-                <span id="stat-total-pct" class="stat-number text-3xl sm:text-4xl font-extrabold font-mono">13.2%</span>
-                <span id="stat-total-fraction" class="text-sm font-mono text-slate-400">45 из 341 выполнено</span>
+          <!-- Верхняя часть с круговым SVG-кольцом прогресса -->
+          <div class="flex flex-wrap items-center justify-between gap-4 mb-4">
+            <div class="flex items-center gap-4">
+              <!-- Круговое кольцо прогресса -->
+              <div class="relative w-20 h-20 shrink-0 flex items-center justify-center">
+                <svg class="w-20 h-20" viewBox="0 0 80 80">
+                  <defs>
+                    <linearGradient id="ringGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stop-color="#6366f1" />
+                      <stop offset="50%" stop-color="#a855f7" />
+                      <stop offset="100%" stop-color="#10b981" />
+                    </linearGradient>
+                  </defs>
+                  <circle cx="40" cy="40" r="33" fill="none" stroke="rgba(30, 41, 59, 0.8)" stroke-width="7"></circle>
+                  <circle id="main-progress-ring" class="progress-ring-circle" cx="40" cy="40" r="33" fill="none" stroke="url(#ringGrad)" stroke-width="7" stroke-linecap="round" stroke-dasharray="207.345" stroke-dashoffset="180"></circle>
+                </svg>
+                <div class="absolute inset-0 flex flex-col items-center justify-center">
+                  <span id="stat-ring-pct" class="text-xs font-extrabold font-mono text-white">13%</span>
+                  <span class="text-[9px] uppercase tracking-wider text-slate-400">Готово</span>
+                </div>
+              </div>
+
+              <div>
+                <span class="text-xs font-semibold uppercase tracking-wider text-indigo-400 flex items-center gap-1.5">
+                  <span class="w-1.5 h-1.5 rounded-full bg-indigo-400 animate-ping"></span>
+                  Общий прогресс программы
+                </span>
+                <div class="flex items-baseline gap-3 mt-1">
+                  <span id="stat-total-pct" class="text-3xl sm:text-4xl font-extrabold font-mono text-white tracking-tight">13.2%</span>
+                  <span id="stat-total-fraction" class="text-xs sm:text-sm font-mono text-slate-400">45 из 341 выполнено</span>
+                </div>
               </div>
             </div>
-            <div class="text-right">
-              <span class="text-xs text-slate-400 block">Осталось закрыть:</span>
-              <span id="stat-total-rem" class="text-2xl font-bold font-mono text-amber-400">296</span>
-              <span class="text-xs text-slate-400">пунктов</span>
+
+            <div class="bg-slate-900/80 border border-slate-800/80 px-4 py-2.5 rounded-xl text-right">
+              <span class="text-[11px] text-slate-400 block">Осталось закрыть:</span>
+              <div class="flex items-baseline justify-end gap-1">
+                <span id="stat-total-rem" class="text-2xl font-bold font-mono text-amber-400">296</span>
+                <span class="text-xs text-slate-400">пунктов</span>
+              </div>
             </div>
           </div>
 
-          <!-- Главный прогресс-бар -->
-          <div class="w-full h-4 bg-slate-950 rounded-full overflow-hidden p-0.5 border border-slate-800 mb-6">
-            <div id="main-progress-bar" class="progress-shimmer h-full rounded-full bg-gradient-to-r from-indigo-500 via-purple-500 to-emerald-400" style="width: 13.2%"></div>
+          <!-- Главный прогресс-бар с жидким бликом -->
+          <div class="w-full h-3.5 bg-slate-950 rounded-full overflow-hidden p-0.5 border border-slate-800/90 mb-5 shadow-inner">
+            <div id="main-progress-bar" class="shimmer-bar h-full rounded-full bg-gradient-to-r from-indigo-500 via-purple-500 to-emerald-400 transition-all duration-700 ease-out shadow-[0_0_16px_rgba(99,102,241,0.45)]" style="width: 13.2%"></div>
           </div>
 
           <!-- Разбивка по типам задач -->
           <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <!-- Лекции -->
-            <div class="bg-slate-900/90 border border-slate-800/90 rounded-xl p-3.5">
+            <div class="bg-slate-900/75 hover:bg-slate-900 border border-slate-800/90 hover:border-sky-500/40 rounded-xl p-3.5 transition-all duration-300 group">
               <div class="flex items-center justify-between mb-1.5">
                 <span class="text-xs font-medium text-sky-400 flex items-center gap-1.5">
-                  <span class="w-2 h-2 rounded-full bg-sky-400"></span>
+                  <span class="w-2 h-2 rounded-full bg-sky-400 shadow-[0_0_8px_#38bdf8]"></span>
                   Лекции и статьи
                 </span>
-                <span id="stat-lec-pct" class="text-xs font-mono text-slate-400">18%</span>
+                <span id="stat-lec-pct" class="text-xs font-mono text-slate-400 group-hover:text-sky-300 transition">18%</span>
               </div>
               <div class="flex items-baseline justify-between">
                 <span id="stat-lec-rem" class="text-lg font-bold font-mono text-white">124 <span class="text-xs font-normal text-slate-400">осталось</span></span>
                 <span id="stat-lec-done" class="text-xs font-mono text-slate-500">27/151</span>
               </div>
               <div class="w-full h-1.5 bg-slate-950 rounded-full mt-2 overflow-hidden">
-                <div id="bar-lec" class="h-full bg-sky-400 rounded-full" style="width: 18%"></div>
+                <div id="bar-lec" class="h-full bg-gradient-to-r from-sky-500 to-cyan-300 rounded-full transition-all duration-700" style="width: 18%"></div>
               </div>
             </div>
 
             <!-- Тесты -->
-            <div class="bg-slate-900/90 border border-slate-800/90 rounded-xl p-3.5">
+            <div class="bg-slate-900/75 hover:bg-slate-900 border border-slate-800/90 hover:border-purple-500/40 rounded-xl p-3.5 transition-all duration-300 group">
               <div class="flex items-center justify-between mb-1.5">
                 <span class="text-xs font-medium text-purple-400 flex items-center gap-1.5">
-                  <span class="w-2 h-2 rounded-full bg-purple-400"></span>
+                  <span class="w-2 h-2 rounded-full bg-purple-400 shadow-[0_0_8px_#c084fc]"></span>
                   Тесты
                 </span>
-                <span id="stat-quiz-pct" class="text-xs font-mono text-slate-400">18%</span>
+                <span id="stat-quiz-pct" class="text-xs font-mono text-slate-400 group-hover:text-purple-300 transition">18%</span>
               </div>
               <div class="flex items-baseline justify-between">
                 <span id="stat-quiz-rem" class="text-lg font-bold font-mono text-white">37 <span class="text-xs font-normal text-slate-400">осталось</span></span>
                 <span id="stat-quiz-done" class="text-xs font-mono text-slate-500">8/45</span>
               </div>
               <div class="w-full h-1.5 bg-slate-950 rounded-full mt-2 overflow-hidden">
-                <div id="bar-quiz" class="h-full bg-purple-400 rounded-full" style="width: 18%"></div>
+                <div id="bar-quiz" class="h-full bg-gradient-to-r from-purple-500 to-fuchsia-400 rounded-full transition-all duration-700" style="width: 18%"></div>
               </div>
             </div>
 
             <!-- Практика / ДЗ -->
-            <div class="bg-slate-900/90 border border-slate-800/90 rounded-xl p-3.5">
+            <div class="bg-slate-900/75 hover:bg-slate-900 border border-slate-800/90 hover:border-emerald-500/40 rounded-xl p-3.5 transition-all duration-300 group">
               <div class="flex items-center justify-between mb-1.5">
                 <span class="text-xs font-medium text-emerald-400 flex items-center gap-1.5">
-                  <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+                  <span class="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_8px_#34d399]"></span>
                   Практика (ДЗ)
                 </span>
-                <span id="stat-hw-pct" class="text-xs font-mono text-slate-400">7%</span>
+                <span id="stat-hw-pct" class="text-xs font-mono text-slate-400 group-hover:text-emerald-300 transition">7%</span>
               </div>
               <div class="flex items-baseline justify-between">
                 <span id="stat-hw-rem" class="text-lg font-bold font-mono text-white">135 <span class="text-xs font-normal text-slate-400">осталось</span></span>
                 <span id="stat-hw-done" class="text-xs font-mono text-slate-500">10/145</span>
               </div>
               <div class="w-full h-1.5 bg-slate-950 rounded-full mt-2 overflow-hidden">
-                <div id="bar-hw" class="h-full bg-emerald-400 rounded-full" style="width: 7%"></div>
+                <div id="bar-hw" class="h-full bg-gradient-to-r from-emerald-500 to-teal-300 rounded-full transition-all duration-700" style="width: 7%"></div>
               </div>
             </div>
           </div>
         </div>
 
         <!-- Мини-сводка по 4 курсам -->
-        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 mt-5 pt-4 border-t border-slate-800/80" id="course-mini-cards"></div>
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 mt-5 pt-4 border-t border-slate-800/80" id="course-mini-cards">
+          <!-- Генерируется через JS -->
+        </div>
       </div>
 
-      <!-- Карточка 2: Калькулятор времени и темпа -->
-      <div class="lg:col-span-5 glass-card rounded-2xl p-5 sm:p-6 flex flex-col justify-between border border-indigo-500/20">
+      <!-- Карточка 2: Калькулятор времени и темпа до Нового года (5 колонок) -->
+      <div class="lg:col-span-5 glass-card spotlight-card rounded-2xl p-5 sm:p-6 flex flex-col justify-between border border-indigo-500/25">
         <div>
           <div class="flex items-center justify-between gap-2 mb-4">
             <div class="flex items-center gap-2">
-              <svg class="w-5 h-5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-              </svg>
+              <div class="w-7 h-7 rounded-lg bg-indigo-500/15 border border-indigo-500/30 flex items-center justify-center text-indigo-400">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+              </div>
               <h2 class="text-base font-bold text-white">Калькулятор дедлайна и темпа</h2>
             </div>
-            <span id="current-date-badge" class="text-xs font-mono text-slate-400 bg-slate-900 px-2.5 py-1 rounded-lg border border-slate-800"></span>
+            <span id="current-date-badge" class="text-xs font-mono text-slate-400 bg-slate-900/90 px-2.5 py-1 rounded-lg border border-slate-800"></span>
           </div>
 
+          <!-- Настройки калькулятора -->
           <div class="space-y-3.5 bg-slate-900/70 p-3.5 rounded-xl border border-slate-800/90">
+            <!-- Дата финиша и Режим дней -->
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
                 <label class="block text-[11px] font-medium text-slate-400 mb-1">Целевая дата финиша:</label>
-                <input type="date" id="target-date-input" value="2026-12-31" onchange="updateSettings()" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs font-mono text-white focus:outline-none focus:border-indigo-500">
+                <input type="date" id="target-date-input" value="2026-12-31" onchange="updateSettings()" class="w-full bg-slate-950 border border-slate-700/80 rounded-lg px-2.5 py-1.5 text-xs font-mono text-white focus:outline-none focus:border-indigo-500 transition">
               </div>
               <div>
                 <label class="block text-[11px] font-medium text-slate-400 mb-1">График занятий:</label>
                 <div class="grid grid-cols-2 bg-slate-950 p-0.5 rounded-lg border border-slate-800">
-                  <button id="mode-5-2" onclick="setScheduleMode('5/2')" class="text-xs py-1 rounded-md font-medium transition bg-indigo-600 text-white">Будни 5/2</button>
+                  <button id="mode-5-2" onclick="setScheduleMode('5/2')" class="text-xs py-1 rounded-md font-medium transition bg-indigo-600 text-white shadow">Будни 5/2</button>
                   <button id="mode-7-0" onclick="setScheduleMode('7/0')" class="text-xs py-1 rounded-md font-medium transition text-slate-400 hover:text-white">Все дни 7/0</button>
                 </div>
               </div>
             </div>
 
+            <!-- Ползунок цели на день -->
             <div>
-              <div class="flex justify-between items-center mb-1">
+              <div class="flex justify-between items-center mb-1.5">
                 <label class="text-xs font-medium text-slate-300">Твоя цель заданий в день:</label>
                 <div class="flex items-center gap-1.5">
-                  <input type="number" id="daily-goal-number" min="1" max="50" value="6" onchange="syncDailyGoal(this.value)" class="w-14 bg-slate-950 border border-indigo-500/50 rounded-lg px-2 py-0.5 text-center font-mono text-sm font-bold text-indigo-300">
+                  <input type="number" id="daily-goal-number" min="1" max="50" value="6" onchange="syncDailyGoal(this.value)" class="w-14 bg-slate-950 border border-indigo-500/50 rounded-lg px-2 py-0.5 text-center font-mono text-sm font-bold text-indigo-300 focus:outline-none focus:border-indigo-400">
                   <span class="text-xs text-slate-400">шт/день</span>
                 </div>
               </div>
-              <input type="range" id="daily-goal-slider" min="1" max="25" value="6" oninput="syncDailyGoal(this.value)" class="w-full accent-indigo-500 cursor-pointer h-1.5 bg-slate-800 rounded-lg">
-              <div class="flex justify-between text-[10px] font-mono text-slate-500 mt-0.5">
+              <input type="range" id="daily-goal-slider" min="1" max="25" value="6" oninput="syncDailyGoal(this.value)" class="w-full cursor-pointer">
+              <div class="flex justify-between text-[10px] font-mono text-slate-500 mt-1">
                 <span>1 (минимум)</span>
-                <span>6 (привычный)</span>
+                <span>6 (комфорт)</span>
                 <span>12 (интенсив)</span>
                 <span>25 (турбо)</span>
               </div>
             </div>
           </div>
 
+          <!-- Выводы калькулятора -->
           <div class="grid grid-cols-2 gap-3 mt-4">
             <div class="bg-slate-900/60 border border-slate-800/80 rounded-xl p-3">
               <span class="text-[11px] text-slate-400 block">Учебных дней до цели:</span>
@@ -458,7 +655,8 @@
           </div>
         </div>
 
-        <div id="pace-verdict-box" class="mt-4 p-3.5 rounded-xl border bg-indigo-950/40 border-indigo-500/30 flex items-start gap-3">
+        <!-- Прогноз даты завершения -->
+        <div id="pace-verdict-box" class="mt-4 p-3.5 rounded-xl border bg-indigo-950/40 border-indigo-500/30 flex items-start gap-3 transition-all duration-300">
           <div id="pace-icon" class="mt-0.5 text-indigo-400 shrink-0"></div>
           <div class="text-xs space-y-1">
             <div class="font-semibold text-white" id="pace-verdict-title">Прогноз завершения курса:</div>
@@ -469,91 +667,611 @@
 
     </section>
 
-    <!-- БЛОК 2: ФОКУС НА СЕГОДНЯ -->
-    <section class="glass-card rounded-2xl p-5 sm:p-6 border border-emerald-500/20">
+    <!-- БЛОК 2: ФОКУС НА СЕГОДНЯ И ТРЕКЕР АКТИВНОСТИ ЗА 7 ДНЕЙ -->
+    <section class="glass-card spotlight-card rounded-2xl p-5 sm:p-6 border border-emerald-500/25">
       <div class="flex flex-wrap items-center justify-between gap-4 mb-4">
-        <div class="flex items-center gap-3">
-          <div class="w-9 h-9 rounded-xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-400 font-mono font-bold text-sm" id="today-badge-count">
+        <div class="flex items-center gap-3.5">
+          <div class="w-11 h-11 rounded-xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-400 font-mono font-bold text-sm shadow-[0_0_15px_rgba(16,185,129,0.2)]" id="today-badge-count">
             0/6
           </div>
           <div>
-            <h2 class="text-base font-bold text-white flex items-center gap-2">
-              План на сегодня
-              <span id="today-status-pill" class="px-2 py-0.5 text-[11px] font-medium rounded-full bg-slate-800 text-slate-300">В процессе</span>
-            </h2>
-            <p class="text-xs text-slate-400">Отмечай любые задачи в списке ниже или сформируй быструю подборку следующих заданий по порядку</p>
+            <div class="flex items-center gap-2 flex-wrap">
+              <h2 class="text-base font-bold text-white">План на сегодня</h2>
+              <span id="today-status-pill" class="px-2.5 py-0.5 text-[11px] font-medium rounded-full bg-slate-800 text-slate-300 transition-all">В процессе</span>
+            </div>
+            <p class="text-xs text-slate-400 mt-0.5">Отмечай любые задачи в списке ниже или сформируй быструю подборку следующих заданий</p>
           </div>
         </div>
 
-        <div class="flex items-center gap-2 flex-wrap">
-          <button onclick="generateTodayQueue()" class="btn-shine px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold flex items-center gap-1.5 shadow-lg shadow-indigo-600/20 transition">
+        <!-- Мини-индикатор активности по дням (7 дней) + кнопки -->
+        <div class="flex items-center gap-3 flex-wrap">
+          <div id="week-activity-bars" class="hidden md:flex items-center gap-1.5 bg-slate-900/90 border border-slate-800 px-3 py-1.5 rounded-xl" title="Твоя активность за последние 7 дней">
+            <!-- Заполняется через JS -->
+          </div>
+
+          <button onclick="generateTodayQueue()" class="px-3.5 py-2 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white text-xs font-semibold flex items-center gap-1.5 shadow-lg shadow-indigo-600/25 transition hover:-translate-y-0.5 active:translate-y-0">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
-            <span>Подобрать задачи на сегодня (<span id="btn-goal-num">6</span> шт.)</span>
+            <span>Подобрать на сегодня (<span id="btn-goal-num">6</span> шт.)</span>
           </button>
-          <button onclick="toggleTodayPanel()" id="toggle-today-btn" class="px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-medium transition">
+          <button onclick="toggleTodayPanel()" id="toggle-today-btn" class="px-3 py-2 rounded-xl bg-slate-800/90 hover:bg-slate-700 text-slate-300 text-xs font-medium border border-slate-700/70 transition">
             Скрыть очередь
           </button>
         </div>
       </div>
 
-      <div class="w-full h-2.5 bg-slate-950 rounded-full overflow-hidden mb-4 border border-slate-800">
-        <div id="today-progress-bar" class="progress-shimmer h-full bg-gradient-to-r from-emerald-500 to-teal-400" style="width: 0%"></div>
+      <!-- Полоса прогресса на сегодня -->
+      <div class="w-full h-2.5 bg-slate-950 rounded-full overflow-hidden mb-4 border border-slate-800/90 p-0.5">
+        <div id="today-progress-bar" class="shimmer-bar h-full rounded-full bg-gradient-to-r from-emerald-500 via-teal-400 to-cyan-400 transition-all duration-500 shadow-[0_0_12px_rgba(16,185,129,0.5)]" style="width: 0%"></div>
       </div>
 
-      <div id="today-queue-container" class="space-y-2"></div>
+      <!-- Контейнер очереди на сегодня -->
+      <div id="today-queue-container" class="space-y-2">
+        <!-- Заполняется через JS -->
+      </div>
     </section>
 
     <!-- БЛОК 3: НАВИГАЦИЯ ПО КУРСАМ, ФИЛЬТРЫ И ПОИСК -->
     <section class="space-y-4">
-      <div class="flex items-center gap-2 overflow-x-auto pb-1 no-scrollbar" id="course-tabs"></div>
+      <!-- Табы курсов -->
+      <div class="flex items-center gap-2 overflow-x-auto pb-1 no-scrollbar" id="course-tabs">
+        <!-- Генерируется через JS -->
+      </div>
 
-      <div class="glass-card rounded-2xl p-4 flex flex-wrap items-center justify-between gap-3">
+      <!-- Панель фильтров и поиска -->
+      <div class="glass-card rounded-2xl p-3.5 sm:p-4 flex flex-wrap items-center justify-between gap-3">
+        <!-- Поиск с хоткеем "/" -->
         <div class="relative flex-1 min-w-[240px]">
-          <svg class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
           </svg>
-          <input type="text" id="search-input" oninput="renderCurriculum()" placeholder="Поиск по названию лекции, ДЗ или теме (например: Selenium, SQL, Ruff, ООП)..." class="w-full bg-slate-950 border border-slate-800 focus:border-indigo-500 rounded-xl pl-10 pr-8 py-2 text-xs sm:text-sm text-white placeholder-slate-500 focus:outline-none transition">
-          <button id="clear-search-btn" onclick="clearSearch()" class="hidden absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300">
+          <input type="text" id="search-input" oninput="renderCurriculum()" placeholder="Поиск по теме, лекции или ДЗ (напр.: Selenium, SQL, Ruff, ООП)..." class="w-full bg-slate-950/90 border border-slate-800 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 rounded-xl pl-10 pr-14 py-2 text-xs sm:text-sm text-white placeholder-slate-500 focus:outline-none transition">
+          <kbd id="search-kbd-hint" class="hidden sm:inline-block absolute right-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 text-[10px] font-mono text-slate-400 bg-slate-900 border border-slate-700 rounded pointer-events-none">/</kbd>
+          <button id="clear-search-btn" onclick="clearSearch()" class="hidden absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white p-1">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
           </button>
         </div>
 
-        <div class="flex items-center gap-1 bg-slate-950 p-1 rounded-xl border border-slate-800">
+        <!-- Фильтр статуса -->
+        <div class="flex items-center gap-1 bg-slate-950/90 p-1 rounded-xl border border-slate-800">
           <button onclick="setStatusFilter('all')" id="filter-status-all" class="px-2.5 py-1.5 rounded-lg text-xs font-medium transition bg-indigo-600 text-white">Все</button>
           <button onclick="setStatusFilter('todo')" id="filter-status-todo" class="px-2.5 py-1.5 rounded-lg text-xs font-medium transition text-slate-400 hover:text-white">Осталось</button>
           <button onclick="setStatusFilter('done')" id="filter-status-done" class="px-2.5 py-1.5 rounded-lg text-xs font-medium transition text-slate-400 hover:text-white">Выполнено</button>
         </div>
 
-        <div class="flex items-center gap-1 bg-slate-950 p-1 rounded-xl border border-slate-800">
+        <!-- Фильтр типа -->
+        <div class="flex items-center gap-1 bg-slate-950/90 p-1 rounded-xl border border-slate-800">
           <button onclick="setTypeFilter('all')" id="filter-type-all" class="px-2.5 py-1.5 rounded-lg text-xs font-medium transition bg-slate-800 text-white">Все типы</button>
           <button onclick="setTypeFilter('lec')" id="filter-type-lec" class="px-2.5 py-1.5 rounded-lg text-xs font-medium transition text-sky-400 hover:bg-slate-900">Лекции</button>
           <button onclick="setTypeFilter('quiz')" id="filter-type-quiz" class="px-2.5 py-1.5 rounded-lg text-xs font-medium transition text-purple-400 hover:bg-slate-900">Тесты</button>
           <button onclick="setTypeFilter('hw')" id="filter-type-hw" class="px-2.5 py-1.5 rounded-lg text-xs font-medium transition text-emerald-400 hover:bg-slate-900">ДЗ</button>
         </div>
 
+        <!-- Развернуть/Свернуть все -->
         <div class="flex items-center gap-1">
-          <button onclick="expandCollapseAll(false)" class="p-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-800 text-xs" title="Развернуть все разделы">
+          <button onclick="expandCollapseAll(false)" class="p-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-800 text-xs transition" title="Развернуть все разделы">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"/></svg>
           </button>
-          <button onclick="expandCollapseAll(true)" class="p-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-800 text-xs" title="Свернуть все разделы">
+          <button onclick="expandCollapseAll(true)" class="p-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-800 text-xs transition" title="Свернуть все разделы">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 9V4.5M9 9H4.5M9 9L3.75 3.75M9 15v4.5M9 15H4.5M9 15l-5.25 5.25M15 9h4.5M15 9V4.5M15 9l5.25-5.25M15 15h4.5M15 15v4.5m0-4.5l5.25 5.25"/></svg>
           </button>
         </div>
       </div>
 
-      <div id="curriculum-list" class="space-y-4"></div>
+      <!-- СПИСОК РАЗДЕЛОВ И ЗАДАНИЙ -->
+      <div id="curriculum-list" class="space-y-4">
+        <!-- Генерируется через JS -->
+      </div>
     </section>
 
   </main>
 
-  <footer class="border-t border-slate-900 bg-slate-950 py-5 mt-12">
+  <footer class="border-t border-slate-900/80 bg-slate-950/90 py-5 mt-12 relative z-10">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 gap-2">
       <div>Полная база программы: 341 элемент (Ручное тестирование, VIP, Основы Python, Автоматизация тестирования)</div>
-      <div class="font-mono">Локальное хранилище активно • Все чекбоксы доступны без блокировок</div>
+      <div class="font-mono flex items-center gap-2">
+        <span>Нажми <kbd class="px-1.5 py-0.5 bg-slate-900 border border-slate-800 rounded text-slate-400">/</kbd> для быстрого поиска</span>
+      </div>
     </div>
   </footer>
 
   <script>
+    // ============================================================================
+    // 0. ИНТЕРАКТИВНЫЙ ЖИВОЙ ФОН (#bg-canvas) + ЭФФЕКТЫ ЧАСТИЦ И ВОЛН (#fx-canvas)
+    // ============================================================================
+    let mousePos = { x: -1000, y: -1000 };
+
+    document.addEventListener('mousemove', (e) => {
+      mousePos.x = e.clientX;
+      mousePos.y = e.clientY;
+
+      const cards = document.querySelectorAll('.spotlight-card');
+      cards.forEach(card => {
+        const rect = card.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        card.style.setProperty('--mouse-x', `${x}px`);
+        card.style.setProperty('--mouse-y', `${y}px`);
+      });
+    });
+
+    // Горячая клавиша "/" для фокуса на поиске
+    document.addEventListener('keydown', (e) => {
+      if (e.key === '/' && document.activeElement.tagName !== 'INPUT') {
+        e.preventDefault();
+        document.getElementById('search-input')?.focus();
+      } else if (e.key === 'Escape' && document.activeElement.id === 'search-input') {
+        clearSearch();
+        document.getElementById('search-input')?.blur();
+      }
+    });
+
+    // ----------------------------------------------------------------------------
+    // 0.1. АНИМАЦИЯ ФОНА: НЕЙРО-СОЗВЕЗДИЯ, ИМПУЛЬСЫ ПО СЕТКЕ И ЭНЕРГЕТИЧЕСКИЕ ВОЛНЫ
+    // ----------------------------------------------------------------------------
+    const bgCanvas = document.getElementById('bg-canvas');
+    const bgCtx = bgCanvas.getContext('2d');
+    let bgNodes = [];
+    let gridPulses = [];
+    let bgWaves = [];
+
+    function initBgCanvas() {
+      bgCanvas.width = window.innerWidth;
+      bgCanvas.height = window.innerHeight;
+
+      const count = Math.min(70, Math.max(32, Math.floor((bgCanvas.width * bgCanvas.height) / 24000)));
+      bgNodes = [];
+      const colors = ['#6366f1', '#818cf8', '#a855f7', '#10b981', '#38bdf8'];
+      const symbols = ['{ }', '✓', '01', 'API', '/>', 'py', 'QA', '⚡'];
+
+      for (let i = 0; i < count; i++) {
+        bgNodes.push({
+          x: Math.random() * bgCanvas.width,
+          y: Math.random() * bgCanvas.height,
+          vx: (Math.random() - 0.5) * 0.42,
+          vy: (Math.random() - 0.5) * 0.42,
+          r: 1.3 + Math.random() * 1.8,
+          color: colors[Math.floor(Math.random() * colors.length)],
+          phase: Math.random() * Math.PI * 2,
+          symbol: Math.random() < 0.22 ? symbols[Math.floor(Math.random() * symbols.length)] : null
+        });
+      }
+    }
+
+    // Спавн светового импульса, бегущего по линиям сетки 36px
+    function spawnGridPulse() {
+      if (gridPulses.length > 8) return;
+      const gridSize = 36;
+      const horizontal = Math.random() > 0.5;
+      const colors = ['#6366f1', '#10b981', '#a855f7', '#38bdf8'];
+      const color = colors[Math.floor(Math.random() * colors.length)];
+
+      if (horizontal) {
+        const row = Math.floor(Math.random() * (bgCanvas.height / gridSize)) * gridSize;
+        gridPulses.push({
+          x: 0,
+          y: row,
+          vx: 3 + Math.random() * 4,
+          vy: 0,
+          len: 55 + Math.random() * 65,
+          color,
+          alpha: 0.45
+        });
+      } else {
+        const col = Math.floor(Math.random() * (bgCanvas.width / gridSize)) * gridSize;
+        gridPulses.push({
+          x: col,
+          y: 0,
+          vx: 0,
+          vy: 3 + Math.random() * 4,
+          len: 55 + Math.random() * 65,
+          color,
+          alpha: 0.45
+        });
+      }
+    }
+
+    // Энергетическая волна по фону при отметке или снятии задачи
+    function triggerBgWave(x, y, color = '#10b981') {
+      bgWaves.push({
+        x,
+        y,
+        r: 10,
+        maxR: Math.max(bgCanvas.width, bgCanvas.height) * 0.65,
+        color,
+        alpha: 0.36
+      });
+    }
+
+    function animateBgLoop() {
+      bgCtx.clearRect(0, 0, bgCanvas.width, bgCanvas.height);
+
+      if (Math.random() < 0.035) {
+        spawnGridPulse();
+      }
+
+      // 1. Отрисовка световых пакетов, бегущих по сетке
+      for (let i = gridPulses.length - 1; i >= 0; i--) {
+        const gp = gridPulses[i];
+        gp.x += gp.vx;
+        gp.y += gp.vy;
+
+        if (gp.x - gp.len > bgCanvas.width || gp.y - gp.len > bgCanvas.height) {
+          gridPulses.splice(i, 1);
+          continue;
+        }
+
+        bgCtx.save();
+        const grad = bgCtx.createLinearGradient(
+          gp.x, gp.y,
+          gp.x - (gp.vx ? gp.len : 0),
+          gp.y - (gp.vy ? gp.len : 0)
+        );
+        grad.addColorStop(0, gp.color);
+        grad.addColorStop(1, 'transparent');
+        bgCtx.strokeStyle = grad;
+        bgCtx.globalAlpha = gp.alpha;
+        bgCtx.lineWidth = 1.6;
+        bgCtx.beginPath();
+        bgCtx.moveTo(gp.x, gp.y);
+        bgCtx.lineTo(gp.x - (gp.vx ? gp.len : 0), gp.y - (gp.vy ? gp.len : 0));
+        bgCtx.stroke();
+        bgCtx.restore();
+      }
+
+      // 2. Отрисовка глобальных энергетических волн по фону (при клике на задачу)
+      for (let i = bgWaves.length - 1; i >= 0; i--) {
+        const w = bgWaves[i];
+        w.r += 14;
+        w.alpha *= 0.965;
+        if (w.r > w.maxR || w.alpha < 0.01) {
+          bgWaves.splice(i, 1);
+          continue;
+        }
+        bgCtx.save();
+        bgCtx.strokeStyle = w.color;
+        bgCtx.globalAlpha = w.alpha;
+        bgCtx.lineWidth = 2;
+        bgCtx.beginPath();
+        bgCtx.arc(w.x, w.y, w.r, 0, Math.PI * 2);
+        bgCtx.stroke();
+        bgCtx.restore();
+      }
+
+      // 3. Обновление и отрисовка нейро-узлов и связей созвездий
+      for (let i = 0; i < bgNodes.length; i++) {
+        const n = bgNodes[i];
+        n.x += n.vx;
+        n.y += n.vy;
+        n.phase += 0.025;
+
+        if (n.x < 0) n.x = bgCanvas.width;
+        if (n.x > bgCanvas.width) n.x = 0;
+        if (n.y < 0) n.y = bgCanvas.height;
+        if (n.y > bgCanvas.height) n.y = 0;
+
+        // Реакция на мышь и энергетические волны
+        let boost = 0;
+        const dMouse = Math.hypot(n.x - mousePos.x, n.y - mousePos.y);
+        if (dMouse < 180) {
+          boost = (1 - dMouse / 180) * 0.65;
+          // Мягкое притяжение к курсору
+          n.x += (mousePos.x - n.x) * 0.003;
+          n.y += (mousePos.y - n.y) * 0.003;
+        }
+
+        for (let w of bgWaves) {
+          const distToWave = Math.abs(Math.hypot(n.x - w.x, n.y - w.y) - w.r);
+          if (distToWave < 50) {
+            boost = Math.max(boost, (1 - distToWave / 50) * 0.9);
+          }
+        }
+
+        // Линии связи между соседними узлами
+        for (let j = i + 1; j < bgNodes.length; j++) {
+          const n2 = bgNodes[j];
+          const dist = Math.hypot(n.x - n2.x, n.y - n2.y);
+          if (dist < 135) {
+            const lineAlpha = (1 - dist / 135) * (0.11 + boost * 0.22);
+            bgCtx.strokeStyle = n.color;
+            bgCtx.globalAlpha = lineAlpha;
+            bgCtx.lineWidth = 0.8;
+            bgCtx.beginPath();
+            bgCtx.moveTo(n.x, n.y);
+            bgCtx.lineTo(n2.x, n2.y);
+            bgCtx.stroke();
+          }
+        }
+
+        // Линия к курсору
+        if (dMouse < 150) {
+          bgCtx.strokeStyle = '#818cf8';
+          bgCtx.globalAlpha = (1 - dMouse / 150) * 0.25;
+          bgCtx.lineWidth = 1;
+          bgCtx.beginPath();
+          bgCtx.moveTo(n.x, n.y);
+          bgCtx.lineTo(mousePos.x, mousePos.y);
+          bgCtx.stroke();
+        }
+
+        // Сам узел или микро-символ QA
+        const pulseAlpha = 0.22 + Math.sin(n.phase) * 0.1 + boost * 0.5;
+        bgCtx.save();
+        bgCtx.globalAlpha = Math.min(0.95, pulseAlpha);
+        bgCtx.fillStyle = n.color;
+        if (n.symbol) {
+          bgCtx.font = '600 10px "JetBrains Mono", monospace';
+          bgCtx.fillText(n.symbol, n.x - 6, n.y + 3);
+        } else {
+          bgCtx.beginPath();
+          bgCtx.arc(n.x, n.y, n.r + boost * 1.8, 0, Math.PI * 2);
+          bgCtx.fill();
+        }
+        bgCtx.restore();
+      }
+
+      requestAnimationFrame(animateBgLoop);
+    }
+
+    // ----------------------------------------------------------------------------
+    // 0.2. ПЕРЕДНИЙ CANVAS ЭФФЕКТОВ (#fx-canvas): ЧАСТИЦЫ, КОЛЬЦА И ТЕКСТ ПРИ КЛИКЕ
+    // ----------------------------------------------------------------------------
+    const fxCanvas = document.getElementById('fx-canvas');
+    const fxCtx = fxCanvas.getContext('2d');
+    let particles = [];
+    let shockwaves = [];
+    let floatingTexts = [];
+    let animFrameId = null;
+
+    function resizeCanvases() {
+      fxCanvas.width = window.innerWidth;
+      fxCanvas.height = window.innerHeight;
+      initBgCanvas();
+    }
+    window.addEventListener('resize', resizeCanvases);
+    resizeCanvases();
+    requestAnimationFrame(animateBgLoop);
+
+    // Взрыв при ВЫПОЛНЕНИИ задания (Check): звезды, конфетти, ударные кольца и +1 бейдж
+    function spawnCheckFX(x, y, isBigCelebration = false) {
+      const palette = ['#10b981', '#34d399', '#6ee7b7', '#6366f1', '#a855f7', '#38bdf8', '#fbbf24'];
+      const count = isBigCelebration ? 52 : 24;
+
+      // Двойное расширяющееся неоновое кольцо
+      shockwaves.push({
+        x, y,
+        r: 4,
+        maxR: isBigCelebration ? 110 : 54,
+        color: '#10b981',
+        alpha: 0.9,
+        lineWidth: isBigCelebration ? 3.5 : 2.5,
+        mode: 'expand'
+      });
+      shockwaves.push({
+        x, y,
+        r: 2,
+        maxR: isBigCelebration ? 75 : 36,
+        color: '#38bdf8',
+        alpha: 0.75,
+        lineWidth: 1.5,
+        mode: 'expand'
+      });
+
+      // Частицы (круги + четырехконечные искры)
+      for (let i = 0; i < count; i++) {
+        const angle = (Math.PI * 2 * i) / count + (Math.random() - 0.5) * 0.45;
+        const speed = isBigCelebration ? (3 + Math.random() * 6.5) : (2 + Math.random() * 4.5);
+        particles.push({
+          x,
+          y,
+          vx: Math.cos(angle) * speed,
+          vy: Math.sin(angle) * speed - (isBigCelebration ? 2.2 : 1.1),
+          radius: isBigCelebration ? (2.5 + Math.random() * 3.2) : (1.8 + Math.random() * 2.5),
+          color: palette[Math.floor(Math.random() * palette.length)],
+          alpha: 1,
+          decay: 0.017 + Math.random() * 0.018,
+          shape: Math.random() > 0.45 ? 'star' : 'circle',
+          rotation: Math.random() * Math.PI,
+          vRot: (Math.random() - 0.5) * 0.2,
+          mode: 'burst'
+        });
+      }
+
+      // Всплывающий голографический бейдж
+      floatingTexts.push({
+        x,
+        y: y - 10,
+        vy: -1.6,
+        text: isBigCelebration ? '🔥 НОРМА ДНЯ!' : '+1 ГОТОВО ✨',
+        color: isBigCelebration ? '#fbbf24' : '#34d399',
+        alpha: 1
+      });
+
+      // Пускаем волну по фоновому созвездию
+      triggerBgWave(x, y, '#10b981');
+
+      if (!animFrameId) {
+        animateFxLoop();
+      }
+    }
+
+    // Эффект при СНЯТИИ ОТМЕТКИ (Uncheck): вакуумное втягивание частиц внутрь и кольцо реверса
+    function spawnUncheckFX(x, y) {
+      const palette = ['#fbbf24', '#f59e0b', '#818cf8', '#f43f5e', '#38bdf8'];
+      const count = 18;
+
+      // Сжимающееся внутрь кольцо (имплозия)
+      shockwaves.push({
+        x, y,
+        r: 44,
+        minR: 3,
+        color: '#fbbf24',
+        alpha: 0.85,
+        lineWidth: 2.2,
+        mode: 'implode'
+      });
+
+      // Частицы, слетающиеся из круга обратно в центр чекбокса
+      for (let i = 0; i < count; i++) {
+        const angle = (Math.PI * 2 * i) / count + (Math.random() - 0.5) * 0.25;
+        const dist = 34 + Math.random() * 24;
+        const startX = x + Math.cos(angle) * dist;
+        const startY = y + Math.sin(angle) * dist;
+
+        particles.push({
+          x: startX,
+          y: startY,
+          targetX: x,
+          targetY: y,
+          radius: 2 + Math.random() * 1.8,
+          color: palette[Math.floor(Math.random() * palette.length)],
+          alpha: 0.95,
+          progress: 0,
+          speed: 0.055 + Math.random() * 0.03,
+          startX,
+          startY,
+          mode: 'implode'
+        });
+      }
+
+      floatingTexts.push({
+        x,
+        y: y - 8,
+        vy: -1.2,
+        text: '↺ В РАБОТУ',
+        color: '#fbbf24',
+        alpha: 0.95
+      });
+
+      triggerBgWave(x, y, '#f59e0b');
+
+      if (!animFrameId) {
+        animateFxLoop();
+      }
+    }
+
+    function drawStar(ctx, x, y, r, rot) {
+      ctx.save();
+      ctx.translate(x, y);
+      ctx.rotate(rot);
+      ctx.beginPath();
+      for (let i = 0; i < 4; i++) {
+        ctx.lineTo(Math.cos((i * Math.PI) / 2) * r * 1.7, Math.sin((i * Math.PI) / 2) * r * 1.7);
+        ctx.lineTo(Math.cos(((i + 0.5) * Math.PI) / 2) * r * 0.5, Math.sin(((i + 0.5) * Math.PI) / 2) * r * 0.5);
+      }
+      ctx.closePath();
+      ctx.fill();
+      ctx.restore();
+    }
+
+    function animateFxLoop() {
+      fxCtx.clearRect(0, 0, fxCanvas.width, fxCanvas.height);
+
+      // 1. Ударные и сжимающиеся кольца
+      for (let i = shockwaves.length - 1; i >= 0; i--) {
+        const sw = shockwaves[i];
+        if (sw.mode === 'expand') {
+          sw.r += (sw.maxR - sw.r) * 0.16 + 1.2;
+          sw.alpha -= 0.04;
+          if (sw.alpha <= 0 || sw.r >= sw.maxR) {
+            shockwaves.splice(i, 1);
+            continue;
+          }
+        } else {
+          sw.r -= (sw.r - sw.minR) * 0.18 + 1.1;
+          sw.alpha -= 0.045;
+          if (sw.alpha <= 0 || sw.r <= sw.minR) {
+            shockwaves.splice(i, 1);
+            continue;
+          }
+        }
+
+        fxCtx.save();
+        fxCtx.globalAlpha = Math.max(0, sw.alpha);
+        fxCtx.strokeStyle = sw.color;
+        fxCtx.shadowColor = sw.color;
+        fxCtx.shadowBlur = 10;
+        fxCtx.lineWidth = sw.lineWidth;
+        fxCtx.beginPath();
+        fxCtx.arc(sw.x, sw.y, Math.max(1, sw.r), 0, Math.PI * 2);
+        fxCtx.stroke();
+        fxCtx.restore();
+      }
+
+      // 2. Частицы (разлет и втягивание)
+      for (let i = particles.length - 1; i >= 0; i--) {
+        const p = particles[i];
+
+        if (p.mode === 'implode') {
+          p.progress += p.speed;
+          if (p.progress >= 1) {
+            particles.splice(i, 1);
+            continue;
+          }
+          // Плавное ускорение к центру чекбокса
+          const ease = p.progress * p.progress;
+          p.x = p.startX + (p.targetX - p.startX) * ease;
+          p.y = p.startY + (p.targetY - p.startY) * ease;
+          p.alpha = 1 - p.progress * 0.7;
+        } else {
+          p.x += p.vx;
+          p.y += p.vy;
+          p.vy += 0.13; // гравитация
+          p.vx *= 0.985;
+          p.rotation += p.vRot || 0;
+          p.alpha -= p.decay;
+
+          if (p.alpha <= 0) {
+            particles.splice(i, 1);
+            continue;
+          }
+        }
+
+        fxCtx.save();
+        fxCtx.globalAlpha = Math.max(0, p.alpha);
+        fxCtx.fillStyle = p.color;
+        fxCtx.shadowColor = p.color;
+        fxCtx.shadowBlur = 8;
+        if (p.shape === 'star') {
+          drawStar(fxCtx, p.x, p.y, p.radius, p.rotation);
+        } else {
+          fxCtx.beginPath();
+          fxCtx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+          fxCtx.fill();
+        }
+        fxCtx.restore();
+      }
+
+      // 3. Всплывающие надписи (+1 ГОТОВО / В РАБОТУ)
+      for (let i = floatingTexts.length - 1; i >= 0; i--) {
+        const ft = floatingTexts[i];
+        ft.y += ft.vy;
+        ft.alpha -= 0.024;
+        if (ft.alpha <= 0) {
+          floatingTexts.splice(i, 1);
+          continue;
+        }
+
+        fxCtx.save();
+        fxCtx.globalAlpha = Math.max(0, ft.alpha);
+        fxCtx.font = '800 11px "JetBrains Mono", monospace';
+        fxCtx.fillStyle = ft.color;
+        fxCtx.shadowColor = 'rgba(0,0,0,0.85)';
+        fxCtx.shadowBlur = 6;
+        fxCtx.textAlign = 'center';
+        fxCtx.fillText(ft.text, ft.x, ft.y);
+        fxCtx.restore();
+      }
+
+      if (particles.length > 0 || shockwaves.length > 0 || floatingTexts.length > 0) {
+        animFrameId = requestAnimationFrame(animateFxLoop);
+      } else {
+        animFrameId = null;
+      }
+    }
+
+    // Отслеживание только что переключенной задачи для CSS-анимации после рендера
+    let lastToggledTask = { id: null, action: null, time: 0 };
+
     // ============================================================================
     // 1. ПОЛНАЯ БАЗА ДАННЫХ ПРОГРАММЫ (341 ПУНКТ ПО 4 ДОКУМЕНТАМ)
     // ============================================================================
@@ -694,6 +1412,9 @@
         ]
       },
 
+      // ========================================================================
+      // 2. РУЧНОЕ ТЕСТИРОВАНИЕ VIP (3 ПУНКТА)
+      // ========================================================================
       {
         id: 'vip',
         title: '2. Ручное тестирование VIP',
@@ -712,6 +1433,9 @@
         ]
       },
 
+      // ========================================================================
+      // 3. ОСНОВЫ PYTHON (78 ПУНКТОВ)
+      // ========================================================================
       {
         id: 'python',
         title: '3. Основы Python',
@@ -842,6 +1566,9 @@
         ]
       },
 
+      // ========================================================================
+      // 4. АВТОМАТИЗИРОВАННОЕ ТЕСТИРОВАНИЕ (191 ПУНКТ)
+      // ========================================================================
       {
         id: 'auto',
         title: '4. Автоматизированное тестирование',
@@ -1140,12 +1867,12 @@
     const STORAGE_KEY = 'qa_roadmap_tracker_v1';
 
     let state = {
-      completed: {},
-      todayLog: {},
-      todayQueue: [],
+      completed: {},          // { itemId: true/false }
+      todayLog: {},           // { 'YYYY-MM-DD': [itemId1, itemId2] }
+      todayQueue: [],         // [itemId1, itemId2, ...]
       settings: {
         targetDate: '2026-12-31',
-        scheduleMode: '5/2',
+        scheduleMode: '5/2',  // '5/2' или '7/0'
         dailyGoal: 6,
         activeCourse: 'all',
         statusFilter: 'all',
@@ -1155,7 +1882,7 @@
       }
     };
 
-    let isInitialLoad = true;
+    let isInitialLoad = true;  // защищает от синка "пустого" состояния при первом рендере
 
     function getTodayDateString() {
       const now = new Date();
@@ -1228,6 +1955,7 @@
       return list;
     }
 
+    // Подсчет календарных и рабочих дней между сегодня и целевой датой
     function calculateDaysUntil(targetDateStr, mode) {
       const now = new Date();
       now.setHours(0, 0, 0, 0);
@@ -1245,7 +1973,7 @@
 
       while (cursor <= target) {
         calendarDays++;
-        const dayOfWeek = cursor.getDay();
+        const dayOfWeek = cursor.getDay(); // 0 - Вс, 6 - Сб
         if (mode === '7/0') {
           studyDays++;
         } else {
@@ -1258,6 +1986,7 @@
       return { calendarDays, studyDays };
     }
 
+    // Расчет прогнозируемой даты завершения при текущем дневном темпе
     function calculateEstimatedFinishDate(remainingCount, dailyGoal, mode) {
       if (remainingCount <= 0) return new Date();
       const neededStudyDays = Math.ceil(remainingCount / Math.max(1, dailyGoal));
@@ -1314,18 +2043,22 @@
       });
 
       const rem = total - done;
-      const pct = total > 0 ? ((done / total) * 100).toFixed(1) : '0.0';
+      const pctNum = total > 0 ? (done / total) * 100 : 0;
+      const pct = pctNum.toFixed(1);
 
-      // Анимированный bump у главной цифры прогресса
-      const pctEl = document.getElementById('stat-total-pct');
-      pctEl.textContent = `${pct}%`;
-      pctEl.classList.remove('bump');
-      void pctEl.offsetWidth;
-      pctEl.classList.add('bump');
-
+      document.getElementById('stat-total-pct').textContent = `${pct}%`;
+      document.getElementById('stat-ring-pct').textContent = `${Math.round(pctNum)}%`;
       document.getElementById('stat-total-fraction').textContent = `${done} из ${total} выполнено`;
       document.getElementById('stat-total-rem').textContent = rem;
       document.getElementById('main-progress-bar').style.width = `${pct}%`;
+
+      // Круговое SVG-кольцо (r=33 -> длина окружности = 2 * PI * 33 = 207.345)
+      const ringEl = document.getElementById('main-progress-ring');
+      if (ringEl) {
+        const circumference = 207.345;
+        const offset = circumference - (pctNum / 100) * circumference;
+        ringEl.style.strokeDashoffset = offset;
+      }
 
       // Лекции
       const lecPct = lecTotal > 0 ? Math.round((lecDone / lecTotal) * 100) : 0;
@@ -1358,19 +2091,20 @@
         }));
         const cPct = cTotal > 0 ? Math.round((cDone / cTotal) * 100) : 0;
         const barColors = {
-          amber: 'bg-amber-400',
-          rose: 'bg-rose-500',
-          sky: 'bg-sky-400',
-          emerald: 'bg-emerald-400'
+          amber: 'bg-gradient-to-r from-amber-500 to-yellow-400',
+          rose: 'bg-gradient-to-r from-rose-500 to-pink-400',
+          sky: 'bg-gradient-to-r from-sky-500 to-cyan-400',
+          emerald: 'bg-gradient-to-r from-emerald-500 to-teal-400'
         };
+        const isActive = state.settings.activeCourse === course.id;
         return `
-          <button onclick="selectCourseTab('${course.id}')" class="mini-card text-left bg-slate-900/70 hover:bg-slate-900 border border-slate-800/80 rounded-xl p-2.5 transition group">
+          <button onclick="selectCourseTab('${course.id}')" class="text-left bg-slate-900/75 hover:bg-slate-800/80 border ${isActive ? 'border-indigo-500/70 shadow-[0_0_15px_rgba(99,102,241,0.18)]' : 'border-slate-800/80'} rounded-xl p-2.5 transition-all duration-200 hover:-translate-y-0.5 group">
             <div class="flex items-center justify-between text-xs mb-1">
               <span class="font-semibold text-slate-200 group-hover:text-white truncate">${course.shortTitle}</span>
-              <span class="font-mono text-[11px] text-slate-400">${cPct}%</span>
+              <span class="font-mono text-[11px] text-slate-400 group-hover:text-indigo-300">${cPct}%</span>
             </div>
-            <div class="w-full h-1 bg-slate-950 rounded-full overflow-hidden mb-1">
-              <div class="h-full ${barColors[course.color] || 'bg-indigo-500'}" style="width: ${cPct}%"></div>
+            <div class="w-full h-1.5 bg-slate-950 rounded-full overflow-hidden mb-1">
+              <div class="h-full ${barColors[course.color] || 'bg-indigo-500'} transition-all duration-500" style="width: ${cPct}%"></div>
             </div>
             <span class="text-[10px] font-mono text-slate-400">Осталось: ${cTotal - cDone} из ${cTotal}</span>
           </button>
@@ -1396,13 +2130,13 @@
       const paceIcon = document.getElementById('pace-icon');
 
       if (rem === 0) {
-        verdictBox.className = 'mt-4 p-3.5 rounded-xl border bg-emerald-950/50 border-emerald-500/40 flex items-start gap-3';
+        verdictBox.className = 'mt-4 p-3.5 rounded-xl border bg-emerald-950/50 border-emerald-500/40 flex items-start gap-3 transition-all duration-300';
         paceIcon.innerHTML = `<svg class="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>`;
         verdictTitle.textContent = 'Поздравляем! Вся программа полностью пройдена!';
         verdictDesc.textContent = 'Все 341 элемент во всех четырех модулях отмечены выполненными.';
       } else if (finishDate <= targetDateObj) {
         const diffDays = Math.round((targetDateObj - finishDate) / (1000 * 60 * 60 * 24));
-        verdictBox.className = 'mt-4 p-3.5 rounded-xl border bg-emerald-950/30 border-emerald-500/30 flex items-start gap-3';
+        verdictBox.className = 'mt-4 p-3.5 rounded-xl border bg-emerald-950/30 border-emerald-500/30 flex items-start gap-3 transition-all duration-300';
         paceIcon.innerHTML = `<svg class="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>`;
         verdictTitle.textContent = `Ты успеваешь к цели! Финиш: ${formatRussianDate(finishDate)}`;
         verdictDesc.textContent = diffDays > 0
@@ -1410,7 +2144,7 @@
           : `При темпе ${state.settings.dailyGoal} шт./день ты закроешь программу тютелька в тютельку в день дедлайна!`;
       } else {
         const extraItemsNeeded = Math.max(0, rem - (studyDays * state.settings.dailyGoal));
-        verdictBox.className = 'mt-4 p-3.5 rounded-xl border bg-amber-950/30 border-amber-500/30 flex items-start gap-3';
+        verdictBox.className = 'mt-4 p-3.5 rounded-xl border bg-amber-950/30 border-amber-500/30 flex items-start gap-3 transition-all duration-300';
         paceIcon.innerHTML = `<svg class="w-5 h-5 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>`;
         verdictTitle.textContent = `Прогноз финиша: ${formatRussianDate(finishDate)}`;
         verdictDesc.textContent = `При ${state.settings.dailyGoal} шт./день до выбранной даты не хватит времени примерно на ${extraItemsNeeded} пунктов. Добавь темп до ${Math.ceil(reqPace)} шт./день или захвати несколько выходных.`;
@@ -1420,8 +2154,46 @@
     }
 
     // ============================================================================
-    // 5. ЕЖЕДНЕВНЫЙ ПЛАН ("ПЛАН НА СЕГОДНЯ")
+    // 5. ЕЖЕДНЕВНЫЙ ПЛАН ("ПЛАН НА СЕГОДНЯ" + 7-ДНЕВНЫЙ ГРАФИК АКТИВНОСТИ)
     // ============================================================================
+    function renderWeekActivityBars() {
+      const container = document.getElementById('week-activity-bars');
+      if (!container) return;
+
+      const dayNames = ['Вс', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'];
+      const goal = Math.max(1, state.settings.dailyGoal || 6);
+      let barsHTML = `<span class="text-[10px] font-medium text-slate-400 mr-1">7 дн:</span>`;
+
+      for (let i = 6; i >= 0; i--) {
+        const d = new Date();
+        d.setDate(d.getDate() - i);
+        const y = d.getFullYear();
+        const m = String(d.getMonth() + 1).padStart(2, '0');
+        const day = String(d.getDate()).padStart(2, '0');
+        const key = `${y}-${m}-${day}`;
+        const count = (state.todayLog[key] || []).filter(id => state.completed[id]).length;
+        const heightPct = Math.min(100, Math.max(20, Math.round((count / goal) * 100)));
+        const isToday = i === 0;
+
+        const colorClass = count >= goal
+          ? 'bg-emerald-400 shadow-[0_0_6px_#34d399]'
+          : count > 0
+            ? 'bg-indigo-400'
+            : 'bg-slate-800';
+
+        barsHTML += `
+          <div class="flex flex-col items-center gap-0.5" title="${dayNames[d.getDay()]} (${key}): выполнено ${count} шт.">
+            <div class="w-2 h-5 bg-slate-950 rounded-sm flex items-end overflow-hidden p-[1px]">
+              <div class="w-full rounded-sm transition-all duration-300 ${colorClass}" style="height: ${heightPct}%"></div>
+            </div>
+            <span class="text-[9px] font-mono ${isToday ? 'text-emerald-400 font-bold' : 'text-slate-500'}">${dayNames[d.getDay()]}</span>
+          </div>
+        `;
+      }
+
+      container.innerHTML = barsHTML;
+    }
+
     function updateTodaySection() {
       const todayKey = getTodayDateString();
       const completedTodayList = (state.todayLog[todayKey] || []).filter(id => state.completed[id]);
@@ -1435,17 +2207,18 @@
       document.getElementById('today-progress-bar').style.width = `${pct}%`;
 
       const statusPill = document.getElementById('today-status-pill');
-      statusPill.classList.remove('goal-hit');
       if (doneTodayCount >= goal) {
         statusPill.textContent = 'Норма дня выполнена! 🔥';
-        statusPill.className = 'goal-hit px-2.5 py-0.5 text-[11px] font-semibold rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/40';
+        statusPill.className = 'px-2.5 py-0.5 text-[11px] font-semibold rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 shadow-[0_0_12px_rgba(16,185,129,0.25)]';
       } else if (doneTodayCount > 0) {
         statusPill.textContent = `Осталось еще ${goal - doneTodayCount} шт. сегодня`;
-        statusPill.className = 'px-2.5 py-0.5 text-[11px] font-medium rounded-full bg-indigo-500/20 text-indigo-300';
+        statusPill.className = 'px-2.5 py-0.5 text-[11px] font-medium rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/30';
       } else {
         statusPill.textContent = `Цель: ${goal} заданий`;
         statusPill.className = 'px-2.5 py-0.5 text-[11px] font-medium rounded-full bg-slate-800 text-slate-300';
       }
+
+      renderWeekActivityBars();
 
       const container = document.getElementById('today-queue-container');
       if (!state.settings.todayPanelOpen) {
@@ -1460,7 +2233,7 @@
       if (!state.todayQueue || state.todayQueue.length === 0) {
         container.innerHTML = `
           <div class="text-center py-4 px-3 rounded-xl bg-slate-900/50 border border-dashed border-slate-800 text-xs text-slate-400">
-            Нажми <span class="text-indigo-400 font-semibold">«Подобрать задачи на сегодня»</span>, чтобы автоматически добавить сюда следующие ${goal} невыполненных заданий, или просто отмечай любые пункты ниже.
+            Нажми <span class="text-indigo-400 font-semibold">«Подобрать на сегодня»</span>, чтобы автоматически добавить сюда следующие ${goal} невыполненных заданий, или просто отмечай любые пункты ниже.
           </div>
         `;
         return;
@@ -1487,14 +2260,43 @@
       saveState();
       updateTodaySection();
       showToast(`Сформирован план на сегодня: ${state.todayQueue.length} заданий`);
-      document.getElementById('today-queue-container')
-        ?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
 
     function toggleTodayPanel() {
       state.settings.todayPanelOpen = !state.settings.todayPanelOpen;
       saveState();
       updateTodaySection();
+    }
+
+    // Быстрый скролл и подсветка следующей невыполненной задачи
+    function scrollToNextTask() {
+      const allFlat = getAllItemsFlat();
+      const nextItem = allFlat.find(i => !state.completed[i.id]);
+      if (!nextItem) {
+        showToast('Все 341 задание уже выполнены! 🎉');
+        return;
+      }
+
+      if (state.settings.statusFilter === 'done') {
+        state.settings.statusFilter = 'all';
+        setStatusFilter('all');
+      }
+      if (state.settings.activeCourse !== 'all' && state.settings.activeCourse !== nextItem.courseId) {
+        state.settings.activeCourse = 'all';
+        renderCourseTabs();
+      }
+      state.settings.collapsedSections[nextItem.sectionId] = false;
+      renderCurriculum();
+
+      setTimeout(() => {
+        const rowEl = document.getElementById(`task-row-${nextItem.id}`);
+        if (rowEl) {
+          rowEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          rowEl.classList.add('highlight-target');
+          setTimeout(() => rowEl.classList.remove('highlight-target'), 3600);
+          showToast(`Следующий шаг: ${nextItem.title.slice(0, 48)}...`);
+        }
+      }, 60);
     }
 
     // ============================================================================
@@ -1506,13 +2308,13 @@
       const totalRem = allFlat.filter(i => !state.completed[i.id]).length;
 
       let html = `
-        <button onclick="selectCourseTab('all')" class="tab-btn px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold whitespace-nowrap transition flex items-center gap-2 border ${
+        <button onclick="selectCourseTab('all')" class="px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold whitespace-nowrap transition-all duration-200 flex items-center gap-2 border ${
           state.settings.activeCourse === 'all'
-            ? 'bg-indigo-600 text-white border-indigo-500 shadow-lg shadow-indigo-600/20'
-            : 'bg-slate-900/90 text-slate-300 border-slate-800 hover:bg-slate-800'
+            ? 'bg-gradient-to-r from-indigo-600 to-indigo-500 text-white border-indigo-400/50 shadow-lg shadow-indigo-600/25 -translate-y-0.5'
+            : 'bg-slate-900/90 text-slate-300 border-slate-800 hover:bg-slate-800 hover:text-white'
         }">
           <span>Все курсы</span>
-          <span class="px-1.5 py-0.5 text-[11px] font-mono rounded-md ${state.settings.activeCourse === 'all' ? 'bg-indigo-800 text-indigo-100' : 'bg-slate-800 text-slate-400'}">${totalRem} ост.</span>
+          <span class="px-1.5 py-0.5 text-[11px] font-mono rounded-md ${state.settings.activeCourse === 'all' ? 'bg-indigo-900/80 text-indigo-100' : 'bg-slate-800 text-slate-400'}">${totalRem} ост.</span>
         </button>
       `;
 
@@ -1526,13 +2328,13 @@
         const active = state.settings.activeCourse === course.id;
 
         html += `
-          <button onclick="selectCourseTab('${course.id}')" class="tab-btn px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold whitespace-nowrap transition flex items-center gap-2 border ${
+          <button onclick="selectCourseTab('${course.id}')" class="px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold whitespace-nowrap transition-all duration-200 flex items-center gap-2 border ${
             active
-              ? 'bg-indigo-600 text-white border-indigo-500 shadow-lg shadow-indigo-600/20'
-              : 'bg-slate-900/90 text-slate-300 border-slate-800 hover:bg-slate-800'
+              ? 'bg-gradient-to-r from-indigo-600 to-indigo-500 text-white border-indigo-400/50 shadow-lg shadow-indigo-600/25 -translate-y-0.5'
+              : 'bg-slate-900/90 text-slate-300 border-slate-800 hover:bg-slate-800 hover:text-white'
           }">
             <span>${course.title}</span>
-            <span class="px-1.5 py-0.5 text-[11px] font-mono rounded-md ${active ? 'bg-indigo-800 text-indigo-100' : 'bg-slate-800 text-slate-400'}">${cRem}/${cTotal}</span>
+            <span class="px-1.5 py-0.5 text-[11px] font-mono rounded-md ${active ? 'bg-indigo-900/80 text-indigo-100' : 'bg-slate-800 text-slate-400'}">${cRem}/${cTotal}</span>
           </button>
         `;
       });
@@ -1551,15 +2353,21 @@
     }
 
     function renderItemRowHTML(item, isDone, showCourseTag = false) {
+      const rowIdAttr = showCourseTag ? '' : `id="task-row-${item.id}"`;
+      const isJustToggled = (Date.now() - lastToggledTask.time < 350) && lastToggledTask.id === item.id;
+      const toggleAnimClass = isJustToggled
+        ? (lastToggledTask.action === 'check' ? 'task-just-checked' : 'task-just-unchecked')
+        : '';
+
       return `
-        <div class="item-row group flex items-center justify-between gap-3 p-3 rounded-xl border ${
+        <div ${rowIdAttr} class="task-row ${isDone ? 'task-done' : ''} ${toggleAnimClass} group flex items-center justify-between gap-3 p-3 rounded-xl border ${
           isDone
-            ? 'bg-slate-950/60 border-slate-800/50 text-slate-500'
-            : 'bg-slate-900/90 hover:bg-slate-850 border-slate-800/90 text-slate-100'
+            ? 'bg-slate-950/50 border-slate-800/40 text-slate-500'
+            : 'bg-slate-900/85 hover:bg-slate-850 border-slate-800/90 hover:border-indigo-500/40 text-slate-100 shadow-sm'
         }">
           <label class="flex items-start sm:items-center gap-3 cursor-pointer flex-1 min-w-0 select-none">
-            <input type="checkbox" class="checkbox-custom hidden" ${isDone ? 'checked' : ''} onchange="toggleItem('${item.id}', this.checked)">
-            <div class="w-5 h-5 mt-0.5 sm:mt-0 rounded-md border-2 border-slate-600 group-hover:border-indigo-400 flex items-center justify-center transition shrink-0 bg-slate-950">
+            <input type="checkbox" class="checkbox-custom hidden" ${isDone ? 'checked' : ''} onchange="toggleItem('${item.id}', this.checked, event)">
+            <div class="checkbox-box w-5 h-5 mt-0.5 sm:mt-0 rounded-md border-2 border-slate-600 group-hover:border-indigo-400 flex items-center justify-center shrink-0 bg-slate-950">
               <svg class="w-3.5 h-3.5 text-white hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/>
               </svg>
@@ -1567,12 +2375,12 @@
             <div class="flex flex-wrap items-center gap-2 min-w-0 flex-1">
               ${getBadgeHTML(item.type)}
               ${showCourseTag && item.courseTitle ? `<span class="px-1.5 py-0.5 text-[10px] font-mono rounded bg-slate-800 text-slate-300 shrink-0">${item.courseTitle}</span>` : ''}
-              <span class="text-xs sm:text-sm font-medium break-words ${isDone ? 'line-through text-slate-500' : 'text-slate-100 group-hover:text-white'}">${item.title}</span>
+              <span class="task-title-text text-xs sm:text-sm font-medium break-words transition-colors ${isDone ? 'line-through text-slate-500' : 'text-slate-100 group-hover:text-white'}">${item.title}</span>
             </div>
           </label>
 
           ${item.url ? `
-            <a href="${item.url}" target="_blank" rel="noopener noreferrer" class="px-2.5 py-1 rounded-lg bg-slate-800/80 hover:bg-indigo-600 text-slate-300 hover:text-white text-[11px] font-medium flex items-center gap-1 shrink-0 transition" title="Открыть задание на платформе iJunior">
+            <a href="${item.url}" target="_blank" rel="noopener noreferrer" class="px-2.5 py-1 rounded-lg bg-slate-800/80 hover:bg-indigo-600 text-slate-300 hover:text-white text-[11px] font-medium flex items-center gap-1 shrink-0 transition-all duration-200 hover:shadow-md hover:shadow-indigo-500/20" title="Открыть задание на платформе iJunior">
               <span class="hidden sm:inline">Открыть</span>
               <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
             </a>
@@ -1584,15 +2392,18 @@
     function renderCurriculum() {
       const searchQuery = document.getElementById('search-input').value.trim().toLowerCase();
       const clearBtn = document.getElementById('clear-search-btn');
+      const kbdHint = document.getElementById('search-kbd-hint');
       if (searchQuery.length > 0) {
         clearBtn.classList.remove('hidden');
+        if (kbdHint) kbdHint.classList.add('hidden');
       } else {
         clearBtn.classList.add('hidden');
+        if (kbdHint) kbdHint.classList.remove('hidden');
       }
 
       const listContainer = document.getElementById('curriculum-list');
       let html = '';
-      let matchedTotal = 0;
+      let sectionIndex = 0;
 
       CURRICULUM_DATA.forEach(course => {
         if (state.settings.activeCourse !== 'all' && state.settings.activeCourse !== course.id) {
@@ -1614,25 +2425,26 @@
           });
 
           if (filteredItems.length === 0) return;
-          matchedTotal += filteredItems.length;
 
           const secTotal = sec.items.length;
           const secDone = sec.items.filter(i => state.completed[i.id]).length;
           const secPct = secTotal > 0 ? Math.round((secDone / secTotal) * 100) : 0;
           const isCollapsed = !!state.settings.collapsedSections[sec.id] && !searchQuery;
           const allSecDone = secDone === secTotal;
+          const animDelay = Math.min(sectionIndex * 35, 280);
+          sectionIndex++;
 
           courseSectionsHTML += `
-            <div class="glass-card rounded-2xl overflow-hidden border border-slate-800/90">
+            <div class="glass-card spotlight-card rounded-2xl overflow-hidden border ${allSecDone ? 'border-emerald-500/30' : 'border-slate-800/90'} animate-section-in" style="animation-delay: ${animDelay}ms">
               <!-- Заголовок раздела -->
-              <div class="p-4 bg-slate-900/70 flex flex-wrap items-center justify-between gap-3 cursor-pointer select-none hover:bg-slate-900 transition" onclick="toggleSectionCollapse('${sec.id}')">
+              <div class="p-4 bg-slate-900/70 flex flex-wrap items-center justify-between gap-3 cursor-pointer select-none hover:bg-slate-900/95 transition" onclick="toggleSectionCollapse('${sec.id}')">
                 <div class="flex items-center gap-3 min-w-0 flex-1">
-                  <button class="text-slate-400 transition-transform duration-200 ${isCollapsed ? '-rotate-90' : ''}">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                  <button class="w-7 h-7 rounded-lg bg-slate-800/80 flex items-center justify-center text-slate-400 transition-transform duration-300 ${isCollapsed ? '-rotate-90' : ''}">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                   </button>
                   <div class="min-w-0 flex-1">
                     <div class="flex items-center gap-2 flex-wrap">
-                      <span class="text-xs font-mono uppercase px-2 py-0.5 rounded bg-slate-800 text-slate-300">${course.shortTitle}</span>
+                      <span class="text-[11px] font-mono uppercase px-2 py-0.5 rounded-md bg-slate-800 text-slate-300 border border-slate-700/60">${course.shortTitle}</span>
                       <h3 class="text-sm sm:text-base font-bold text-white truncate">${sec.title}</h3>
                     </div>
                   </div>
@@ -1641,12 +2453,12 @@
                 <div class="flex items-center gap-3" onclick="event.stopPropagation()">
                   <div class="flex items-center gap-2">
                     <div class="w-20 sm:w-28 h-2 bg-slate-950 rounded-full overflow-hidden border border-slate-800">
-                      <div class="h-full ${allSecDone ? 'bg-emerald-400' : 'bg-indigo-500'} transition-all duration-300" style="width: ${secPct}%"></div>
+                      <div class="h-full ${allSecDone ? 'bg-gradient-to-r from-emerald-500 to-teal-400' : 'bg-gradient-to-r from-indigo-500 to-purple-500'} transition-all duration-500" style="width: ${secPct}%"></div>
                     </div>
                     <span class="text-xs font-mono ${allSecDone ? 'text-emerald-400 font-bold' : 'text-slate-400'}">${secDone}/${secTotal}</span>
                   </div>
 
-                  <button onclick="markEntireSection('${sec.id}', ${!allSecDone})" class="px-2.5 py-1 rounded-lg text-[11px] font-medium border transition ${
+                  <button onclick="markEntireSection('${sec.id}', ${!allSecDone}, event)" class="px-2.5 py-1 rounded-lg text-[11px] font-medium border transition ${
                     allSecDone
                       ? 'bg-slate-900 border-slate-800 text-slate-400 hover:text-rose-300'
                       : 'bg-slate-800 hover:bg-emerald-600/30 border-slate-700 hover:border-emerald-500/40 text-slate-300 hover:text-emerald-200'
@@ -1671,7 +2483,7 @@
 
       if (!html) {
         listContainer.innerHTML = `
-          <div class="glass-card rounded-2xl p-10 text-center space-y-3">
+          <div class="glass-card rounded-2xl p-10 text-center space-y-3 animate-section-in">
             <div class="w-12 h-12 rounded-2xl bg-slate-900 border border-slate-800 flex items-center justify-center mx-auto text-slate-400">
               <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
             </div>
@@ -1686,22 +2498,50 @@
     }
 
     // ============================================================================
-    // 7. ОБРАБОТЧИКИ ДЕЙСТВИЙ ПОЛЬЗОВАТЕЛЯ
+    // 7. ОБРАБОТЧИКИ ДЕЙСТВИЙ ПОЛЬЗОВАТЕЛЯ (С ЭФФЕКТАМИ ОТМЕТКИ И СНЯТИЯ)
     // ============================================================================
-    function toggleItem(itemId, checked) {
+    function toggleItem(itemId, checked, evt) {
       const todayKey = getTodayDateString();
       if (!state.todayLog[todayKey]) {
         state.todayLog[todayKey] = [];
       }
+
+      // Координаты клика для запуска Canvas-эффекта до перерисовки DOM
+      let clickX = window.innerWidth / 2;
+      let clickY = window.innerHeight / 2;
+      if (evt && evt.target) {
+        const box = evt.target.nextElementSibling;
+        if (box) {
+          const rect = box.getBoundingClientRect();
+          clickX = rect.left + rect.width / 2;
+          clickY = rect.top + rect.height / 2;
+        }
+      }
+
+      // Запоминаем ID задачи и тип действия, чтобы при рендере сработала пружинная и лазерная анимация
+      lastToggledTask = {
+        id: itemId,
+        action: checked ? 'check' : 'uncheck',
+        time: Date.now()
+      };
 
       if (checked) {
         state.completed[itemId] = true;
         if (!state.todayLog[todayKey].includes(itemId)) {
           state.todayLog[todayKey].push(itemId);
         }
+
+        const doneTodayCount = state.todayLog[todayKey].filter(id => state.completed[id]).length;
+        const hitGoal = doneTodayCount === state.settings.dailyGoal;
+        spawnCheckFX(clickX, clickY, hitGoal);
+
+        if (hitGoal) {
+          showToast('🔥 Дневная норма выполнена! Отличная работа!');
+        }
       } else {
         delete state.completed[itemId];
         state.todayLog[todayKey] = state.todayLog[todayKey].filter(id => id !== itemId);
+        spawnUncheckFX(clickX, clickY);
       }
 
       saveState();
@@ -1710,7 +2550,7 @@
       renderCurriculum();
     }
 
-    function markEntireSection(secId, markDone) {
+    function markEntireSection(secId, markDone, evt) {
       const todayKey = getTodayDateString();
       if (!state.todayLog[todayKey]) state.todayLog[todayKey] = [];
 
@@ -1734,11 +2574,22 @@
         });
       });
 
+      if (evt && evt.currentTarget) {
+        const rect = evt.currentTarget.getBoundingClientRect();
+        const cx = rect.left + rect.width / 2;
+        const cy = rect.top + rect.height / 2;
+        if (markDone) {
+          spawnCheckFX(cx, cy, true);
+        } else {
+          spawnUncheckFX(cx, cy);
+        }
+      }
+
       saveState();
       updateDashboardStats();
       renderCourseTabs();
       renderCurriculum();
-      showToast(markDone ? 'Раздел полностью отмечен выполненным!' : 'Отметки с раздела сняты');
+      showToast(markDone ? 'Раздел полностью отмечен выполненным! 🎉' : 'Отметки с раздела сняты');
     }
 
     function toggleSectionCollapse(secId) {
@@ -1758,6 +2609,7 @@
     function selectCourseTab(courseId) {
       state.settings.activeCourse = courseId;
       saveState();
+      updateDashboardStats();
       renderCourseTabs();
       renderCurriculum();
     }
@@ -1767,7 +2619,7 @@
       ['all', 'todo', 'done'].forEach(st => {
         const btn = document.getElementById(`filter-status-${st}`);
         if (st === status) {
-          btn.className = 'px-2.5 py-1.5 rounded-lg text-xs font-medium transition bg-indigo-600 text-white';
+          btn.className = 'px-2.5 py-1.5 rounded-lg text-xs font-medium transition bg-indigo-600 text-white shadow';
         } else {
           btn.className = 'px-2.5 py-1.5 rounded-lg text-xs font-medium transition text-slate-400 hover:text-white';
         }
@@ -1787,7 +2639,7 @@
       ['all', 'lec', 'quiz', 'hw'].forEach(tp => {
         const btn = document.getElementById(`filter-type-${tp}`);
         if (tp === type) {
-          btn.className = `px-2.5 py-1.5 rounded-lg text-xs font-semibold transition bg-slate-800 text-white border border-slate-700`;
+          btn.className = `px-2.5 py-1.5 rounded-lg text-xs font-semibold transition bg-slate-800 text-white border border-slate-700 shadow`;
         } else {
           btn.className = `px-2.5 py-1.5 rounded-lg text-xs font-medium transition ${styles[tp]} hover:bg-slate-900`;
         }
@@ -1815,10 +2667,10 @@
       const btn52 = document.getElementById('mode-5-2');
       const btn70 = document.getElementById('mode-7-0');
       if (mode === '5/2') {
-        btn52.className = 'text-xs py-1 rounded-md font-medium transition bg-indigo-600 text-white';
+        btn52.className = 'text-xs py-1 rounded-md font-medium transition bg-indigo-600 text-white shadow';
         btn70.className = 'text-xs py-1 rounded-md font-medium transition text-slate-400 hover:text-white';
       } else {
-        btn70.className = 'text-xs py-1 rounded-md font-medium transition bg-indigo-600 text-white';
+        btn70.className = 'text-xs py-1 rounded-md font-medium transition bg-indigo-600 text-white shadow';
         btn52.className = 'text-xs py-1 rounded-md font-medium transition text-slate-400 hover:text-white';
       }
       saveState();
@@ -1849,16 +2701,18 @@
     function showToast(message) {
       const container = document.getElementById('toast-container');
       const toast = document.createElement('div');
-      toast.className = 'toast-item glass-card px-4 py-2.5 rounded-xl border border-indigo-500/40 text-xs font-medium text-white shadow-xl flex items-center gap-2';
+      toast.className = 'glass-card px-4 py-2.5 rounded-xl border border-indigo-500/40 text-xs font-medium text-white shadow-2xl flex items-center gap-2.5 animate-section-in';
       toast.innerHTML = `
-        <span class="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_6px_#34d399]"></span>
+        <span class="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_8px_#34d399]"></span>
         <span>${message}</span>
       `;
       container.appendChild(toast);
       setTimeout(() => {
-        toast.classList.add('leaving');
-        setTimeout(() => toast.remove(), 320);
-      }, 2600);
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateY(8px)';
+        toast.style.transition = 'all 0.25s ease';
+        setTimeout(() => toast.remove(), 260);
+      }, 2800);
     }
 
     function exportProgress() {
@@ -1970,6 +2824,7 @@
       updateDashboardStats();
       renderCourseTabs();
       renderCurriculum();
+      
       isInitialLoad = false;
     });
   </script>
@@ -1988,63 +2843,63 @@
       appId: "1:882979378356:web:5c5bbe17c8493bce7af3e1"
     };
 
-    константа приложение = инициализировать приложение(firebaseConfig);
-    константа БД = getFirestore(приложение);
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
 
-    константа трекерDocRef = док(БД, "qa_tracker", "nikita_main");
+    const trackerDocRef = doc(db, "qa_tracker", "nikita_main");
 
-    константа dotEl  = документ.getElementById("облачная точка");
-    константа текстEl = документ.getElementById("облачный текст");
+    const dotEl  = document.getElementById("cloud-dot");
+    const textEl = document.getElementById("cloud-text");
 
-    функция установитьСтатус(состояние, сообщение) {
-      если (!dotEl || !текстEl) возвращаться;
-      текстEl.текстСодержание = сообщение;
-      dotEl.имя класса = "w-2 h-2 округленный-полный" + (
-        состояние === "онлайн"  ? "bg-emerald-400 онлайн" :
-        состояние === "синхронизация" ? "bg-amber-400 анимационный-импульс" :
-                              "бг-роза-500"
+    function setStatus(state, message) {
+      if (!dotEl || !textEl) return;
+      textEl.textContent = message;
+      dotEl.className = "w-2 h-2 rounded-full " + (
+        state === "online"  ? "bg-emerald-400 shadow-[0_0_8px_#34d399]" :
+        state === "syncing" ? "bg-amber-400 animate-pulse" :
+                              "bg-rose-500"
       );
     }
 
-    позволять isApplyingRemoteUpdate = ложный;
+    let isApplyingRemoteUpdate = false;
 
-    окно.syncToFirebase = асинхронный функция (текущееСостояние) {
-      если (isApplyingRemoteUpdate) возвращаться;
-      пытаться {
-        ждать setDoc(трекерDocRef, {
-          завершенный:   текущееСостояние.завершенный   || {},
-          сегодняВ журнале:    текущееСостояние.сегодняВ журнале    || {},
-          сегодняОчередь:  текущееСостояние.сегодняОчередь  || [],
-          настройки:    текущееСостояние.настройки    || {},
-          обновленоAt:   новый Дата().toISOString()
+    window.syncToFirebase = async function (currentState) {
+      if (isApplyingRemoteUpdate) return;
+      try {
+        await setDoc(trackerDocRef, {
+          completed:   currentState.completed   || {},
+          todayLog:    currentState.todayLog    || {},
+          todayQueue:  currentState.todayQueue  || [],
+          settings:    currentState.settings    || {},
+          updatedAt:   new Date().toISOString()
         });
-        установитьСтатус("онлайн", "Синхронизирвано (Firebase)");
-      } ловить (ошибаться) {
-        консоль.ошибка(«Ошибка записи в Firestore:», ошибаться);
-        установитьСтатус("ошибка", "Ошибка синхронизации");
+        setStatus("online", "Синхронизировано (Firebase)");
+      } catch (err) {
+        console.error("Ошибка записи в Firestore:", err);
+        setStatus("error", "Ошибка синхронизации");
       }
     };
 
-    наСнимок(трекерDocRef, (docSnap) => {
-      если (docSnap.существует()) {
-        константа облачные данные = docSnap.данные();
-        isApplyingRemoteUpdate = истинный;
+    onSnapshot(trackerDocRef, (docSnap) => {
+      if (docSnap.exists()) {
+        const cloudData = docSnap.data();
+        isApplyingRemoteUpdate = true;
 
-        если (окно.применитьCloudState) {
-          окно.применитьCloudState(облачные данные);
+        if (window.applyCloudState) {
+          window.applyCloudState(cloudData);
         }
 
-        isApplyingRemoteUpdate = ложный;
-        установитьСтатус("онлайн", "Синхронизирвано (Firebase)");
-      } еще {
-        если (окно.getCurrentTrackerState) {
-          окно.syncToFirebase(окно.getCurrentTrackerState());
+        isApplyingRemoteUpdate = false;
+        setStatus("online", "Синхронизировано (Firebase)");
+      } else {
+        if (window.getCurrentTrackerState) {
+          window.syncToFirebase(window.getCurrentTrackerState());
         }
       }
-    }, (ошибка) => {
-      консоль.ошибка(«Ошибка подключения к Firestore:», ошибка);
-      установитьСтатус("ошибка", "Офлайн (только локально)");
+    }, (error) => {
+      console.error("Ошибка подключения к Firestore:", error);
+      setStatus("error", "Офлайн (только локально)");
     });
-  </сценарий>
-</тело>
-    </html>
+  </script>
+</body>
+</html>
