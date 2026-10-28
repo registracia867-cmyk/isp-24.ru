@@ -35,40 +35,216 @@
       color: #f1f5f9;
       overflow-x: hidden;
     }
+
     /* Кастомный скроллбар */
-    ::-webkit-scrollbar {
-      width: 8px;
-      height: 8px;
-    }
-    ::-webkit-scrollbar-track {
-      background: #0f172a;
-    }
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-track { background: #0f172a; }
     ::-webkit-scrollbar-thumb {
-      background: #334155;
+      background: linear-gradient(180deg, #475569, #334155);
       border-radius: 4px;
     }
-    ::-webkit-scrollbar-thumb:hover {
-      background: #475569;
-    }
+    ::-webkit-scrollbar-thumb:hover { background: #475569; }
+
+    /* Чекбокс + pop-анимация галочки */
     .checkbox-custom:checked + div {
-      background-color: #10b981;
+      background: linear-gradient(135deg, #10b981, #059669);
       border-color: #10b981;
+      box-shadow: 0 0 12px rgba(16, 185, 129, 0.5);
     }
     .checkbox-custom:checked + div svg {
       display: block;
+      animation: checkmark-bounce 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
+
+    /* Стеклянная карточка + плавный hover */
     .glass-card {
       background: rgba(15, 23, 42, 0.85);
       backdrop-filter: blur(12px);
       border: 1px solid rgba(51, 65, 85, 0.6);
+      transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
     }
+    .glass-card:hover {
+      border-color: rgba(99, 102, 241, 0.35);
+      box-shadow: 0 8px 32px rgba(99, 102, 241, 0.08);
+    }
+
+    /* Keyframes */
     @keyframes pulse-subtle {
       0%, 100% { opacity: 1; }
       50% { opacity: 0.75; }
     }
-    .animate-pulse-subtle {
-      animation: pulse-subtle 2.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    @keyframes fade-in-up {
+      from { opacity: 0; transform: translateY(14px); }
+      to   { opacity: 1; transform: translateY(0); }
     }
+    @keyframes fade-in {
+      from { opacity: 0; } to { opacity: 1; }
+    }
+    @keyframes scale-in {
+      from { opacity: 0; transform: scale(0.94); }
+      to   { opacity: 1; transform: scale(1); }
+    }
+    @keyframes slide-in-right {
+      from { opacity: 0; transform: translateX(24px); }
+      to   { opacity: 1; transform: translateX(0); }
+    }
+    @keyframes slide-out-right {
+      from { opacity: 1; transform: translateX(0); }
+      to   { opacity: 0; transform: translateX(24px); }
+    }
+    @keyframes shimmer {
+      0%   { transform: translateX(-120%); }
+      100% { transform: translateX(220%); }
+    }
+    @keyframes checkmark-bounce {
+      0%   { transform: scale(0) rotate(-15deg); }
+      60%  { transform: scale(1.25) rotate(3deg); }
+      100% { transform: scale(1) rotate(0); }
+    }
+    @keyframes glow-pulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.25); }
+      50%      { box-shadow: 0 0 22px 2px rgba(99, 102, 241, 0.25); }
+    }
+    @keyframes float-soft {
+      0%, 100% { transform: translateY(0); }
+      50%      { transform: translateY(-3px); }
+    }
+    @keyframes bump {
+      0%   { transform: scale(1); }
+      40%  { transform: scale(1.08); }
+      100% { transform: scale(1); }
+    }
+    @keyframes ring-pulse {
+      0%   { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.6); }
+      70%  { box-shadow: 0 0 0 8px rgba(16, 185, 129, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+    }
+    @keyframes shine-sweep {
+      0%   { transform: translateX(-100%) skewX(-20deg); }
+      100% { transform: translateX(250%) skewX(-20deg); }
+    }
+
+    /* Утилиты анимаций */
+    .animate-pulse-subtle { animation: pulse-subtle 2.5s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+    .animate-fade-in-up   { animation: fade-in-up 0.55s cubic-bezier(0.16, 1, 0.3, 1) both; }
+    .animate-fade-in      { animation: fade-in 0.4s ease-out both; }
+    .animate-scale-in     { animation: scale-in 0.35s cubic-bezier(0.16, 1, 0.3, 1) both; }
+    .animate-float-soft   { animation: float-soft 3.5s ease-in-out infinite; }
+    .animate-glow-pulse   { animation: glow-pulse 3s ease-in-out infinite; }
+
+    /* Stagger для секций */
+    .stagger > * { animation: fade-in-up 0.55s cubic-bezier(0.16, 1, 0.3, 1) both; }
+    .stagger > *:nth-child(1) { animation-delay: 0.04s; }
+    .stagger > *:nth-child(2) { animation-delay: 0.10s; }
+    .stagger > *:nth-child(3) { animation-delay: 0.16s; }
+    .stagger > *:nth-child(4) { animation-delay: 0.22s; }
+    .stagger > *:nth-child(5) { animation-delay: 0.28s; }
+
+    /* Градиентный текст для крупных чисел */
+    .stat-number {
+      background: linear-gradient(135deg, #ffffff 0%, #c7d2fe 60%, #a5b4fc 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+      display: inline-block;
+    }
+    .stat-number.bump { animation: bump 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); }
+
+    /* Shimmer на прогресс-барах */
+    .progress-shimmer { position: relative; overflow: hidden; }
+    .progress-shimmer::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 40%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.28), transparent);
+      animation: shimmer 2.8s ease-in-out infinite;
+      pointer-events: none;
+    }
+
+    /* Плавные переходы для прогресс-баров */
+    #main-progress-bar { transition: width 0.8s cubic-bezier(0.16, 1, 0.3, 1); }
+    #today-progress-bar { transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1); }
+    #bar-lec, #bar-quiz, #bar-hw { transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1); }
+
+    /* Строки заданий */
+    .item-row {
+      transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+                  background-color 0.2s ease,
+                  border-color 0.2s ease;
+    }
+    .item-row:hover { transform: translateX(3px); }
+
+    /* Кнопки — микро press */
+    button:active:not(:disabled), label:active {
+      transform: scale(0.97);
+      transition: transform 0.08s ease;
+    }
+
+    /* Кнопка со sweep-блеском */
+    .btn-shine {
+      position: relative;
+      overflow: hidden;
+    }
+    .btn-shine::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 40%; height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.22), transparent);
+      transform: translateX(-100%) skewX(-20deg);
+      pointer-events: none;
+    }
+    .btn-shine:hover::before {
+      animation: shine-sweep 0.7s ease forwards;
+    }
+
+    /* Toast */
+    .toast-item {
+      animation: slide-in-right 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+    .toast-item.leaving {
+      animation: slide-out-right 0.3s cubic-bezier(0.4, 0, 1, 1) both;
+    }
+
+    /* Модалка */
+    #modal-overlay:not(.hidden) > div {
+      animation: scale-in 0.3s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+
+    /* Индикатор облака — пульс в online */
+    #cloud-dot.online {
+      box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.6);
+      animation: ring-pulse 2s infinite;
+    }
+
+    /* Табы */
+    .tab-btn { transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1); }
+    .tab-btn:hover { transform: translateY(-1px); }
+
+    /* Мини-карточки курсов */
+    .mini-card {
+      transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+                  background-color 0.25s ease,
+                  border-color 0.25s ease;
+    }
+    .mini-card:hover {
+      transform: translateY(-2px);
+      border-color: rgba(99, 102, 241, 0.4);
+    }
+
+    /* Бейдж выполненной нормы дня */
+    #today-status-pill.goal-hit { animation: ring-pulse 2s infinite; }
+
+    /* Иконка в шапке — лёгкий флоат */
+    .header-badge { animation: float-soft 4s ease-in-out infinite; }
+
+    /* Убираем скроллбар у табов */
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
   </style>
 </head>
 <body class="min-h-screen flex flex-col selection:bg-indigo-500 selection:text-white">
@@ -76,7 +252,7 @@
   <!-- Уведомления (Тосты) -->
   <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
 
-  <!-- Модальное окно подтверждения сброса / импорта -->
+  <!-- Модальное окно подтверждения -->
   <div id="modal-overlay" class="fixed inset-0 bg-black/75 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
     <div class="glass-card max-w-md w-full rounded-2xl p-6 shadow-2xl border border-slate-700">
       <h3 id="modal-title" class="text-lg font-bold text-white mb-2">Подтверждение</h3>
@@ -92,7 +268,7 @@
   <header class="border-b border-slate-800/80 bg-slate-950/90 sticky top-0 z-40 backdrop-blur-md">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex flex-wrap items-center justify-between gap-4">
       <div class="flex items-center gap-3">
-        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 via-purple-500 to-emerald-500 flex items-center justify-center shadow-lg shadow-indigo-500/20">
+        <div class="header-badge w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 via-purple-500 to-emerald-500 flex items-center justify-center shadow-lg shadow-indigo-500/20">
           <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
           </svg>
@@ -122,13 +298,11 @@
           <span>Импорт</span>
           <input type="file" id="import-file" accept=".json" class="hidden" onchange="importProgress(event)">
         </label>
-        
-        </button>
       </div>
     </div>
   </header>
 
-  <main class="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6 flex-1">
+  <main class="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6 flex-1 stagger">
 
     <!-- ВЕРХНИЙ БЛОК: Глобальный прогресс и Калькулятор темпа -->
     <section class="grid grid-cols-1 lg:grid-cols-12 gap-5">
@@ -142,7 +316,7 @@
             <div>
               <span class="text-xs font-semibold uppercase tracking-wider text-indigo-400">Общий прогресс программы</span>
               <div class="flex items-baseline gap-3 mt-1">
-                <span id="stat-total-pct" class="text-3xl sm:text-4xl font-extrabold font-mono text-white">13.2%</span>
+                <span id="stat-total-pct" class="stat-number text-3xl sm:text-4xl font-extrabold font-mono">13.2%</span>
                 <span id="stat-total-fraction" class="text-sm font-mono text-slate-400">45 из 341 выполнено</span>
               </div>
             </div>
@@ -155,7 +329,7 @@
 
           <!-- Главный прогресс-бар -->
           <div class="w-full h-4 bg-slate-950 rounded-full overflow-hidden p-0.5 border border-slate-800 mb-6">
-            <div id="main-progress-bar" class="h-full rounded-full bg-gradient-to-r from-indigo-500 via-purple-500 to-emerald-400 transition-all duration-500" style="width: 13.2%"></div>
+            <div id="main-progress-bar" class="progress-shimmer h-full rounded-full bg-gradient-to-r from-indigo-500 via-purple-500 to-emerald-400" style="width: 13.2%"></div>
           </div>
 
           <!-- Разбивка по типам задач -->
@@ -174,7 +348,7 @@
                 <span id="stat-lec-done" class="text-xs font-mono text-slate-500">27/151</span>
               </div>
               <div class="w-full h-1.5 bg-slate-950 rounded-full mt-2 overflow-hidden">
-                <div id="bar-lec" class="h-full bg-sky-400 rounded-full transition-all duration-500" style="width: 18%"></div>
+                <div id="bar-lec" class="h-full bg-sky-400 rounded-full" style="width: 18%"></div>
               </div>
             </div>
 
@@ -192,7 +366,7 @@
                 <span id="stat-quiz-done" class="text-xs font-mono text-slate-500">8/45</span>
               </div>
               <div class="w-full h-1.5 bg-slate-950 rounded-full mt-2 overflow-hidden">
-                <div id="bar-quiz" class="h-full bg-purple-400 rounded-full transition-all duration-500" style="width: 18%"></div>
+                <div id="bar-quiz" class="h-full bg-purple-400 rounded-full" style="width: 18%"></div>
               </div>
             </div>
 
@@ -210,19 +384,17 @@
                 <span id="stat-hw-done" class="text-xs font-mono text-slate-500">10/145</span>
               </div>
               <div class="w-full h-1.5 bg-slate-950 rounded-full mt-2 overflow-hidden">
-                <div id="bar-hw" class="h-full bg-emerald-400 rounded-full transition-all duration-500" style="width: 7%"></div>
+                <div id="bar-hw" class="h-full bg-emerald-400 rounded-full" style="width: 7%"></div>
               </div>
             </div>
           </div>
         </div>
 
         <!-- Мини-сводка по 4 курсам -->
-        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 mt-5 pt-4 border-t border-slate-800/80" id="course-mini-cards">
-          <!-- Генерируется через JS -->
-        </div>
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 mt-5 pt-4 border-t border-slate-800/80" id="course-mini-cards"></div>
       </div>
 
-      <!-- Карточка 2: Калькулятор времени и темпа до Нового года (5 колонок) -->
+      <!-- Карточка 2: Калькулятор времени и темпа -->
       <div class="lg:col-span-5 glass-card rounded-2xl p-5 sm:p-6 flex flex-col justify-between border border-indigo-500/20">
         <div>
           <div class="flex items-center justify-between gap-2 mb-4">
@@ -235,9 +407,7 @@
             <span id="current-date-badge" class="text-xs font-mono text-slate-400 bg-slate-900 px-2.5 py-1 rounded-lg border border-slate-800"></span>
           </div>
 
-          <!-- Настройки калькулятора -->
           <div class="space-y-3.5 bg-slate-900/70 p-3.5 rounded-xl border border-slate-800/90">
-            <!-- Дата финиша и Режим дней -->
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
                 <label class="block text-[11px] font-medium text-slate-400 mb-1">Целевая дата финиша:</label>
@@ -252,7 +422,6 @@
               </div>
             </div>
 
-            <!-- Ползунок цели на день -->
             <div>
               <div class="flex justify-between items-center mb-1">
                 <label class="text-xs font-medium text-slate-300">Твоя цель заданий в день:</label>
@@ -271,7 +440,6 @@
             </div>
           </div>
 
-          <!-- Выводы калькулятора -->
           <div class="grid grid-cols-2 gap-3 mt-4">
             <div class="bg-slate-900/60 border border-slate-800/80 rounded-xl p-3">
               <span class="text-[11px] text-slate-400 block">Учебных дней до цели:</span>
@@ -290,7 +458,6 @@
           </div>
         </div>
 
-        <!-- Прогноз даты завершения -->
         <div id="pace-verdict-box" class="mt-4 p-3.5 rounded-xl border bg-indigo-950/40 border-indigo-500/30 flex items-start gap-3">
           <div id="pace-icon" class="mt-0.5 text-indigo-400 shrink-0"></div>
           <div class="text-xs space-y-1">
@@ -302,7 +469,7 @@
 
     </section>
 
-    <!-- БЛОК 2: ФОКУС НА СЕГОДНЯ (Ежедневная цель и быстрая очередь) -->
+    <!-- БЛОК 2: ФОКУС НА СЕГОДНЯ -->
     <section class="glass-card rounded-2xl p-5 sm:p-6 border border-emerald-500/20">
       <div class="flex flex-wrap items-center justify-between gap-4 mb-4">
         <div class="flex items-center gap-3">
@@ -319,7 +486,7 @@
         </div>
 
         <div class="flex items-center gap-2 flex-wrap">
-          <button onclick="generateTodayQueue()" class="px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold flex items-center gap-1.5 shadow-lg shadow-indigo-600/20 transition">
+          <button onclick="generateTodayQueue()" class="btn-shine px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold flex items-center gap-1.5 shadow-lg shadow-indigo-600/20 transition">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
             <span>Подобрать задачи на сегодня (<span id="btn-goal-num">6</span> шт.)</span>
           </button>
@@ -329,27 +496,18 @@
         </div>
       </div>
 
-      <!-- Полоса прогресса на сегодня -->
       <div class="w-full h-2.5 bg-slate-950 rounded-full overflow-hidden mb-4 border border-slate-800">
-        <div id="today-progress-bar" class="h-full bg-gradient-to-r from-emerald-500 to-teal-400 transition-all duration-300" style="width: 0%"></div>
+        <div id="today-progress-bar" class="progress-shimmer h-full bg-gradient-to-r from-emerald-500 to-teal-400" style="width: 0%"></div>
       </div>
 
-      <!-- Контейнер очереди на сегодня -->
-      <div id="today-queue-container" class="space-y-2">
-        <!-- Заполняется через JS -->
-      </div>
+      <div id="today-queue-container" class="space-y-2"></div>
     </section>
 
     <!-- БЛОК 3: НАВИГАЦИЯ ПО КУРСАМ, ФИЛЬТРЫ И ПОИСК -->
     <section class="space-y-4">
-      <!-- Табы курсов -->
-      <div class="flex items-center gap-2 overflow-x-auto pb-1 no-scrollbar" id="course-tabs">
-        <!-- Генерируется через JS -->
-      </div>
+      <div class="flex items-center gap-2 overflow-x-auto pb-1 no-scrollbar" id="course-tabs"></div>
 
-      <!-- Панель фильтров и поиска -->
       <div class="glass-card rounded-2xl p-4 flex flex-wrap items-center justify-between gap-3">
-        <!-- Поиск -->
         <div class="relative flex-1 min-w-[240px]">
           <svg class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
@@ -360,14 +518,12 @@
           </button>
         </div>
 
-        <!-- Фильтр статуса -->
         <div class="flex items-center gap-1 bg-slate-950 p-1 rounded-xl border border-slate-800">
           <button onclick="setStatusFilter('all')" id="filter-status-all" class="px-2.5 py-1.5 rounded-lg text-xs font-medium transition bg-indigo-600 text-white">Все</button>
           <button onclick="setStatusFilter('todo')" id="filter-status-todo" class="px-2.5 py-1.5 rounded-lg text-xs font-medium transition text-slate-400 hover:text-white">Осталось</button>
           <button onclick="setStatusFilter('done')" id="filter-status-done" class="px-2.5 py-1.5 rounded-lg text-xs font-medium transition text-slate-400 hover:text-white">Выполнено</button>
         </div>
 
-        <!-- Фильтр типа -->
         <div class="flex items-center gap-1 bg-slate-950 p-1 rounded-xl border border-slate-800">
           <button onclick="setTypeFilter('all')" id="filter-type-all" class="px-2.5 py-1.5 rounded-lg text-xs font-medium transition bg-slate-800 text-white">Все типы</button>
           <button onclick="setTypeFilter('lec')" id="filter-type-lec" class="px-2.5 py-1.5 rounded-lg text-xs font-medium transition text-sky-400 hover:bg-slate-900">Лекции</button>
@@ -375,7 +531,6 @@
           <button onclick="setTypeFilter('hw')" id="filter-type-hw" class="px-2.5 py-1.5 rounded-lg text-xs font-medium transition text-emerald-400 hover:bg-slate-900">ДЗ</button>
         </div>
 
-        <!-- Развернуть/Свернуть все -->
         <div class="flex items-center gap-1">
           <button onclick="expandCollapseAll(false)" class="p-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-800 text-xs" title="Развернуть все разделы">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"/></svg>
@@ -386,10 +541,7 @@
         </div>
       </div>
 
-      <!-- СПИСОК РАЗДЕЛОВ И ЗАДАНИЙ -->
-      <div id="curriculum-list" class="space-y-4">
-        <!-- Генерируется через JS -->
-      </div>
+      <div id="curriculum-list" class="space-y-4"></div>
     </section>
 
   </main>
@@ -404,7 +556,6 @@
   <script>
     // ============================================================================
     // 1. ПОЛНАЯ БАЗА ДАННЫХ ПРОГРАММЫ (341 ПУНКТ ПО 4 ДОКУМЕНТАМ)
-    // Типы: 'lec' (Лекция / Материал / Страница), 'quiz' (Тест), 'hw' (ДЗ / Задание)
     // ============================================================================
     const CURRICULUM_DATA = [
       {
@@ -543,9 +694,6 @@
         ]
       },
 
-      // ========================================================================
-      // 2. РУЧНОЕ ТЕСТИРОВАНИЕ VIP (3 ПУНКТА)
-      // ========================================================================
       {
         id: 'vip',
         title: '2. Ручное тестирование VIP',
@@ -564,9 +712,6 @@
         ]
       },
 
-      // ========================================================================
-      // 3. ОСНОВЫ PYTHON (78 ПУНКТОВ)
-      // ========================================================================
       {
         id: 'python',
         title: '3. Основы Python',
@@ -697,9 +842,6 @@
         ]
       },
 
-      // ========================================================================
-      // 4. АВТОМАТИЗИРОВАННОЕ ТЕСТИРОВАНИЕ (191 ПУНКТ)
-      // ========================================================================
       {
         id: 'auto',
         title: '4. Автоматизированное тестирование',
@@ -998,12 +1140,12 @@
     const STORAGE_KEY = 'qa_roadmap_tracker_v1';
 
     let state = {
-      completed: {},          // { itemId: true/false }
-      todayLog: {},           // { 'YYYY-MM-DD': [itemId1, itemId2] }
-      todayQueue: [],         // [itemId1, itemId2, ...]
+      completed: {},
+      todayLog: {},
+      todayQueue: [],
       settings: {
         targetDate: '2026-12-31',
-        scheduleMode: '5/2',  // '5/2' или '7/0'
+        scheduleMode: '5/2',
         dailyGoal: 6,
         activeCourse: 'all',
         statusFilter: 'all',
@@ -1013,7 +1155,7 @@
       }
     };
 
-    let isInitialLoad = true;  // защищает от синка "пустого" состояния при первом рендере
+    let isInitialLoad = true;
 
     function getTodayDateString() {
       const now = new Date();
@@ -1057,7 +1199,6 @@
     function saveState() {
       try {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-        // Отправляем в облако, но НЕ во время первичной загрузки страницы
         if (!isInitialLoad && window.syncToFirebase) {
           window.syncToFirebase(state);
         }
@@ -1087,7 +1228,6 @@
       return list;
     }
 
-    // Подсчет календарных и рабочих дней между сегодня и целевой датой
     function calculateDaysUntil(targetDateStr, mode) {
       const now = new Date();
       now.setHours(0, 0, 0, 0);
@@ -1105,7 +1245,7 @@
 
       while (cursor <= target) {
         calendarDays++;
-        const dayOfWeek = cursor.getDay(); // 0 - Вс, 6 - Сб
+        const dayOfWeek = cursor.getDay();
         if (mode === '7/0') {
           studyDays++;
         } else {
@@ -1118,7 +1258,6 @@
       return { calendarDays, studyDays };
     }
 
-    // Расчет прогнозируемой даты завершения при текущем дневном темпе
     function calculateEstimatedFinishDate(remainingCount, dailyGoal, mode) {
       if (remainingCount <= 0) return new Date();
       const neededStudyDays = Math.ceil(remainingCount / Math.max(1, dailyGoal));
@@ -1177,7 +1316,13 @@
       const rem = total - done;
       const pct = total > 0 ? ((done / total) * 100).toFixed(1) : '0.0';
 
-      document.getElementById('stat-total-pct').textContent = `${pct}%`;
+      // Анимированный bump у главной цифры прогресса
+      const pctEl = document.getElementById('stat-total-pct');
+      pctEl.textContent = `${pct}%`;
+      pctEl.classList.remove('bump');
+      void pctEl.offsetWidth;
+      pctEl.classList.add('bump');
+
       document.getElementById('stat-total-fraction').textContent = `${done} из ${total} выполнено`;
       document.getElementById('stat-total-rem').textContent = rem;
       document.getElementById('main-progress-bar').style.width = `${pct}%`;
@@ -1219,7 +1364,7 @@
           emerald: 'bg-emerald-400'
         };
         return `
-          <button onclick="selectCourseTab('${course.id}')" class="text-left bg-slate-900/70 hover:bg-slate-900 border border-slate-800/80 rounded-xl p-2.5 transition group">
+          <button onclick="selectCourseTab('${course.id}')" class="mini-card text-left bg-slate-900/70 hover:bg-slate-900 border border-slate-800/80 rounded-xl p-2.5 transition group">
             <div class="flex items-center justify-between text-xs mb-1">
               <span class="font-semibold text-slate-200 group-hover:text-white truncate">${course.shortTitle}</span>
               <span class="font-mono text-[11px] text-slate-400">${cPct}%</span>
@@ -1290,9 +1435,10 @@
       document.getElementById('today-progress-bar').style.width = `${pct}%`;
 
       const statusPill = document.getElementById('today-status-pill');
+      statusPill.classList.remove('goal-hit');
       if (doneTodayCount >= goal) {
         statusPill.textContent = 'Норма дня выполнена! 🔥';
-        statusPill.className = 'px-2.5 py-0.5 text-[11px] font-semibold rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/40';
+        statusPill.className = 'goal-hit px-2.5 py-0.5 text-[11px] font-semibold rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/40';
       } else if (doneTodayCount > 0) {
         statusPill.textContent = `Осталось еще ${goal - doneTodayCount} шт. сегодня`;
         statusPill.className = 'px-2.5 py-0.5 text-[11px] font-medium rounded-full bg-indigo-500/20 text-indigo-300';
@@ -1341,6 +1487,8 @@
       saveState();
       updateTodaySection();
       showToast(`Сформирован план на сегодня: ${state.todayQueue.length} заданий`);
+      document.getElementById('today-queue-container')
+        ?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
 
     function toggleTodayPanel() {
@@ -1358,7 +1506,7 @@
       const totalRem = allFlat.filter(i => !state.completed[i.id]).length;
 
       let html = `
-        <button onclick="selectCourseTab('all')" class="px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold whitespace-nowrap transition flex items-center gap-2 border ${
+        <button onclick="selectCourseTab('all')" class="tab-btn px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold whitespace-nowrap transition flex items-center gap-2 border ${
           state.settings.activeCourse === 'all'
             ? 'bg-indigo-600 text-white border-indigo-500 shadow-lg shadow-indigo-600/20'
             : 'bg-slate-900/90 text-slate-300 border-slate-800 hover:bg-slate-800'
@@ -1378,7 +1526,7 @@
         const active = state.settings.activeCourse === course.id;
 
         html += `
-          <button onclick="selectCourseTab('${course.id}')" class="px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold whitespace-nowrap transition flex items-center gap-2 border ${
+          <button onclick="selectCourseTab('${course.id}')" class="tab-btn px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold whitespace-nowrap transition flex items-center gap-2 border ${
             active
               ? 'bg-indigo-600 text-white border-indigo-500 shadow-lg shadow-indigo-600/20'
               : 'bg-slate-900/90 text-slate-300 border-slate-800 hover:bg-slate-800'
@@ -1404,7 +1552,7 @@
 
     function renderItemRowHTML(item, isDone, showCourseTag = false) {
       return `
-        <div class="group flex items-center justify-between gap-3 p-3 rounded-xl border transition ${
+        <div class="item-row group flex items-center justify-between gap-3 p-3 rounded-xl border ${
           isDone
             ? 'bg-slate-950/60 border-slate-800/50 text-slate-500'
             : 'bg-slate-900/90 hover:bg-slate-850 border-slate-800/90 text-slate-100'
@@ -1701,16 +1849,16 @@
     function showToast(message) {
       const container = document.getElementById('toast-container');
       const toast = document.createElement('div');
-      toast.className = 'glass-card px-4 py-2.5 rounded-xl border border-indigo-500/40 text-xs font-medium text-white shadow-xl flex items-center gap-2 transition-all duration-300';
+      toast.className = 'toast-item glass-card px-4 py-2.5 rounded-xl border border-indigo-500/40 text-xs font-medium text-white shadow-xl flex items-center gap-2';
       toast.innerHTML = `
-        <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+        <span class="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_6px_#34d399]"></span>
         <span>${message}</span>
       `;
       container.appendChild(toast);
       setTimeout(() => {
-        toast.style.opacity = '0';
-        setTimeout(() => toast.remove(), 300);
-      }, 2800);
+        toast.classList.add('leaving');
+        setTimeout(() => toast.remove(), 320);
+      }, 2600);
     }
 
     function exportProgress() {
@@ -1793,29 +1941,27 @@
       document.getElementById('current-date-badge').textContent = `Сегодня: ${now.toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric' })}`;
     }
 
-// Дать модулю Firebase доступ к текущему состоянию
-window.getCurrentTrackerState = () => state;
+    // Дать модулю Firebase доступ к текущему состоянию
+    window.getCurrentTrackerState = () => state;
 
-// Принять состояние из облака и перерисовать UI без перезагрузки
-window.applyCloudState = (cloudData) => {
-  if (cloudData.completed)  state.completed  = cloudData.completed;
-  if (cloudData.todayLog)   state.todayLog   = cloudData.todayLog;
-  if (cloudData.todayQueue) state.todayQueue = cloudData.todayQueue;
-  if (cloudData.settings)   state.settings   = { ...state.settings, ...cloudData.settings };
+    // Принять состояние из облака и перерисовать UI без перезагрузки
+    window.applyCloudState = (cloudData) => {
+      if (cloudData.completed)  state.completed  = cloudData.completed;
+      if (cloudData.todayLog)   state.todayLog   = cloudData.todayLog;
+      if (cloudData.todayQueue) state.todayQueue = cloudData.todayQueue;
+      if (cloudData.settings)   state.settings   = { ...state.settings, ...cloudData.settings };
 
-  // Сохраняем в localStorage напрямую (не через saveState, чтобы не было цикла)
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-  } catch (e) {
-    console.error('Ошибка сохранения в localStorage:', e);
-  }
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      } catch (e) {
+        console.error('Ошибка сохранения в localStorage:', e);
+      }
 
-  // Полная перерисовка интерфейса
-  applySettingsToUI();
-  updateDashboardStats();
-  renderCourseTabs();
-  renderCurriculum();
-};            
+      applySettingsToUI();
+      updateDashboardStats();
+      renderCourseTabs();
+      renderCurriculum();
+    };
 
     // Инициализация при загрузке
     window.addEventListener('DOMContentLoaded', () => {
@@ -1824,88 +1970,81 @@ window.applyCloudState = (cloudData) => {
       updateDashboardStats();
       renderCourseTabs();
       renderCurriculum();
-      
       isInitialLoad = false;
     });
-    
   </script>
+
   <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
-  import { getFirestore, doc, setDoc, onSnapshot }
-    from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
+    import { getFirestore, doc, setDoc, onSnapshot }
+      from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
 
-  // Твой конфиг из Firebase Console
-  const firebaseConfig = {
-    apiKey: "AIzaSyCvHmjNwE1fEliUn1XO69PgXLmzIKrsUMg",
-    authDomain: "qa-automation-59deb.firebaseapp.com",
-    projectId: "qa-automation-59deb",
-    storageBucket: "qa-automation-59deb.firebasestorage.app",
-    messagingSenderId: "882979378356",
-    appId: "1:882979378356:web:5c5bbe17c8493bce7af3e1"
-  };
+    const firebaseConfig = {
+      apiKey: "AIzaSyCvHmjNwE1fEliUn1XO69PgXLmzIKrsUMg",
+      authDomain: "qa-automation-59deb.firebaseapp.com",
+      projectId: "qa-automation-59deb",
+      storageBucket: "qa-automation-59deb.firebasestorage.app",
+      messagingSenderId: "882979378356",
+      appId: "1:882979378356:web:5c5bbe17c8493bce7af3e1"
+    };
 
-  const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
+    константа приложение = инициализировать приложение(firebaseConfig);
+    константа БД = getFirestore(приложение);
 
-  // Один документ на весь трекер
-  const trackerDocRef = doc(db, "qa_tracker", "nikita_main");
+    константа трекерDocRef = док(БД, "qa_tracker", "nikita_main");
 
-  const dotEl  = document.getElementById("cloud-dot");
-  const textEl = document.getElementById("cloud-text");
+    константа dotEl  = документ.getElementById("облачная точка");
+    константа текстEl = документ.getElementById("облачный текст");
 
-  function setStatus(state, message) {
-    if (!dotEl || !textEl) return;
-    textEl.textContent = message;
-    dotEl.className = "w-2 h-2 rounded-full " + (
-      state === "online"  ? "bg-emerald-400 shadow-[0_0_8px_#34d399]" :
-      state === "syncing" ? "bg-amber-400 animate-pulse" :
-                            "bg-rose-500"
-    );
-  }
-
-  // Флаг, чтобы не запускать бесконечный цикл при приёме данных из облака
-  let isApplyingRemoteUpdate = false;
-
-  // ── 1. Отправка состояния в облако ──────────────────────────────────────
-  window.syncToFirebase = async function (currentState) {
-    if (isApplyingRemoteUpdate) return;
-    try {
-      await setDoc(trackerDocRef, {
-  completed:   currentState.completed   || {},
-  todayLog:    currentState.todayLog    || {},
-  todayQueue:  currentState.todayQueue  || [],
-  settings:    currentState.settings    || {},
-  updatedAt:   new Date().toISOString()
-});  // ← без { merge: true }
-      setStatus("online", "Синхронизировано (Firebase)");
-    } catch (err) {
-      console.error("Ошибка записи в Firestore:", err);
-      setStatus("error", "Ошибка синхронизации");
+    функция установитьСтатус(состояние, сообщение) {
+      если (!dotEl || !текстEl) возвращаться;
+      текстEl.текстСодержание = сообщение;
+      dotEl.имя класса = "w-2 h-2 округленный-полный" + (
+        состояние === "онлайн"  ? "bg-emerald-400 онлайн" :
+        состояние === "синхронизация" ? "bg-amber-400 анимационный-импульс" :
+                              "бг-роза-500"
+      );
     }
-  };
 
-  // ── 2. Реалтайм-подписка на изменения из облака ─────────────────────────
-  onSnapshot(trackerDocRef, (docSnap) => {
-    if (docSnap.exists()) {
-      const cloudData = docSnap.data();
-      isApplyingRemoteUpdate = true;
+    позволять isApplyingRemoteUpdate = ложный;
 
-      if (window.applyCloudState) {
-        window.applyCloudState(cloudData);
+    окно.syncToFirebase = асинхронный функция (текущееСостояние) {
+      если (isApplyingRemoteUpdate) возвращаться;
+      пытаться {
+        ждать setDoc(трекерDocRef, {
+          завершенный:   текущееСостояние.завершенный   || {},
+          сегодняВ журнале:    текущееСостояние.сегодняВ журнале    || {},
+          сегодняОчередь:  текущееСостояние.сегодняОчередь  || [],
+          настройки:    текущееСостояние.настройки    || {},
+          обновленоAt:   новый Дата().toISOString()
+        });
+        установитьСтатус("онлайн", "Синхронизирвано (Firebase)");
+      } ловить (ошибаться) {
+        консоль.ошибка(«Ошибка записи в Firestore:», ошибаться);
+        установитьСтатус("ошибка", "Ошибка синхронизации");
       }
+    };
 
-      isApplyingRemoteUpdate = false;
-      setStatus("online", "Синхронизировано (Firebase)");
-    } else {
-      // Документа ещё нет — пушим текущее локальное состояние
-      if (window.getCurrentTrackerState) {
-        window.syncToFirebase(window.getCurrentTrackerState());
+    наСнимок(трекерDocRef, (docSnap) => {
+      если (docSnap.существует()) {
+        константа облачные данные = docSnap.данные();
+        isApplyingRemoteUpdate = истинный;
+
+        если (окно.применитьCloudState) {
+          окно.применитьCloudState(облачные данные);
+        }
+
+        isApplyingRemoteUpdate = ложный;
+        установитьСтатус("онлайн", "Синхронизирвано (Firebase)");
+      } еще {
+        если (окно.getCurrentTrackerState) {
+          окно.syncToFirebase(окно.getCurrentTrackerState());
+        }
       }
-    }
-  }, (error) => {
-    console.error("Ошибка подключения к Firestore:", error);
-    setStatus("error", "Офлайн (только локально)");
-  });
-</script>
-</body>
-</html>
+    }, (ошибка) => {
+      консоль.ошибка(«Ошибка подключения к Firestore:», ошибка);
+      установитьСтатус("ошибка", "Офлайн (только локально)");
+    });
+  </сценарий>
+</тело>
+    </html>
