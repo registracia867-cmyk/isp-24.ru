@@ -1850,62 +1850,62 @@ window.applyCloudState = (cloudData) => {
   // Один документ на весь трекер
   const trackerDocRef = doc(db, "qa_tracker", "nikita_main");
 
-  константа dotEl  = документ.getElementById("облачная точка");
-  константа текстEl = документ.getElementById("облачный текст");
+  const dotEl  = document.getElementById("cloud-dot");
+  const textEl = document.getElementById("cloud-text");
 
-  функция установитьСтатус(состояние, сообщение) {
-    если (!dotEl || !текстEl) возвращаться;
-    текстEl.текстСодержание = сообщение;
-    dotEl.имя класса = "w-2 h-2 округленный-полный" + (
-      состояние === "онлайн"  ? "bg-emerald-400 тень-[0_0_8px_#34d399]" :
-      состояние === "синхронизация" ? "bg-amber-400 анимационный импульс" :
-                            "бг-роза-500"
+  function setStatus(state, message) {
+    if (!dotEl || !textEl) return;
+    textEl.textContent = message;
+    dotEl.className = "w-2 h-2 rounded-full " + (
+      state === "online"  ? "bg-emerald-400 shadow-[0_0_8px_#34d399]" :
+      state === "syncing" ? "bg-amber-400 animate-pulse" :
+                            "bg-rose-500"
     );
   }
 
   // Флаг, чтобы не запускать бесконечный цикл при приёме данных из облака
-  позволять isApplyingRemoteUpdate = ложный;
+  let isApplyingRemoteUpdate = false;
 
   // ── 1. Отправка состояния в облако ──────────────────────────────────────
-  окно.syncToFirebase = асинхронный функция (текущееСостояние) {
-    если (isApplyingRemoteUpdate) возвращаться;
-    пытаться {
-      ждать setDoc(трекерDocRef, {
-  завершенный:   текущееСостояние.завершенный   || {},
-  сегодняВ журнале:    текущееСостояние.сегодняВ журнале    || {},
-  сегодняОчередь:  текущееСостояние.сегодняОчередь  || [],
-  настройки:    текущееСостояние.настройки    || {},
-  обновленоAt:   новый Дата().toISOString()
-});  // ← без { слияние: true }
-      установитьСтатус("онлайн", "Синхронизирвано (Firebase)");
-    } ловить (ошибаться) {
-      консоль.ошибка(«Ошибка записи в Firestore:», ошибаться);
-      установитьСтатус("ошибка", "Ошибка синхронизации");
+  window.syncToFirebase = async function (currentState) {
+    if (isApplyingRemoteUpdate) return;
+    try {
+      await setDoc(trackerDocRef, {
+  completed:   currentState.completed   || {},
+  todayLog:    currentState.todayLog    || {},
+  todayQueue:  currentState.todayQueue  || [],
+  settings:    currentState.settings    || {},
+  updatedAt:   new Date().toISOString()
+});  // ← без { merge: true }
+      setStatus("online", "Синхронизировано (Firebase)");
+    } catch (err) {
+      console.error("Ошибка записи в Firestore:", err);
+      setStatus("error", "Ошибка синхронизации");
     }
   };
 
   // ── 2. Реалтайм-подписка на изменения из облака ─────────────────────────
-  наСнимок(трекерDocRef, (docSnap) => {
-    если (docSnap.существует()) {
-      константа облачные данные = docSnap.данные();
-      isApplyingRemoteUpdate = истинный;
+  onSnapshot(trackerDocRef, (docSnap) => {
+    if (docSnap.exists()) {
+      const cloudData = docSnap.data();
+      isApplyingRemoteUpdate = true;
 
-      если (окно.применитьCloudState) {
-        окно.применитьCloudState(облачные данные);
+      if (window.applyCloudState) {
+        window.applyCloudState(cloudData);
       }
 
-      isApplyingRemoteUpdate = ложный;
-      установитьСтатус("онлайн", "Синхронизирвано (Firebase)");
-    } еще {
+      isApplyingRemoteUpdate = false;
+      setStatus("online", "Синхронизировано (Firebase)");
+    } else {
       // Документа ещё нет — пушим текущее локальное состояние
-      если (окно.getCurrentTrackerState) {
-        окно.syncToFirebase(окно.getCurrentTrackerState());
+      if (window.getCurrentTrackerState) {
+        window.syncToFirebase(window.getCurrentTrackerState());
       }
     }
-  }, (ошибка) => {
-    консоль.ошибка(«Ошибка подключения к Firestore:», ошибка);
-    установитьСтатус("ошибка", "Офлайн (только локально)");
+  }, (error) => {
+    console.error("Ошибка подключения к Firestore:", error);
+    setStatus("error", "Офлайн (только локально)");
   });
-</сценарий>
-</тело>
-    </html>
+</script>
+</body>
+</html>
