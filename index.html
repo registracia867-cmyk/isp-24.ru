@@ -2901,108 +2901,130 @@ namespace ${t.app}
                 </div>
 
                 <!-- Контент этапов -->
-                <div class="space-y-8">
-                    ${stage1Html}
-                    ${stage2Html}
-                    ${stage3Html}
-                    ${stage4Html}
+```html
+<!-- ... existing code ... -->
+            <div class="flex items-center gap-2">
+                <a href="#step-1-sql" class="hidden sm:inline-block px-2.5 py-1.5 text-xs font-medium rounded-lg bg-slate-800 text-slate-200 hover:bg-slate-700 transition">1. SQL</a>
+                <a href="#step-2-resources" class="hidden sm:inline-block px-2.5 py-1.5 text-xs font-medium rounded-lg bg-slate-800 text-slate-200 hover:bg-slate-700 transition">2. Ресурсы</a>
+                <a href="#step-3-ef" class="hidden sm:inline-block px-2.5 py-1.5 text-xs font-medium rounded-lg bg-slate-800 text-slate-200 hover:bg-slate-700 transition">3. EF6 и Core</a>
+                <a href="#step-4-main" class="hidden sm:inline-block px-2.5 py-1.5 text-xs font-medium rounded-lg bg-slate-800 text-slate-200 hover:bg-slate-700 transition">4. Главное окно</a>
+                <a href="#step-5-table" class="hidden sm:inline-block px-2.5 py-1.5 text-xs font-medium rounded-lg bg-slate-800 text-slate-200 hover:bg-slate-700 transition">5. Таблицы</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Основной контейнер -->
+    <div class="max-w-7xl w-full mx-auto flex-1 flex relative">
+<!-- ... existing code ... -->
+        <!-- Правая рабочая область: ЕДИНАЯ СТРАНИЦА (Методичка + Все коды выбранного билета) -->
+        <main class="flex-1 min-w-0 p-4 sm:p-6 lg:p-8 space-y-6">
+
+            <!-- БЛОК 0: ПАСПОРТ ВЫБРАННОГО БИЛЕТА И СКАЧИВАНИЕ ZIP -->
+            <section id="top-ticket" class="bg-white border border-slate-200 rounded-xl p-5 sm:p-6 shadow-sm">
+                <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-4 border-b border-slate-100">
+                    <div>
+                        <div class="flex flex-wrap items-center gap-2 mb-1.5">
+                            <span id="ticketBadge" class="px-2.5 py-0.5 text-xs font-bold bg-blue-600 text-white rounded-md">БИЛЕТ № 1</span>
+                            <span id="ticketDbBadge" class="px-2.5 py-0.5 text-xs font-mono bg-slate-100 text-slate-700 rounded-md border border-slate-200">БД: SupplyGoodsDB</span>
+                            <span id="ticketRelBadge" class="px-2.5 py-0.5 text-xs font-medium bg-emerald-50 text-emerald-700 rounded-md border border-emerald-200">Связь: 1 : M</span>
+                        </div>
+                        <h2 id="ticketTitle" class="text-xl sm:text-2xl font-bold text-slate-900">Приложение «Поставка товаров»</h2>
+                    </div>
+
+                    <div class="flex flex-wrap items-center gap-2 shrink-0">
+                        <select id="quickTicketSelect" onchange="selectTicket(Number(this.value))" aria-label="Быстрый выбор билета"
+                            class="px-3 py-2.5 bg-slate-50 border border-slate-300 text-slate-800 text-sm font-medium rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <!-- Заполняется через JS -->
+                        </select>
+                        <button onclick="downloadTicketZip()" class="px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-lg shadow-sm flex items-center gap-2 transition">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                            </svg>
+                            Скачать весь комплект (.zip)
+                        </button>
+                    </div>
                 </div>
 
-                <!-- Интерактивный чек-лист самопроверки перед сдачей -->
-                <section class="rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-5 space-y-3 shadow-xs">
-                    <div class="flex items-center justify-between">
-                        <h3 class="text-base font-extrabold text-slate-900 dark:text-white">✅ Контрольный чек-лист проверки билета № ${t.num}</h3>
-                        <span class="text-xs text-slate-500">Отметки сохраняются автоматически</span>
+                <!-- Условие билета и структура БД -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 pt-4 text-sm">
+                    <div class="bg-slate-50 border border-slate-200/80 rounded-lg p-4">
+                        <div class="font-semibold text-slate-800 mb-2">Задания билета:</div>
+                        <ol id="ticketTasksList" class="list-decimal list-inside space-y-1 text-slate-700">
+                            <!-- Заполняется динамически -->
+                        </ol>
                     </div>
-                    <div class="space-y-2.5">
-                        ${checklistHtml}
+                    <div class="bg-slate-50 border border-slate-200/80 rounded-lg p-4">
+                        <div class="font-semibold text-slate-800 mb-2">Структура БД по заданию:</div>
+                        <div id="ticketSchemaDesc" class="space-y-1.5 text-slate-700 text-xs sm:text-sm">
+                            <!-- Заполняется динамически -->
+                        </div>
                     </div>
-                </section>
-            `;
-        }
+                </div>
 
-        // Навигация между билетами и вкладками
-        function selectTicket(num) {
-            activeTicketNum = num;
-            document.getElementById('btnOverviewNav').classList.remove('ring-2', 'ring-[#E67E22]');
-            renderSidebarList(document.getElementById('ticketSearchInput').value);
-            renderTicket(num);
-            toggleMobileSidebar(false);
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
+                <!-- Быстрая навигация по этапам на этой же странице -->
+                <div class="flex flex-wrap items-center gap-2 pt-4 mt-4 border-t border-slate-100 text-xs">
+                    <span class="font-semibold text-slate-500 uppercase mr-1">Перейти к этапу:</span>
+                    <a href="#step-1-sql" class="px-2.5 py-1 rounded-md bg-slate-100 hover:bg-blue-50 hover:text-blue-700 text-slate-700 font-medium transition">Шаг 1. SQL-скрипт БД</a>
+                    <a href="#step-2-resources" class="px-2.5 py-1 rounded-md bg-slate-100 hover:bg-blue-50 hover:text-blue-700 text-slate-700 font-medium transition">Шаг 2. Проект и картинки</a>
+                    <a href="#step-3-ef" class="px-2.5 py-1 rounded-md bg-slate-100 hover:bg-blue-50 hover:text-blue-700 text-slate-700 font-medium transition">Шаг 3. Entity Framework 6</a>
+                    <a href="#step-4-main" class="px-2.5 py-1 rounded-md bg-slate-100 hover:bg-blue-50 hover:text-blue-700 text-slate-700 font-medium transition">Шаг 4. Главное окно (фото)</a>
+                    <a href="#step-5-table" class="px-2.5 py-1 rounded-md bg-slate-100 hover:bg-blue-50 hover:text-blue-700 text-slate-700 font-medium transition">Шаг 5. Окно табличных данных</a>
+                    <a href="#step-6-errors" class="px-2.5 py-1 rounded-md bg-slate-100 hover:bg-blue-50 hover:text-blue-700 text-slate-700 font-medium transition">Шаг 6. Проверка ошибок</a>
+                </div>
+            </section>
 
-        function selectOverview() {
-            activeTicketNum = 0;
-            document.getElementById('btnOverviewNav').classList.add('ring-2', 'ring-[#E67E22]');
-            renderSidebarList(document.getElementById('ticketSearchInput').value);
-            renderOverview();
-            toggleMobileSidebar(false);
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
+            <!-- ШАГ 1: МЕТОДИЧКА + SQL-СКРИПТ -->
+            <section id="step-1-sql" class="bg-white border border-slate-200 rounded-xl p-5 sm:p-6 shadow-sm space-y-4 scroll-mt-20">
+                <div class="flex items-center gap-3">
+                    <span class="w-8 h-8 rounded-lg bg-blue-600 text-white font-bold flex items-center justify-center shrink-0">1</span>
+                    <div>
+                        <h3 class="text-lg font-bold text-slate-900">Создание и заполнение базы данных в MS SQL Server (SSMS)</h3>
+                        <p class="text-xs text-slate-500">Пункт 1 билета — проектирование таблиц, ключей PK/FK и тестовых данных</p>
+                    </div>
+                </div>
 
-        function setStageTab(tabId) {
-            activeStageTab = tabId;
-            if (activeTicketNum > 0) {
-                renderTicket(activeTicketNum);
-            }
-        }
+                <ol class="list-decimal list-inside space-y-1.5 text-sm text-slate-700 leading-relaxed bg-slate-50 border border-slate-200/80 rounded-lg p-4">
+                    <li>Откройте <strong>SQL Server Management Studio (SSMS)</strong> и подключитесь к локальному серверу (Проверка подлинности Windows).</li>
+                    <li>Нажмите кнопку <strong>Создать запрос (New Query)</strong> на верхней панели.</li>
+                    <li>Скопируйте готовый SQL-скрипт ниже (<code class="bg-white border border-slate-200 px-1.5 py-0.5 rounded text-xs">create_database.sql</code>), вставьте в окно запроса и нажмите <strong>Выполнить (F5)</strong>.</li>
+                    <li>Скрипт сам создаст базу данных <strong id="step1DbName">SupplyGoodsDB</strong>, две связанные таблицы, поле <code class="bg-white border border-slate-200 px-1.5 py-0.5 rounded text-xs">ImagePath</code> и заполнит их тестовыми записями.</li>
+                    <li>В «Обозревателе объектов» слева нажмите ПКМ по «Базы данных» → <strong>Обновить</strong>, чтобы убедиться, что БД появилась.</li>
+                </ol>
 
-        function navigateTicket(delta) {
-            if (activeTicketNum === 0 && delta > 0) {
-                selectTicket(1);
-                return;
-            }
-            const next = activeTicketNum + delta;
-            if (next >= 1 && next <= 25) {
-                selectTicket(next);
-            }
-        }
+                <div id="sqlCodeContainer"></div>
+            </section>
 
-        // Мобильное выдвижное меню
-        function toggleMobileSidebar(open) {
-            const sidebar = document.getElementById('sidebar');
-            const overlay = document.getElementById('mobileOverlay');
-            if (open) {
-                sidebar.classList.remove('-translate-x-full');
-                overlay.classList.remove('hidden');
-            } else {
-                sidebar.classList.add('-translate-x-full');
-                overlay.classList.add('hidden');
-            }
-        }
+            <!-- ШАГ 2: МЕТОДИЧКА + РЕСУРСЫ И КАРТИНКИ -->
+            <section id="step-2-resources" class="bg-white border border-slate-200 rounded-xl p-5 sm:p-6 shadow-sm space-y-4 scroll-mt-20">
+                <div class="flex items-center gap-3">
+                    <span class="w-8 h-8 rounded-lg bg-blue-600 text-white font-bold flex items-center justify-center shrink-0">2</span>
+                    <div>
+                        <h3 class="text-lg font-bold text-slate-900">Создание проекта WPF (.NET Framework), папок и добавление ресурсов</h3>
+                        <p class="text-xs text-slate-500">Подготовка структуры решения Visual Studio и картинок для главного окна</p>
+                    </div>
+                </div>
 
-        // Темная / светлая тема
-        function toggleDarkMode() {
-            const html = document.documentElement;
-            const isDark = html.classList.toggle('dark');
-            document.getElementById('themeIcon').textContent = isDark ? '☀️' : '🌙';
-            try {
-                localStorage.setItem('mdk0101_theme', isDark ? 'dark' : 'light');
-            } catch (e) {}
-        }
+                <ol class="list-decimal list-inside space-y-1.5 text-sm text-slate-700 leading-relaxed bg-slate-50 border border-slate-200/80 rounded-lg p-4">
+                    <li>Откройте <strong>Visual Studio</strong> → <strong>Создание проекта</strong> → выберите шаблон <strong>Приложение WPF (.NET Framework)</strong> на языке <strong>C#</strong> (не <em>WPF (.NET)</em>, так как дизайнер EDMX работает только в .NET Framework!).</li>
+                    <li>Укажите имя проекта: <strong id="step2ProjectName" class="font-mono text-blue-700">Ticket01_SupplyGoods</strong> и нажмите <strong>Создать</strong>.</li>
+                    <li>В <strong>Обозревателе решений</strong> (справа) создайте 3 папки (ПКМ по проекту → Добавить → Создать папку): <code class="bg-white border border-slate-200 px-1.5 py-0.5 rounded text-xs">classes</code>, <code class="bg-white border border-slate-200 px-1.5 py-0.5 rounded text-xs">Windows</code> и <code class="bg-white border border-slate-200 px-1.5 py-0.5 rounded text-xs">Resources</code>.</li>
+                    <li>Скачайте ниже <code class="bg-white border border-slate-200 px-1.5 py-0.5 rounded text-xs">logo.png</code> и <code class="bg-white border border-slate-200 px-1.5 py-0.5 rounded text-xs">picture.png</code>, поместите их в папку <code class="bg-white border border-slate-200 px-1.5 py-0.5 rounded text-xs">Resources</code> проекта, выделите оба файла в Обозревателе решений, нажмите <strong>F4 (Свойства)</strong> и выставьте <strong>Действие при сборке (Build Action) = Resource</strong>.</li>
+                    <li>Соберите проект (<code class="bg-white border border-slate-200 px-1.5 py-0.5 rounded text-xs">Ctrl + Shift + B</code>), откройте папку проекта в Проводнике → <code class="bg-white border border-slate-200 px-1.5 py-0.5 rounded text-xs">bin\Debug</code> → создайте папку <code class="bg-white border border-slate-200 px-1.5 py-0.5 rounded text-xs">images</code> и скопируйте туда <code class="bg-white border border-slate-200 px-1.5 py-0.5 rounded text-xs">item1.png … item4.png</code>.</li>
+                </ol>
 
-        // Масштабирование шрифта для удобного чтения
-        function changeFontScale(step) {
-            fontScale = Math.min(130, Math.max(85, fontScale + step * 5));
-            document.getElementById('fontScaleLabel').textContent = `${fontScale}%`;
-            document.documentElement.style.fontSize = `${16 * (fontScale / 100)}px`;
-            if (activeTicketNum > 0) renderTicket(activeTicketNum);
-            else renderOverview();
-        }
+                <div id="resourcesContainer"></div>
+            </section>
 
-        // Инициализация при загрузке страницы
-        window.addEventListener('DOMContentLoaded', () => {
-            try {
-                if (localStorage.getItem('mdk0101_theme') === 'dark') {
-                    document.documentElement.classList.add('dark');
-                    document.getElementById('themeIcon').textContent = '☀️';
-                }
-            } catch (e) {}
+            <!-- ШАГ 3: МЕТОДИЧКА + ENTITY FRAMEWORK 6 + CORE / PARTIAL / APP.XAML -->
+            <section id="step-3-ef" class="bg-white border border-slate-200 rounded-xl p-5 sm:p-6 shadow-sm space-y-4 scroll-mt-20">
+                <div class="flex items-center gap-3">
+                    <span class="w-8 h-8 rounded-lg bg-blue-600 text-white font-bold flex items-center justify-center shrink-0">3</span>
+                    <div>
+                        <h3 class="text-lg font-bold text-slate-900">Подключение Entity Framework 6 (EDMX), стили и базовые классы</h3>
+                        <p class="text-xs text-slate-500">Генерация модели данных из SQL Server, контекст Core.cs и расширение для вывода фото</p>
+                    </div>
+                </div>
 
-            updateSidebarProgress();
-            renderSidebarList();
-            selectTicket(1);
-        });
-    </script>
-</body>
-</html>
+                <ol class="list-decimal list-inside space-y-1.5 text-sm text-slate-700 leading-relaxed bg-slate-50 border border-slate-200/80 rounded-lg p-4">
+                    <li>ПКМ по проекту → <strong>Управление пакетами NuGet</strong> → вкладка <strong>Обзор</strong> → найдите <code class="bg-white border border-slate-200 px-1.5 py-0.5 rounded text-
+```
