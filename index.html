@@ -3,244 +3,296 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>МДК 01.01 — Полная методичка и решения 25 билетов (SQL + WPF .NET Framework)</title>
+    <title>МДК 01.01 — Методичка по всем 25 экзаменационным билетам</title>
+    <!-- Подключение Tailwind CSS, JSZip для архивации ресурсов и шрифтов Inter + JetBrains Mono -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'Consolas', 'monospace'],
+                    },
+                    colors: {
+                        brand: {
+                            primary: '#2C3E50',
+                            accent: '#E67E22',
+                            accentHover: '#D35400',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
     <style>
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #f8fafc;
-            color: #0f172a;
-        }
-        pre, code {
-            font-family: 'JetBrains Mono', monospace;
-        }
-        /* Аккуратный скроллбар для блоков кода и сайдбара */
-        ::-webkit-scrollbar {
-            width: 7px;
-            height: 7px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #f1f5f9;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #cbd5e1;
-            border-radius: 4px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #94a3b8;
-        }
+        /* Плавная прокрутка и аккуратные полосы прокрутки */
+        html { scroll-behavior: smooth; }
+        ::-webkit-scrollbar { width: 7px; height: 7px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(148, 163, 184, 0.45); border-radius: 9999px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(100, 116, 139, 0.7); }
+
+        /* Подсветка синтаксиса внутри темных блоков кода */
+        .tok-kw { color: #93c5fd; font-weight: 500; }
+        .tok-type { color: #5eead4; }
+        .tok-str { color: #fcd34d; }
+        .tok-com { color: #94a3b8; font-style: italic; }
+        .tok-tag { color: #7dd3fc; }
+        .tok-attr { color: #c4b5fd; }
+        .tok-num { color: #fda4af; }
     </style>
 </head>
-<body class="min-h-screen flex flex-col">
+<body class="bg-slate-50 text-slate-800 dark:bg-slate-950 dark:text-slate-100 font-sans antialiased transition-colors duration-200">
 
-    <!-- Верхняя панель навигации -->
-    <header class="bg-slate-900 text-white border-b border-slate-800 sticky top-0 z-30">
-        <div class="max-w-7xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-3">
-            <div class="flex items-center gap-3">
-                <button id="mobileMenuBtn" class="lg:hidden p-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200" aria-label="Меню билетов">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
-                    </svg>
-                </button>
-                <div>
-                    <div class="flex items-center gap-2">
-                        <span class="px-2 py-0.5 text-xs font-semibold bg-blue-600 rounded text-white">09.02.07</span>
-                        <h1 class="text-base sm:text-lg font-bold tracking-tight">МДК 01.01 — Экзаменационные билеты (1–25)</h1>
+    <!-- Скрытое поле для надежного копирования в буфер обмена через execCommand -->
+    <textarea id="clipboardHelper" class="fixed -left-[9999px] top-0 opacity-0" aria-hidden="true"></textarea>
+
+    <!-- Всплывающее уведомление (Toast) вместо alert() -->
+    <div id="toastContainer" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+    <!-- Затемнение фона для мобильного меню -->
+    <div id="mobileOverlay" onclick="toggleMobileSidebar(false)"
+         class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-30 hidden lg:hidden"></div>
+
+    <div class="min-h-screen flex flex-col lg:flex-row">
+
+        <!-- ЛЕВАЯ ПАНЕЛЬ НАВИГАЦИИ ПО 25 БИЛЕТАМ -->
+        <aside id="sidebar"
+               class="fixed lg:sticky top-0 left-0 z-40 h-screen w-80 shrink-0 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 flex flex-col transform -translate-x-full lg:translate-x-0 transition-transform duration-200">
+
+            <!-- Логотип и заголовок справочника -->
+            <div class="p-4 bg-[#2C3E50] text-white flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-[#E67E22] flex items-center justify-center font-extrabold text-lg shadow-sm">
+                        01
                     </div>
-                    <p class="text-xs text-slate-400 hidden sm:block">MS SQL Server + WPF (.NET Framework, C#, Entity Framework 6) • Минимализм</p>
+                    <div>
+                        <div class="font-bold text-sm tracking-wide">МДК 01.01 • Экзамен</div>
+                        <div class="text-xs text-slate-300">Все 25 билетов + коды</div>
+                    </div>
                 </div>
+                <button onclick="toggleMobileSidebar(false)" class="lg:hidden p-2 rounded-lg hover:bg-white/10 text-white" aria-label="Закрыть меню">
+                    ✕
+                </button>
             </div>
 
-            <div class="flex items-center gap-2">
-                <a href="#step-1-sql" class="hidden sm:inline-block px-2.5 py-1.5 text-xs font-medium rounded-lg bg-slate-800 text-slate-200 hover:bg-slate-700 transition">1. SQL</a>
-                <a href="#step-2-resources" class="hidden sm:inline-block px-2.5 py-1.5 text-xs font-medium rounded-lg bg-slate-800 text-slate-200 hover:bg-slate-700 transition">2. Ресурсы</a>
-                <a href="#step-3-ef" class="hidden sm:inline-block px-2.5 py-1.5 text-xs font-medium rounded-lg bg-slate-800 text-slate-200 hover:bg-slate-700 transition">3. EF6 и Core</a>
-                <a href="#step-4-main" class="hidden sm:inline-block px-2.5 py-1.5 text-xs font-medium rounded-lg bg-slate-800 text-slate-200 hover:bg-slate-700 transition">4. Главное окно</a>
-                <a href="#step-5-table" class="hidden sm:inline-block px-2.5 py-1.5 text-xs font-medium rounded-lg bg-slate-800 text-slate-200 hover:bg-slate-700 transition">5. Таблицы</a>
-            </div>
-        </div>
-    </header>
-
-    <!-- Основной контейнер -->
-    <div class="max-w-7xl w-full mx-auto flex-1 flex relative">
-
-        <!-- Боковая панель выбора билета -->
-        <aside id="sidebar" class="fixed lg:static inset-y-0 left-0 z-20 w-72 bg-white border-r border-slate-200 transform -translate-x-full lg:translate-x-0 transition-transform duration-200 flex flex-col pt-16 lg:pt-0">
-            <div class="p-3 border-b border-slate-200 bg-slate-50">
-                <label for="ticketSearch" class="block text-xs font-semibold text-slate-500 uppercase mb-1.5">Поиск билета (1–25)</label>
-                <input type="text" id="ticketSearch" placeholder="Номер или тема (напр. ГАИ)..."
-                    class="w-full px-3 py-2 text-sm bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-            </div>
-
-            <div id="ticketsNavList" class="flex-1 overflow-y-auto p-2 space-y-1">
-                <!-- Список 25 билетов генерируется через JS -->
-            </div>
-
-            <div class="p-3 border-t border-slate-200 bg-slate-50 text-xs text-slate-600 space-y-2">
-                <div class="font-semibold text-slate-800">Общие ресурсы WPF:</div>
-                <div class="flex gap-2">
-                    <button onclick="downloadBasePng('logo')" class="flex-1 py-1.5 px-2 bg-white border border-slate-300 hover:bg-slate-100 rounded-md font-medium text-slate-700 transition">
-                        ⬇ logo.png
-                    </button>
-                    <button onclick="downloadBasePng('picture')" class="flex-1 py-1.5 px-2 bg-white border border-slate-300 hover:bg-slate-100 rounded-md font-medium text-slate-700 transition">
-                        ⬇ picture.png
+            <!-- Поиск по билетам -->
+            <div class="p-3 border-b border-slate-200 dark:border-slate-800">
+                <div class="relative">
+                    <input id="ticketSearchInput" type="text" oninput="filterTicketList()"
+                           placeholder="Поиск билета, БД или проекта..."
+                           class="w-full pl-9 pr-8 py-2 text-sm rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:outline-none focus:ring-2 focus:ring-[#E67E22]">
+                    <span class="absolute left-3 top-2.5 text-slate-400 text-sm">🔍</span>
+                    <button id="clearSearchBtn" onclick="clearTicketSearch()"
+                            class="hidden absolute right-2.5 top-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-sm font-bold">
+                        ✕
                     </button>
                 </div>
+                <button onclick="selectOverview()"
+                        id="btnOverviewNav"
+                        class="mt-2.5 w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold bg-amber-50 dark:bg-amber-500/10 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-500/30 hover:bg-amber-100 dark:hover:bg-amber-500/20 transition">
+                    <span>⚡ Общий алгоритм сдачи экзамена</span>
+                    <span>→</span>
+                </button>
+            </div>
+
+            <!-- Прокручиваемый список 25 билетов -->
+            <div id="ticketsNavList" class="flex-1 overflow-y-auto p-2.5 space-y-1">
+                <!-- Заполняется через JS -->
+            </div>
+
+            <!-- Подвал сайдбара -->
+            <div class="p-3 border-t border-slate-200 dark:border-slate-800 text-[11px] text-slate-500 dark:text-slate-400 flex items-center justify-between">
+                <span>Спец. 09.02.07 ИСиП</span>
+                <span id="sidebarProgressBadge" class="font-semibold text-[#E67E22]">Готово к работе</span>
             </div>
         </aside>
 
-        <!-- Затемнение фона для мобильного меню -->
-        <div id="sidebarOverlay" class="fixed inset-0 bg-slate-900/40 z-10 hidden lg:hidden"></div>
+        <!-- ОСНОВНАЯ РАБОЧАЯ ОБЛАСТЬ -->
+        <div class="flex-1 flex flex-col min-w-0">
 
-        <!-- Правая рабочая область: ЕДИНАЯ СТРАНИЦА (Полная методичка + Ресурсы + Все коды выбранного билета) -->
-        <main class="flex-1 min-w-0 p-4 sm:p-6 lg:p-8 space-y-6">
-
-            <!-- БЛОК 0: ПАСПОРТ ВЫБРАННОГО БИЛЕТА И СКАЧИВАНИЕ ZIP -->
-            <section id="top-ticket" class="bg-white border border-slate-200 rounded-xl p-5 sm:p-6 shadow-sm">
-                <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-4 border-b border-slate-100">
-                    <div>
-                        <div class="flex flex-wrap items-center gap-2 mb-1.5">
-                            <span id="ticketBadge" class="px-2.5 py-0.5 text-xs font-bold bg-blue-600 text-white rounded-md">БИЛЕТ № 1</span>
-                            <span id="ticketDbBadge" class="px-2.5 py-0.5 text-xs font-mono bg-slate-100 text-slate-700 rounded-md border border-slate-200">БД: SupplyGoodsDB</span>
-                            <span id="ticketRelBadge" class="px-2.5 py-0.5 text-xs font-medium bg-emerald-50 text-emerald-700 rounded-md border border-emerald-200">Связь: 1 : M</span>
-                        </div>
-                        <h2 id="ticketTitle" class="text-xl sm:text-2xl font-bold text-slate-900">Приложение «Поставка товаров»</h2>
-                    </div>
-
-                    <div class="flex flex-wrap items-center gap-2 shrink-0">
-                        <select id="quickTicketSelect" onchange="selectTicket(Number(this.value))" aria-label="Быстрый выбор билета"
-                            class="px-3 py-2.5 bg-slate-50 border border-slate-300 text-slate-800 text-sm font-medium rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                            <!-- Заполняется через JS -->
-                        </select>
-                        <button onclick="downloadTicketZip()" class="px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-lg shadow-sm flex items-center gap-2 transition">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
-                            </svg>
-                            Скачать весь комплект (.zip)
+            <!-- ВЕРХНЯЯ ПАНЕЛЬ ИНСТРУМЕНТОВ -->
+            <header class="sticky top-0 z-20 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 px-4 sm:px-6 py-3">
+                <div class="max-w-6xl mx-auto flex flex-wrap items-center justify-between gap-3">
+                    <div class="flex items-center gap-3">
+                        <button onclick="toggleMobileSidebar(true)"
+                                class="lg:hidden px-3 py-2 rounded-xl bg-[#2C3E50] text-white text-sm font-semibold flex items-center gap-1.5">
+                            <span>☰</span>
+                            <span>Билеты</span>
                         </button>
+                        <div>
+                            <div id="topBreadcrumb" class="text-xs font-medium text-slate-500 dark:text-slate-400">
+                                Методическое руководство • 25 экзаменационных билетов
+                            </div>
+                            <h1 id="topHeaderTitle" class="text-base sm:text-lg font-bold text-slate-900 dark:text-white truncate">
+                                Билет № 1 — «Поставка товаров»
+                            </h1>
+                        </div>
                     </div>
-                </div>
 
-                <!-- Условие билета и структура БД -->
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 pt-4 text-sm">
-                    <div class="bg-slate-50 border border-slate-200/80 rounded-lg p-4">
-                        <div class="font-semibold text-slate-800 mb-2">Задания билета:</div>
-                        <ol id="ticketTasksList" class="list-decimal list-inside space-y-1 text-slate-700">
-                            <!-- Заполняется динамически -->
-                        </ol>
-                    </div>
-                    <div class="bg-slate-50 border border-slate-200/80 rounded-lg p-4">
-                        <div class="font-semibold text-slate-800 mb-2">Структура БД по заданию:</div>
-                        <div id="ticketSchemaDesc" class="space-y-1.5 text-slate-700 text-xs sm:text-sm">
-                            <!-- Заполняется динамически -->
+                    <!-- Инструменты: размер шрифта, тема, переключение билетов -->
+                    <div class="flex items-center gap-2">
+                        <div class="hidden sm:flex items-center bg-slate-100 dark:bg-slate-800 rounded-xl p-1 border border-slate-200 dark:border-slate-700">
+                            <button onclick="changeFontScale(-1)" title="Уменьшить шрифт"
+                                    class="px-2.5 py-1 text-xs font-bold rounded-lg hover:bg-white dark:hover:bg-slate-700 transition">
+                                A−
+                            </button>
+                            <span id="fontScaleLabel" class="px-2 text-xs font-semibold text-slate-500">100%</span>
+                            <button onclick="changeFontScale(1)" title="Увеличить шрифт"
+                                    class="px-2.5 py-1 text-xs font-bold rounded-lg hover:bg-white dark:hover:bg-slate-700 transition">
+                                A+
+                            </button>
+                        </div>
+
+                        <button onclick="toggleDarkMode()" title="Переключить тему оформления"
+                                class="px-3 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm font-medium hover:border-[#E67E22] transition">
+                            <span id="themeIcon">🌙</span>
+                        </button>
+
+                        <div class="flex items-center gap-1">
+                            <button id="prevTicketBtn" onclick="navigateTicket(-1)" title="Предыдущий билет"
+                                    class="px-3 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs sm:text-sm font-semibold hover:bg-slate-200 dark:hover:bg-slate-700 disabled:opacity-40 transition">
+                                ← Пред.
+                            </button>
+                            <button id="nextTicketBtn" onclick="navigateTicket(1)" title="Следующий билет"
+                                    class="px-3 py-2 rounded-xl bg-[#E67E22] hover:bg-[#D35400] text-white text-xs sm:text-sm font-semibold disabled:opacity-40 transition">
+                                След. →
+                            </button>
                         </div>
                     </div>
                 </div>
+            </header>
 
-                <!-- Быстрая навигация по этапам на этой же странице -->
-                <div class="flex flex-wrap items-center gap-2 pt-4 mt-4 border-t border-slate-100 text-xs">
-                    <span class="font-semibold text-slate-500 uppercase mr-1">Разделы методички и кода:</span>
-                    <a href="#step-0-overview" class="px-2.5 py-1 rounded-md bg-slate-100 hover:bg-blue-50 hover:text-blue-700 text-slate-700 font-medium transition">Введение и структура</a>
-                    <a href="#step-1-sql" class="px-2.5 py-1 rounded-md bg-slate-100 hover:bg-blue-50 hover:text-blue-700 text-slate-700 font-medium transition">Шаг 1. SQL и диаграмма БД</a>
-                    <a href="#step-2-resources" class="px-2.5 py-1 rounded-md bg-slate-100 hover:bg-blue-50 hover:text-blue-700 text-slate-700 font-medium transition">Шаг 2. Проект и картинки</a>
-                    <a href="#step-3-ef" class="px-2.5 py-1 rounded-md bg-slate-100 hover:bg-blue-50 hover:text-blue-700 text-slate-700 font-medium transition">Шаг 3. Entity Framework 6</a>
-                    <a href="#step-4-main" class="px-2.5 py-1 rounded-md bg-slate-100 hover:bg-blue-50 hover:text-blue-700 text-slate-700 font-medium transition">Шаг 4. Главное окно (фото)</a>
-                    <a href="#step-5-table" class="px-2.5 py-1 rounded-md bg-slate-100 hover:bg-blue-50 hover:text-blue-700 text-slate-700 font-medium transition">Шаг 5. Окно таблиц (DataGrid)</a>
-                    <a href="#step-6-errors" class="px-2.5 py-1 rounded-md bg-slate-100 hover:bg-blue-50 hover:text-blue-700 text-slate-700 font-medium transition">Шаг 6. Чек-лист и ошибки</a>
+            <!-- КОНТЕНТ БИЛЕТА ИЛИ ОБЩЕЙ ПАМЯТКИ -->
+            <main id="mainContent" class="flex-1 px-4 sm:px-6 py-6">
+                <div id="contentContainer" class="max-w-6xl mx-auto space-y-6">
+                    <!-- Динамический рендер через JS -->
                 </div>
-            </section>
+            </main>
 
-            <!-- ВВЕДЕНИЕ: ОБЩАЯ СХЕМА РАЗРАБОТКИ И СТРУКТУРА РЕШЕНИЯ -->
-            <section id="step-0-overview" class="bg-white border border-slate-200 rounded-xl p-5 sm:p-6 shadow-sm space-y-4 scroll-mt-20">
-                <div class="flex items-center gap-3">
-                    <span class="px-2.5 py-1 rounded-lg bg-slate-900 text-white text-xs font-bold shrink-0">МЕТОДИЧКА</span>
-                    <div>
-                        <h3 class="text-lg font-bold text-slate-900">Общий алгоритм выполнения билета и архитектура WPF-приложения</h3>
-                        <p class="text-xs text-slate-500">Полное руководство от создания БД в SSMS до запуска минималистичного приложения в Visual Studio</p>
-                    </div>
-                </div>
+        </div>
+    </div>
 
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 text-sm text-slate-700">
-                    <div class="bg-slate-50 border border-slate-200/80 rounded-lg p-4 space-y-2">
-                        <div class="font-semibold text-slate-900">Что требуется реализовать по билету:</div>
-                        <ul class="list-disc list-inside space-y-1 text-slate-700">
-                            <li><strong>База данных (MS SQL Server):</strong> две связанные таблицы с первичными (<code class="bg-white px-1 border border-slate-200 rounded text-xs">PRIMARY KEY</code>) и внешними (<code class="bg-white px-1 border border-slate-200 rounded text-xs">FOREIGN KEY</code>) ключами, а также полем <code class="bg-white px-1 border border-slate-200 rounded text-xs">ImagePath</code> для хранения относительного пути к изображению.</li>
-                            <li><strong>Главное окно (<code class="bg-white px-1 border border-slate-200 rounded text-xs">MainWindow</code>):</strong> вывод логотипа в шапке, вывод записей главной таблицы через <code class="bg-white px-1 border border-slate-200 rounded text-xs">ListView</code> с картинками, автоматическая подстановка заглушки <code class="bg-white px-1 border border-slate-200 rounded text-xs">picture.png</code> при отсутствии фото, поиск и сортировка.</li>
-                            <li><strong>Окно табличных данных (<code class="bg-white px-1 border border-slate-200 rounded text-xs">TableWindow</code>):</strong> вывод обеих таблиц в <code class="bg-white px-1 border border-slate-200 rounded text-xs">DataGrid</code> (на двух вкладках <code class="bg-white px-1 border border-slate-200 rounded text-xs">TabControl</code>), добавление, редактирование и удаление записей через Entity Framework 6.</li>
-                        </ul>
-                    </div>
-
-                    <div class="bg-slate-950 text-slate-100 rounded-lg p-4 font-mono text-xs leading-relaxed overflow-x-auto">
-                        <div class="text-amber-300 font-semibold mb-1.5">Итоговая структура папок проекта в Visual Studio:</div>
-<pre>Проект (.NET Framework, C#)
-├── App.xaml                  # Минималистичные стили элементов
-├── Model1.edmx               # Модель Entity Framework 6 из БД
-├── MainWindow.xaml           # Главное окно (логотип + ListView с фото)
-├── MainWindow.xaml.cs        # Логика поиска, сортировки и загрузки БД
-├── classes/
-│   ├── Core.cs               # Статический контекст БД (Core.DB)
-│   └── PartialEntities.cs    # Свойство ImgUri для вывода картинок
-├── Windows/
-│   ├── TableWindow.xaml      # Окно с DataGrid для обеих таблиц
-│   └── TableWindow.xaml.cs   # Добавление, сохранение и удаление строк
-├── Resources/                # Build Action = Resource (F4 -> Свойства)
-│   ├── logo.png              # Логотип приложения в шапке
-│   └── picture.png           # Заглушка «Нет фото»
-└── bin/Debug/images/         # Копируется рядом с .exe после сборки
-    ├── item1.png
-    ├── item2.png
-    ├── item3.png
-    └── item4.png</pre>
-                    </div>
-                </div>
-            </section>
-
-            <!-- ШАГ 1: МЕТОДИЧКА + SQL-СКРИПТ -->
-            <section id="step-1-sql" class="bg-white border border-slate-200 rounded-xl p-5 sm:p-6 shadow-sm space-y-4 scroll-mt-20">
-                <div class="flex items-center gap-3">
-                    <span class="w-8 h-8 rounded-lg bg-blue-600 text-white font-bold flex items-center justify-center shrink-0">1</span>
-                    <div>
-                        <h3 class="text-lg font-bold text-slate-900">Создание базы данных и диаграммы связей в MS SQL Server (SSMS)</h3>
-                        <p class="text-xs text-slate-500">Пункт 1 билета — проектирование таблиц, ключей PK/FK и наполнение тестовыми записями</p>
-                    </div>
-                </div>
-
-                <ol class="list-decimal list-inside space-y-1.5 text-sm text-slate-700 leading-relaxed bg-slate-50 border border-slate-200/80 rounded-lg p-4">
-                    <li>Откройте <strong>SQL Server Management Studio (SSMS)</strong> и подключитесь к локальному серверу (Проверка подлинности Windows).</li>
-                    <li>Нажмите кнопку <strong>Создать запрос (New Query)</strong> на верхней панели.</li>
-                    <li>Скопируйте готовый SQL-скрипт ниже (<code class="bg-white border border-slate-200 px-1.5 py-0.5 rounded text-xs">create_database.sql</code>), вставьте в окно запроса и нажмите <strong>Выполнить (F5)</strong>.</li>
-                    <li>Скрипт автоматически создаст базу данных <strong id="step1DbName">SupplyGoodsDB</strong>, две связанные таблицы, поле <code class="bg-white border border-slate-200 px-1.5 py-0.5 rounded text-xs">ImagePath</code> и заполнит их тестовыми записями.</li>
-                    <li><strong>Построение диаграммы БД (если требуется показать схему):</strong> в «Обозревателе объектов» нажмите ПКМ по «Базы данных» → <strong>Обновить</strong> → раскройте вашу БД → ПКМ по папке <strong>Диаграммы баз данных (Database Diagrams)</strong> → <strong>Создать диаграмму базы данных</strong> → выделите обе таблицы и нажмите <strong>Добавить</strong>.</li>
-                </ol>
-
-                <div id="sqlCodeContainer"></div>
-            </section>
-
-            <!-- ШАГ 2: МЕТОДИЧКА + РЕСУРСЫ И КАРТИНКИ -->
-            <section id="step-2-resources" class="bg-white border border-slate-200 rounded-xl p-5 sm:p-6 shadow-sm space-y-4 scroll-mt-20">
-                <div class="flex items-center gap-3">
-                    <span class="w-8 h-8 rounded-lg bg-blue-600 text-white font-bold flex items-center justify-center shrink-0">2</span>
-                    <div>
-                        <h3 class="text-lg font-bold text-slate-900">Создание проекта WPF (.NET Framework), папок и добавление ресурсов</h3>
-                        <p class="text-xs text-slate-500">Подготовка структуры решения Visual Studio и графических файлов для главного окна</p>
-                    </div>
-                </div>
-
-                <ol class="list-decimal list-inside space-y-1.5 text-sm text-slate-700 leading-relaxed bg-slate-50 border border-slate-200/80 rounded-lg p-4">
-                    <li>Откройте <strong>Visual Studio</strong> → <strong>Создание проекта</strong> → выберите шаблон <strong>Приложение WPF (.NET Framework)</strong> на языке <strong>C#</strong> (обязательно с пометкой <em>.NET Framework</em>, так как визуальный дизайнер EDMX работает только в нём).</li>
-                    <li>Укажите имя проекта: <strong id="step2ProjectName" class="font-mono text-blue-700">Ticket01_SupplyGoods</strong> и нажмите <strong>Создать</strong>.</li>
-                    <li>В <strong>Обозревателе решений</strong> (справа) создайте 3 папки (ПКМ по проекту → Добавить → Создать папку): <code class="bg-white border border-slate-200 px-1.5 py-0.5 rounded text-xs">classes</code>, <code class="bg-white border border-slate-200 px-1.5 py-0.5 rounded text-xs">Windows</code> и <code class="bg-white border border-slate-200 px-1.5 py-0.5 rounded text-xs">Resources</code>.</li>
-                    <li>Скачайте ниже <code class="bg-white border border-slate-200 px-1.5 py-0.5 rounded text-xs">logo.png</code> и <code class="bg-white border border-slate-200 px-1.5 py-0.5 rounded text-xs">picture.png</code>, перетащите их в папку <code class="bg-white border border-slate-200 px-1.5 py-0.5 rounded text-xs">Resources</code> в Обозревателе решений, выделите оба файла, нажмите <strong>F4 (Свойства)</strong> и установите <strong>Действие при сборке (Build Action) = Resource</strong>.</li>
-                    <li>Выполните сборку (<code class="bg-white border border-slate-200 px-1.5 py-0.5 rounded text-xs">Ctrl + Shift + B</code>), откройте папку проекта в Проводнике → перейдите в <code class="bg-white border border-slate-200 px-1.5 py-0.5 rounded text-xs">bin\Debug</code> → создайте папку <code class="bg-white border border-slate-200 px-1.5 py-0.5 rounded text-xs">images</code> и скопируйте туда 4 картинки (<code class="bg-white border border-slate-200 px-1.5 py-0.5 rounded text-xs">item1.png … item4.png</code>).</li>
-                </ol>
-
-                <div id="resourcesContainer"></div>
-            </section>
-
-            <!-- ШАГ 3: МЕТОДИЧКА + ENTITY FRAMEWORK 6 + CORE / PARTIAL / APP.XAML -->
-            <section id="step-3-ef" class="bg-white border border-slate-200 rounded-xl p-5 sm:p-6 shadow-sm space-y-4 scroll-mt-20">
-                <div class="flex items-center gap-3">
-                    <span class="w-8 h-8 rounded-lg bg-blue-600 text-white 
+    <!-- ДАННЫЕ ВСЕХ 25 ЭКЗАМЕНАЦИОННЫХ БИЛЕТОВ И ГЕНЕРАТОР КОДА -->
+    <script>
+        // Полный массив из 25 экзаменационных билетов по МДК 01.01
+        const TICKETS = [
+            {
+                num: 1, title: "Поставка товаров", db: "SupplyDB", app: "SupplyApp",
+                desc: "Автоматизация учета поставок товаров от поставщиков на склад: номенклатура, категории товаров, накладные поставок и контроль минимальных остатков.",
+                lt: "ProductTypes", ll: "Категория товара", la: "Все категории",
+                lrows: [
+                    [1, "Электроника", "Компьютерная техника, периферия и комплектующие"],
+                    [2, "Офисная техника", "Принтеры, сканеры, МФУ и расходные материалы"],
+                    [3, "Сетевое оборудование", "Маршрутизаторы, коммутаторы и кабельная продукция"],
+                    [4, "Канцтовары", "Бумага, архивные папки и офисные принадлежности"]
+                ],
+                mt: "Products", mer: "Товар", mpr: "Товары на складе", fk: "TypeID",
+                cc: "Article", cl: "Артикул",
+                m1: "StockQty", m1l: "Остаток на складе (шт.)",
+                m2: "MinStock", m2l: "Мин. остаток (шт.)",
+                pc: "PurchasePrice", pl: "Цена закупки (₽)", pu: "₽",
+                mrows: [
+                    [1, "SUP-101", "Монитор IPS 24 дюйма FullHD", 1, "Безрамочный офисный монитор, HDMI/DisplayPort", 14, 5, 13500.00, "images/monitor.jpg"],
+                    [2, "SUP-102", "МФУ лазерное A4 сетевое", 2, "Печать, сканирование и копирование до 30 стр/мин", 3, 5, 24900.00, "images/mfu.jpg"],
+                    [3, "SUP-103", "Коммутатор гигабитный 24 порта", 3, "Управляемый стоечный коммутатор L2", 2, 4, 18200.00, "images/switch.jpg"],
+                    [4, "SUP-104", "Бумага офисная А4 500 л.", 4, "Плотность 80 г/м2, класс А, коробка 5 пачек", 45, 20, 420.00, "images/paper.jpg"],
+                    [5, "SUP-105", "Клавиатура + мышь беспроводные", 1, "Комплект 2.4 ГГц с тихим ходом клавиш", 4, 6, 2150.00, "images/keyboard.jpg"],
+                    [6, "SUP-106", "Маршрутизатор Wi-Fi 6 корпоративный", 3, "Двухдиапазонный роутер с поддержкой VPN", 9, 4, 8900.00, "images/router.jpg"]
+                ],
+                hdesc: "Подсвечивать светло-оранжевым цветом товары, остаток которых ниже минимального порога (StockQty < MinStock).",
+                hexpr: "StockQty < MinStock",
+                salert: '$\"Дефицит: {StockQty} из мин. {MinStock} шт.\"',
+                sok: '$\"В наличии: {StockQty} шт. (мин. {MinStock})\"',
+                pt: "Suppliers", ptr: "Поставщики",
+                pc1: ["CompanyName", "Наименование поставщика"], pc2: ["INN", "ИНН"], pc3: ["Phone", "Телефон"],
+                prows: [
+                    [1, "ООО «ТехноОптТрейд»", "7701234561", "+7(495)210-11-01"],
+                    [2, "АО «ОфисСнаб Плюс»", "7702345672", "+7(495)210-22-02"],
+                    [3, "ООО «СетьКомплект»", "7803456783", "+7(812)310-33-03"],
+                    [4, "ИП Ковалев А.В.", "500456789012", "+7(916)410-44-04"]
+                ],
+                dt: "Supplies", dtr: "Накладные поставок", dnl: "№ накладной",
+                drows: [
+                    [1, "ПН-2026-001", 1, "2026-10-12", "Принята", 189000.00],
+                    [2, "ПН-2026-002", 2, "2026-10-18", "Принята", 74700.00],
+                    [3, "ПН-2026-003", 3, "2026-11-02", "В пути", 54200.00],
+                    [4, "ПН-2026-004", 1, "2026-11-05", "Оформлена", 36400.00]
+                ],
+                mm: "SupplyItems", mmtr: "Состав поставок (M:M)", mmql: "Кол-во в поставке",
+                mmrows: [[1,1,10,13500.00],[1,5,25,2150.00],[2,2,3,24900.00],[3,3,2,18200.00],[3,6,2,8900.00],[4,4,50,420.00]],
+                sorts: ["Без сортировки","Наименование (А → Я)","Наименование (Я → А)","Остаток на складе (по возрастанию)","Остаток на складе (по убыванию)","Цена закупки (по возрастанию)","Цена закупки (по убыванию)"]
+            },
+            {
+                num: 2, title: "Банковские вклады", db: "BankDepositsDB", app: "BankDepositsApp",
+                desc: "Учет депозитных программ банка, вкладчиков и заключенных договоров вкладов с расчетом доходности и контролем повышенных ставок.",
+                lt: "DepositTypes", ll: "Вид вклада", la: "Все виды вкладов",
+                lrows: [
+                    [1, "Срочный", "Фиксированный срок и максимальная процентная ставка"],
+                    [2, "Накопительный", "Свободное пополнение и частичное снятие средств"],
+                    [3, "Пенсионный", "Льготные условия и ежемесячная капитализация"],
+                    [4, "Валютный", "Размещение средств в иностранной валюте"]
+                ],
+                mt: "DepositPrograms", mer: "Программа вклада", mpr: "Депозитные программы", fk: "TypeID",
+                cc: "ProgramCode", cl: "Код тарифа",
+                m1: "TermMonths", m1l: "Срок вклада (мес.)",
+                m2: "MinAmount", m2l: "Мин. сумма (тыс. ₽)",
+                pc: "InterestRate", pl: "Ставка (% годовых)", pu: "%",
+                mrows: [
+                    [1, "DEP-01", "Максимальный доход Плюс", 1, "Выплата процентов в конце срока без снятия", 12, 50, 18.50, "images/dep_max.jpg"],
+                    [2, "DEP-02", "Копилка на мечту", 2, "Ежедневное начисление процентов на остаток", 6, 10, 13.20, "images/dep_save.jpg"],
+                    [3, "DEP-03", "Забота и стабильность", 3, "Специальный вклад для пенсионеров с капитализацией", 18, 15, 16.00, "images/dep_pens.jpg"],
+                    [4, "DEP-04", "Юань Выгодный", 4, "Вклад в китайских юанях с фиксированной ставкой", 12, 100, 6.50, "images/dep_cny.jpg"],
+                    [5, "DEP-05", "Надежный старт", 1, "Краткосрочный вклад на 3 месяца с автопролонгацией", 3, 30, 17.80, "images/dep_start.jpg"],
+                    [6, "DEP-06", "Универсальный резерв", 2, "Пополнение в любое время без потери процентов", 24, 20, 12.00, "images/dep_univ.jpg"]
+                ],
+                hdesc: "Подсвечивать светло-оранжевым цветом программы вкладов с повышенной ставкой (>= 16% годовых).",
+                hexpr: "InterestRate >= 16.0m",
+                salert: '$\"Повышенная ставка! Мин. взнос: {MinAmount} тыс. ₽\"',
+                sok: '$\"Базовый тариф | Мин. взнос: {MinAmount} тыс. ₽\"',
+                pt: "Depositors", ptr: "Вкладчики банка",
+                pc1: ["FullName", "ФИО вкладчика"], pc2: ["PassportNumber", "Серия и номер паспорта"], pc3: ["Phone", "Телефон"],
+                prows: [
+                    [1, "Смирнов Алексей Викторович", "4510 892341", "+7(916)501-12-34"],
+                    [2, "Кузнецова Елена Сергеевна", "4512 773412", "+7(926)502-45-67"],
+                    [3, "Попов Николай Иванович", "4508 654321", "+7(903)503-78-90"],
+                    [4, "Васильева Ольга Дмитриевна", "4515 112233", "+7(915)504-99-00"]
+                ],
+                dt: "DepositBranches", dtr: "Отделения оформления", dnl: "Код офиса",
+                drows: [
+                    [1, "ДО-01/МСК", 1, "2026-09-10", "Действует", 500000.00],
+                    [2, "ДО-02/МСК", 2, "2026-10-05", "Действует", 150000.00],
+                    [3, "ДО-03/СПБ", 3, "2026-10-20", "Действует", 320000.00],
+                    [4, "ДО-04/ЕКБ", 4, "2026-11-01", "Закрыт", 100000.00]
+                ],
+                mm: "DepositContracts", mmtr: "Договоры вкладов (M:M)", mmql: "Срок (мес.)",
+                mmrows: [[1,1,12,500000.00],[1,2,6,120000.00],[2,5,3,150000.00],[3,3,18,320000.00],[3,6,24,80000.00],[4,4,12,100000.00]],
+                sorts: ["Без сортировки","Название вклада (А → Я)","Название вклада (Я → А)","Срок вклада (по возрастанию)","Срок вклада (по убыванию)","Процентная ставка (по возрастанию)","Процентная ставка (по убыванию)"]
+            },
+            {
+                num: 3, title: "Розничная торговля", db: "RetailTradeDB", app: "RetailTradeApp",
+                desc: "Информационная система магазина розничной торговли: каталог товаров, кассиры, чеки продаж и автоматический контроль пополнения полок.",
+                lt: "Categories", ll: "Отдел / Категория", la: "Все категории",
+                lrows: [
+                    [1, "Молочная продукция", "Молоко, сыры, йогурты и кисломолочные товары"],
+                    [2, "Бакалея", "Крупы, макаронные изделия, чай, кофе и специи"],
+                    [3, "Напитки", "Соки, минеральная вода и безалкогольные напитки"],
+                    [4, "Хлебобулочные изделия", "Свежий хлеб, выпечка и кондитерские изделия"]
+                ],
+                mt: "Goods", mer: "Товар", mpr: "Каталог розничных товаров", fk: "CategoryID",
+                cc: "Barcode", cl: "Штрихкод",
+                m1: "ShelfQty", m1l: "Остаток в зале (шт.)",
+                m2: "MinShelfQty", m2l: "Мин. запас в зале",
+                pc: "RetailPrice", pl: "Розничная цена (₽)", pu: "₽",
+                mrows: [
+                    [1, "460700123001", "Молоко отборное 3.2% 1л", 1, "Пастеризованное фермерское молоко в ПЭТ-бутылке", 18, 10, 94.90, "images/milk.jpg"],
+                    [2, "460700123002", "Кофе зерновой Арабика 1 кг", 2, "Средняя обжарка, 100% бразильская арабика", 4, 6, 1450.00, "images/coffee.jpg"],
+                    [3, "460700123003", "Сок яблочный прямого отжима 1л", 3, "Без добавления сахара, стеклянная бутылка", 12, 8, 139.00, "images/juice.jpg"],
+                    [4, "460700123004", "Багет французский хрустящий", 4, "Собственная пекарня, свежая утренняя выпечка", 3, 10, 69.00, "images/baguette.jpg"],
+                    [5, "460700123005", "Сыр Российский полутвердый 250г", 1, "Жирность 50%, вакуумная упаковка", 5, 8, 249.5
