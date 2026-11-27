@@ -1,0 +1,2036 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MasterSCADA — Интерактивная методичка и симулятор АСУ ТП</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+          colors: {
+            scada: {
+              50: '#f0f9ff',
+              100: '#e0f2fe',
+              200: '#bae6fd',
+              500: '#0ea5e9',
+              600: '#0284c7',
+              700: '#0369a1',
+              800: '#075985',
+              900: '#0c4a6e',
+              950: '#082f49',
+            }
+          }
+        }
+      }
+    };
+  </script>
+  <style>
+    /* Инженерная сетка фона в стиле САПР / SCADA */
+    .scada-grid-bg {
+      background-color: #f8fafc;
+      background-image:
+        linear-gradient(to right, rgba(148, 163, 184, 0.12) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(148, 163, 184, 0.12) 1px, transparent 1px);
+      background-size: 24px 24px;
+    }
+
+    /* Стилизация вертикальных ползунков как в MasterSCADA */
+    input[type="range"].scada-vslider {
+      -webkit-appearance: slider-vertical;
+      appearance: slider-vertical;
+      width: 22px;
+      height: 76px;
+      accent-color: #0284c7;
+      cursor: pointer;
+    }
+
+    /* Плавные переходы для узлов мнемосхемы */
+    .vessel-node {
+      cursor: pointer;
+      transition: transform 0.18s ease, filter 0.18s ease;
+    }
+    .vessel-node:hover {
+      filter: brightness(1.12);
+    }
+    .vessel-selected {
+      filter: drop-shadow(0 0 8px rgba(14, 165, 233, 0.9));
+    }
+
+    /* Кастомный скроллбар для дерева проекта */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #f1f5f9;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+  </style>
+</head>
+<body class="scada-grid-bg text-slate-800 antialiased min-h-screen flex flex-col">
+
+  <!-- Всплывающее уведомление (Toast) вместо alert() -->
+  <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+  <!-- Верхняя панель навигации и прогресса -->
+  <header class="sticky top-0 z-40 bg-white/95 backdrop-blur border-b border-slate-200 shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex flex-col md:flex-row md:items-center md:justify-between py-3 gap-3">
+        <!-- Логотип и заголовок -->
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-scada-600 to-scada-900 flex items-center justify-center text-white shadow-md">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z" />
+              </svg>
+            </div>
+            <div>
+              <div class="flex items-center gap-2">
+                <h1 class="text-lg sm:text-xl font-bold text-slate-900 tracking-tight">MasterSCADA LabGuide</h1>
+                <span class="hidden sm:inline-flex items-center px-2 py-0.5 rounded-md text-xs font-mono font-semibold bg-scada-100 text-scada-800 border border-scada-200">
+                  АСУ ТП • v3.x
+                </span>
+              </div>
+              <p class="text-xs text-slate-500">Интерактивная методичка, симулятор мнемосхемы и генератор формул</p>
+            </div>
+          </div>
+
+          <!-- Компактный прогресс на мобильных -->
+          <div class="flex md:hidden items-center gap-2 bg-slate-100 px-3 py-1.5 rounded-lg border border-slate-200">
+            <span class="text-xs font-medium text-slate-600">Прогресс:</span>
+            <span id="mobile-progress-text" class="text-xs font-mono font-bold text-scada-700">0/8</span>
+          </div>
+        </div>
+
+        <!-- Трекер прогресса выполнения шагов (Desktop) -->
+        <div class="hidden md:flex items-center gap-4 bg-slate-50 px-4 py-2 rounded-xl border border-slate-200">
+          <div class="flex flex-col">
+            <div class="flex items-center justify-between gap-4 mb-1">
+              <span class="text-xs font-semibold text-slate-600">Прогресс выполнения работы</span>
+              <span id="desktop-progress-text" class="text-xs font-mono font-bold text-scada-700">0 из 8 этапов (0%)</span>
+            </div>
+            <div class="w-48 h-2 bg-slate-200 rounded-full overflow-hidden">
+              <div id="desktop-progress-bar" class="h-full bg-gradient-to-r from-scada-500 to-emerald-500 transition-all duration-300" style="width: 0%"></div>
+            </div>
+          </div>
+          <button onclick="resetProgress()" title="Сбросить отметки выполнения" class="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Навигационные вкладки (4 основных раздела) -->
+      <nav class="flex overflow-x-auto gap-1.5 pb-2.5 pt-1 no-scrollbar" aria-label="Разделы методички">
+        <button onclick="switchTab('guide')" id="tab-btn-guide" class="nav-tab active flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold whitespace-nowrap transition-all bg-scada-600 text-white shadow-sm">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+          </svg>
+          <span>1. Пошаговая методичка</span>
+        </button>
+
+        <button onclick="switchTab('simulator')" id="tab-btn-simulator" class="nav-tab flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold whitespace-nowrap transition-all bg-slate-100 text-slate-700 hover:bg-slate-200">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+            <path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <span>2. Симулятор мнемосхемы</span>
+          <span class="px-1.5 py-0.5 text-[10px] font-mono uppercase rounded bg-emerald-100 text-emerald-800 border border-emerald-200">Live</span>
+        </button>
+
+        <button onclick="switchTab('calculator')" id="tab-btn-calculator" class="nav-tab flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold whitespace-nowrap transition-all bg-slate-100 text-slate-700 hover:bg-slate-200">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+          </svg>
+          <span>3. Калькулятор варианта</span>
+        </button>
+
+        <button onclick="switchTab('cheatsheet')" id="tab-btn-cheatsheet" class="nav-tab flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold whitespace-nowrap transition-all bg-slate-100 text-slate-700 hover:bg-slate-200">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+          </svg>
+          <span>4. Шпаргалка и ошибки</span>
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Основной контент -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+
+    <!-- ===================================================================== -->
+    <!-- РАЗДЕЛ 1: ПОШАГОВАЯ МЕТОДИЧКА (8 ЭТАПОВ)                              -->
+    <!-- ===================================================================== -->
+    <section id="section-guide" class="space-y-6">
+      <!-- Вводная плашка с исходным заданием -->
+      <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 sm:p-6">
+        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+          <div>
+            <div class="inline-flex items-center gap-2 px-2.5 py-1 rounded-lg bg-scada-50 text-scada-700 text-xs font-semibold border border-scada-200 mb-2">
+              Эталонный разбор варианта • 12 технологических блоков • 19 элементов дерева
+            </div>
+            <h2 class="text-xl sm:text-2xl font-bold text-slate-900">Пошаговое руководство по сборке проекта в MasterSCADA</h2>
+            <p class="text-sm text-slate-600 mt-1 max-w-3xl">
+              Отмечайте выполненные этапы галочками — ваш прогресс сохраняется автоматически. Нажмите на любую формулу или имя параметра, чтобы скопировать его в буфер обмена.
+            </p>
+          </div>
+          <div class="flex flex-wrap gap-2">
+            <button onclick="switchTab('simulator')" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-scada-600 hover:bg-scada-700 text-white text-sm font-semibold shadow-sm transition">
+              <span>Открыть живую схему</span>
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Контейнер 8 этапов -->
+      <div class="space-y-5">
+
+        <!-- ЭТАП 1 -->
+        <article id="step-card-1" class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden transition-all">
+          <div class="p-5 sm:p-6">
+            <div class="flex items-start justify-between gap-4">
+              <div class="flex items-start gap-3.5">
+                <span class="flex-shrink-0 w-9 h-9 rounded-xl bg-scada-600 text-white font-mono font-bold flex items-center justify-center shadow-sm">01</span>
+                <div>
+                  <h3 class="text-lg font-bold text-slate-900">Создание проекта и главного объекта «Схема»</h3>
+                  <p class="text-sm text-slate-500 mt-0.5">Инициализация рабочей среды и корневого узла иерархии объектов</p>
+                </div>
+              </div>
+              <label class="inline-flex items-center gap-2 cursor-pointer select-none bg-slate-50 hover:bg-slate-100 px-3 py-1.5 rounded-xl border border-slate-200 transition">
+                <input type="checkbox" data-step="1" onchange="toggleStep(1)" class="w-4 h-4 rounded text-scada-600 focus:ring-scada-500" />
+                <span class="text-xs font-semibold text-slate-700">Выполнено</span>
+              </label>
+            </div>
+
+            <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div class="bg-slate-50 rounded-xl p-4 border border-slate-200/80 space-y-2.5 text-sm">
+                <div class="font-semibold text-slate-800 flex items-center gap-2">
+                  <span class="w-2 h-2 rounded-full bg-scada-500"></span>
+                  Шаг 1.1: Новый проект
+                </div>
+                <ol class="list-decimal list-inside space-y-1.5 text-slate-600">
+                  <li>Запустите среду разработки <strong>MasterSCADA</strong>.</li>
+                  <li>В окне «Создание проекта» (вкладка <em>Новый проект</em>) введите имя проекта:
+                    <button onclick="copyText('схема')" class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-white border border-slate-300 font-mono text-xs font-bold text-scada-700 hover:border-scada-500">
+                      схема
+                      <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+                    </button>
+                  </li>
+                  <li>Нажмите <strong>ОК</strong>. В окне запроса пароля <strong>пароль не ставим</strong> — сразу нажимаем <strong>ОК</strong>.</li>
+                </ol>
+              </div>
+
+              <div class="bg-slate-50 rounded-xl p-4 border border-slate-200/80 space-y-2.5 text-sm">
+                <div class="font-semibold text-slate-800 flex items-center gap-2">
+                  <span class="w-2 h-2 rounded-full bg-scada-500"></span>
+                  Шаг 1.2: Вставка объекта «Схема»
+                </div>
+                <ol class="list-decimal list-inside space-y-1.5 text-slate-600">
+                  <li>В левой нижней панели дерева объектов нажмите <strong>ПКМ (правой кнопкой мыши)</strong> по корневому пункту <code class="font-mono text-xs bg-white px-1.5 py-0.5 rounded border">Объект</code>.</li>
+                  <li>Выберите в контекстном меню: <span class="font-mono text-xs bg-scada-50 text-scada-800 px-1.5 py-0.5 rounded border border-scada-200">Вставить → Объект</span>.</li>
+                  <li>Во вкладке <strong>Общие</strong> в поле «Имя» переименуйте объект в
+                    <button onclick="copyText('Схема')" class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-white border border-slate-300 font-mono text-xs font-bold text-scada-700 hover:border-scada-500">
+                      Схема
+                      <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+                    </button>
+                  </li>
+                </ol>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <!-- ЭТАП 2 -->
+        <article id="step-card-2" class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden transition-all">
+          <div class="p-5 sm:p-6">
+            <div class="flex items-start justify-between gap-4">
+              <div class="flex items-start gap-3.5">
+                <span class="flex-shrink-0 w-9 h-9 rounded-xl bg-scada-600 text-white font-mono font-bold flex items-center justify-center shadow-sm">02</span>
+                <div>
+                  <h3 class="text-lg font-bold text-slate-900">Настройка аналоговых шкал измерений</h3>
+                  <p class="text-sm text-slate-500 mt-0.5">Путь: Дерево <code class="font-mono text-xs bg-slate-100 px-1.5 py-0.5 rounded">Система</code> → вкладка <code class="font-mono text-xs bg-slate-100 px-1.5 py-0.5 rounded">Шкалы</code> → раздел <code class="font-mono text-xs bg-slate-100 px-1.5 py-0.5 rounded">\Аналоговые\</code></p>
+                </div>
+              </div>
+              <label class="inline-flex items-center gap-2 cursor-pointer select-none bg-slate-50 hover:bg-slate-100 px-3 py-1.5 rounded-xl border border-slate-200 transition">
+                <input type="checkbox" data-step="2" onchange="toggleStep(2)" class="w-4 h-4 rounded text-scada-600 focus:ring-scada-500" />
+                <span class="text-xs font-semibold text-slate-700">Выполнено</span>
+              </label>
+            </div>
+
+            <p class="mt-3 text-sm text-slate-600">
+              Кликните в любое место таблицы «Аналоговые значения» и нажмите кнопку <strong>Добавить</strong> 3 раза. В шкалы вносим диапазоны двух входных блоков из задания (<code class="font-mono text-xs">110-300кг</code> и <code class="font-mono text-xs">300-350кг</code>), а также <strong>сумму их максимумов</strong> (<code class="font-mono text-xs">300 + 350 = 650</code>) для промежуточных и выходных узлов:
+            </p>
+
+            <div class="mt-4 overflow-x-auto rounded-xl border border-slate-200">
+              <table class="w-full text-left border-collapse text-sm">
+                <thead>
+                  <tr class="bg-slate-100 text-slate-700 border-b border-slate-200 font-semibold text-xs uppercase tracking-wider">
+                    <th class="py-2.5 px-4">Интервал (Имя)</th>
+                    <th class="py-2.5 px-4">Начало</th>
+                    <th class="py-2.5 px-4">Конец</th>
+                    <th class="py-2.5 px-4">Формат</th>
+                    <th class="py-2.5 px-4">Ед. измерения</th>
+                    <th class="py-2.5 px-4">Назначение</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-200 font-mono text-xs">
+                  <tr class="hover:bg-scada-50/50">
+                    <td class="py-2.5 px-4 font-bold text-scada-700">
+                      <button onclick="copyText('110-300')" class="hover:underline">110-300</button>
+                    </td>
+                    <td class="py-2.5 px-4">110</td>
+                    <td class="py-2.5 px-4">300</td>
+                    <td class="py-2.5 px-4">f2</td>
+                    <td class="py-2.5 px-4 font-sans">Килограмм</td>
+                    <td class="py-2.5 px-4 font-sans text-slate-600">Входной Блок 1</td>
+                  </tr>
+                  <tr class="hover:bg-scada-50/50">
+                    <td class="py-2.5 px-4 font-bold text-scada-700">
+                      <button onclick="copyText('300-350')" class="hover:underline">300-350</button>
+                    </td>
+                    <td class="py-2.5 px-4">300</td>
+                    <td class="py-2.5 px-4">350</td>
+                    <td class="py-2.5 px-4">f2</td>
+                    <td class="py-2.5 px-4 font-sans">Килограмм</td>
+                    <td class="py-2.5 px-4 font-sans text-slate-600">Входной Блок 2</td>
+                  </tr>
+                  <tr class="hover:bg-scada-50/50 bg-amber-50/40">
+                    <td class="py-2.5 px-4 font-bold text-amber-800">
+                      <button onclick="copyText('0-650')" class="hover:underline">0-650</button>
+                    </td>
+                    <td class="py-2.5 px-4">0</td>
+                    <td class="py-2.5 px-4">650</td>
+                    <td class="py-2.5 px-4">f2</td>
+                    <td class="py-2.5 px-4 font-sans">Килограмм</td>
+                    <td class="py-2.5 px-4 font-sans text-slate-700">Все расчеты (300 + 350 = 650)</td>
+                  </tr>
+                  <tr class="hover:bg-slate-50 text-slate-500">
+                    <td class="py-2.5 px-4 font-semibold">Проценты</td>
+                    <td class="py-2.5 px-4">0.0</td>
+                    <td class="py-2.5 px-4">100.0</td>
+                    <td class="py-2.5 px-4">f1</td>
+                    <td class="py-2.5 px-4 font-sans">Процент</td>
+                    <td class="py-2.5 px-4 font-sans">Встроенная шкала для команд (%)</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </article>
+
+        <!-- ЭТАП 3 -->
+        <article id="step-card-3" class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden transition-all">
+          <div class="p-5 sm:p-6">
+            <div class="flex items-start justify-between gap-4">
+              <div class="flex items-start gap-3.5">
+                <span class="flex-shrink-0 w-9 h-9 rounded-xl bg-scada-600 text-white font-mono font-bold flex items-center justify-center shadow-sm">03</span>
+                <div>
+                  <h3 class="text-lg font-bold text-slate-900">Создание входных значений с имитацией «Шум»</h3>
+                  <p class="text-sm text-slate-500 mt-0.5">ПКМ по объекту <code class="font-mono text-xs bg-slate-100 px-1.5 py-0.5 rounded">Схема</code> → <code class="font-mono text-xs bg-slate-100 px-1.5 py-0.5 rounded">Вставить → Значение</code> (добавляем 2 штуки)</p>
+                </div>
+              </div>
+              <label class="inline-flex items-center gap-2 cursor-pointer select-none bg-slate-50 hover:bg-slate-100 px-3 py-1.5 rounded-xl border border-slate-200 transition">
+                <input type="checkbox" data-step="3" onchange="toggleStep(3)" class="w-4 h-4 rounded text-scada-600 focus:ring-scada-500" />
+                <span class="text-xs font-semibold text-slate-700">Выполнено</span>
+              </label>
+            </div>
+
+            <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+              <!-- Значение 1 -->
+              <div class="rounded-xl border border-slate-200 bg-slate-50 p-4 space-y-2">
+                <div class="flex items-center justify-between">
+                  <span class="text-xs font-bold uppercase tracking-wider text-scada-700">Вход 1 (Блок 1)</span>
+                  <span class="font-mono text-xs px-2 py-0.5 rounded bg-blue-100 text-blue-800">Аналоговый • Вещ. дв. точности</span>
+                </div>
+                <div class="text-sm space-y-1 text-slate-700">
+                  <div>• Вкладка <strong>Общие</strong> → Имя:
+                    <button onclick="copyText('110-300кг')" class="font-mono text-xs font-bold bg-white px-2 py-0.5 rounded border border-slate-300 text-scada-700 hover:border-scada-500">110-300кг</button>
+                  </div>
+                  <div>• Диапазон изменения: <code class="font-mono text-xs bg-white px-1.5 py-0.5 rounded border">110-300</code></div>
+                  <div>• Вкладка <strong>Опрос</strong> → переключатель <strong>Имитация</strong> → Закон: <span class="font-semibold text-emerald-700">Шум</span></div>
+                </div>
+              </div>
+
+              <!-- Значение 2 -->
+              <div class="rounded-xl border border-slate-200 bg-slate-50 p-4 space-y-2">
+                <div class="flex items-center justify-between">
+                  <span class="text-xs font-bold uppercase tracking-wider text-scada-700">Вход 2 (Блок 2)</span>
+                  <span class="font-mono text-xs px-2 py-0.5 rounded bg-blue-100 text-blue-800">Аналоговый • Вещ. дв. точности</span>
+                </div>
+                <div class="text-sm space-y-1 text-slate-700">
+                  <div>• Вкладка <strong>Общие</strong> → Имя:
+                    <button onclick="copyText('300-350кг')" class="font-mono text-xs font-bold bg-white px-2 py-0.5 rounded border border-slate-300 text-scada-700 hover:border-scada-500">300-350кг</button>
+                  </div>
+                  <div>• Диапазон изменения: <code class="font-mono text-xs bg-white px-1.5 py-0.5 rounded border">300-350</code></div>
+                  <div>• Вкладка <strong>Опрос</strong> → переключатель <strong>Имитация</strong> → Закон: <span class="font-semibold text-emerald-700">Шум</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <!-- ЭТАП 4 -->
+        <article id="step-card-4" class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden transition-all">
+          <div class="p-5 sm:p-6">
+            <div class="flex items-start justify-between gap-4">
+              <div class="flex items-start gap-3.5">
+                <span class="flex-shrink-0 w-9 h-9 rounded-xl bg-scada-600 text-white font-mono font-bold flex items-center justify-center shadow-sm">04</span>
+                <div>
+                  <h3 class="text-lg font-bold text-slate-900">Главный суммирующий расчет — Блок 3</h3>
+                  <p class="text-sm text-slate-500 mt-0.5">Сложение двух входных потоков в узле смешения №3</p>
+                </div>
+              </div>
+              <label class="inline-flex items-center gap-2 cursor-pointer select-none bg-slate-50 hover:bg-slate-100 px-3 py-1.5 rounded-xl border border-slate-200 transition">
+                <input type="checkbox" data-step="4" onchange="toggleStep(4)" class="w-4 h-4 rounded text-scada-600 focus:ring-scada-500" />
+                <span class="text-xs font-semibold text-slate-700">Выполнено</span>
+              </label>
+            </div>
+
+            <div class="mt-4 bg-slate-50 rounded-xl p-4 border border-slate-200 space-y-3 text-sm">
+              <div class="flex flex-wrap items-center gap-x-6 gap-y-2">
+                <span>1. Нажмите ПКМ на <code class="font-mono text-xs bg-white px-1.5 py-0.5 rounded border">Схема</code> → <strong>Вставить → Расчет</strong>.</span>
+                <span>2. Имя: <button onclick="copyText('3')" class="font-mono text-xs font-bold bg-white px-2 py-0.5 rounded border border-slate-300 text-scada-700">3</button></span>
+                <span>3. Диапазон изменения: <code class="font-mono text-xs bg-white px-1.5 py-0.5 rounded border">0-650</code></span>
+              </div>
+              <p class="text-slate-600">
+                4. Перейдите во вкладку <strong>Формула</strong>. Перетащите левой кнопкой мыши из дерева оба значения (<code class="font-mono text-xs">110-300кг</code> и <code class="font-mono text-xs">300-350кг</code>) в таблицу переменных внизу. Затем <strong>двойным кликом</strong> внутри таблицы вставьте их в поле формулы и поставьте знак <code class="font-mono font-bold">+</code>:
+              </p>
+              <div class="flex items-center justify-between bg-slate-900 text-cyan-300 font-mono text-sm px-4 py-3 rounded-xl">
+                <span>_110_300кг + _300_350кг</span>
+                <button onclick="copyText('_110_300кг + _300_350кг')" class="text-xs bg-slate-800 hover:bg-slate-700 text-white px-2.5 py-1 rounded-lg border border-slate-700 transition">
+                  Копировать формулу
+                </button>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <!-- ЭТАП 5 -->
+        <article id="step-card-5" class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden transition-all">
+          <div class="p-5 sm:p-6">
+            <div class="flex items-start justify-between gap-4">
+              <div class="flex items-start gap-3.5">
+                <span class="flex-shrink-0 w-9 h-9 rounded-xl bg-scada-600 text-white font-mono font-bold flex items-center justify-center shadow-sm">05</span>
+                <div>
+                  <h3 class="text-lg font-bold text-slate-900">Алгоритм расчета разветвлений (проценты и остаток)</h3>
+                  <p class="text-sm text-slate-500 mt-0.5">Универсальный шаблон из 3 шагов на примере выхода из Блока 3 (ветвь 8% в Блок 4 и остаток в Блок 5)</p>
+                </div>
+              </div>
+              <label class="inline-flex items-center gap-2 cursor-pointer select-none bg-slate-50 hover:bg-slate-100 px-3 py-1.5 rounded-xl border border-slate-200 transition">
+                <input type="checkbox" data-step="5" onchange="toggleStep(5)" class="w-4 h-4 rounded text-scada-600 focus:ring-scada-500" />
+                <span class="text-xs font-semibold text-slate-700">Выполнено</span>
+              </label>
+            </div>
+
+            <div class="mt-4 grid grid-cols-1 lg:grid-cols-3 gap-4">
+              <!-- Шаг A: Команда процента -->
+              <div class="rounded-xl border border-indigo-200 bg-indigo-50/40 p-4 flex flex-col justify-between">
+                <div class="space-y-2 text-sm">
+                  <div class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-indigo-100 text-indigo-800 text-xs font-bold">
+                    Шаг 5.1 • Команда (Процент)
+                  </div>
+                  <p class="text-slate-700">ПКМ на <code class="font-mono text-xs">Схема</code> → <strong>Вставить → Команду</strong>.</p>
+                  <ul class="space-y-1 text-xs text-slate-600">
+                    <li>• Имя: <code class="font-mono font-bold text-slate-900">8%</code></li>
+                    <li>• Диапазон: <code class="font-mono font-bold text-slate-900">Проценты</code></li>
+                    <li>• Вкладка <strong>Опрос выхода</strong>: ставим галочку <strong>«Значение до опроса»</strong> и вводим <code class="font-mono font-bold text-indigo-700">8,00</code>.</li>
+                  </ul>
+                </div>
+              </div>
+
+              <!-- Шаг B: Расчет процентной ветви -->
+              <div class="rounded-xl border border-scada-200 bg-scada-50/40 p-4 flex flex-col justify-between">
+                <div class="space-y-2 text-sm">
+                  <div class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-scada-100 text-scada-800 text-xs font-bold">
+                    Шаг 5.2 • Расчет целевого узла (4)
+                  </div>
+                  <p class="text-slate-700">ПКМ на <code class="font-mono text-xs">Схема</code> → <strong>Вставить → Расчет</strong>.</p>
+                  <ul class="space-y-1 text-xs text-slate-600">
+                    <li>• Имя: <code class="font-mono font-bold text-slate-900">4</code></li>
+                    <li>• Диапазон: <code class="font-mono font-bold text-slate-900">0-650</code></li>
+                    <li>• Перетаскиваем <code class="font-mono">3</code> и <code class="font-mono">8%</code> в таблицу формулы.</li>
+                  </ul>
+                </div>
+                <div class="mt-3 flex items-center justify-between bg-slate-900 text-cyan-300 font-mono text-xs px-3 py-2 rounded-lg">
+                  <span>_3 * _8_ / 100</span>
+                  <button onclick="copyText('_3 * _8_ / 100')" class="text-[11px] bg-slate-800 hover:bg-slate-700 text-white px-2 py-0.5 rounded">Копия</button>
+                </div>
+              </div>
+
+              <!-- Шаг C: Расчет остатка (стрелка без %) -->
+              <div class="rounded-xl border border-emerald-200 bg-emerald-50/40 p-4 flex flex-col justify-between">
+                <div class="space-y-2 text-sm">
+                  <div class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 text-xs font-bold">
+                    Шаг 5.3 • Остаток без % (с 3 на 5)
+                  </div>
+                  <p class="text-slate-700">ПКМ на <code class="font-mono text-xs">Схема</code> → <strong>Вставить → Расчет</strong>.</p>
+                  <ul class="space-y-1 text-xs text-slate-600">
+                    <li>• Имя: <code class="font-mono font-bold text-slate-900">с 3 на 5</code> (скобки писать не надо!)</li>
+                    <li>• Диапазон: <code class="font-mono font-bold text-slate-900">0-650</code></li>
+                    <li>• Из главного узла <code class="font-mono">3</code> вычитаем ответвление <code class="font-mono">4</code>.</li>
+                  </ul>
+                </div>
+                <div class="mt-3 flex items-center justify-between bg-slate-900 text-emerald-300 font-mono text-xs px-3 py-2 rounded-lg">
+                  <span>_3 - _4</span>
+                  <button onclick="copyText('_3 - _4')" class="text-[11px] bg-slate-800 hover:bg-slate-700 text-white px-2 py-0.5 rounded">Копия</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <!-- ЭТАП 6: ПОРЯДОК ОБХОДА И ИНТЕРАКТИВНОЕ ДЕРЕВО ИЗ 19 ЭЛЕМЕНТОВ -->
+        <article id="step-card-6" class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden transition-all">
+          <div class="p-5 sm:p-6">
+            <div class="flex items-start justify-between gap-4">
+              <div class="flex items-start gap-3.5">
+                <span class="flex-shrink-0 w-9 h-9 rounded-xl bg-scada-600 text-white font-mono font-bold flex items-center justify-center shadow-sm">06</span>
+                <div>
+                  <h3 class="text-lg font-bold text-slate-900">Порядок обхода всей схемы (шаги 1–7) и дерево из 19 элементов</h3>
+                  <p class="text-sm text-slate-500 mt-0.5">Кликните на любой из 19 элементов в дереве ниже, чтобы увидеть его тип, шкалу и готовую формулу</p>
+                </div>
+              </div>
+              <label class="inline-flex items-center gap-2 cursor-pointer select-none bg-slate-50 hover:bg-slate-100 px-3 py-1.5 rounded-xl border border-slate-200 transition">
+                <input type="checkbox" data-step="6" onchange="toggleStep(6)" class="w-4 h-4 rounded text-scada-600 focus:ring-scada-500" />
+                <span class="text-xs font-semibold text-slate-700">Выполнено</span>
+              </label>
+            </div>
+
+            <!-- Порядок обхода (красные цифры 1..7 на схеме из методички) -->
+            <div class="mt-4 bg-slate-50 rounded-xl p-4 border border-slate-200">
+              <div class="text-xs font-bold uppercase tracking-wider text-slate-600 mb-2.5">Последовательность расчета узлов после Блока 5:</div>
+              <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5 text-xs">
+                <div class="bg-white p-2.5 rounded-lg border border-slate-200">
+                  <span class="font-mono font-bold text-rose-600">Порядок 1 → Блок 6:</span>
+                  <div class="text-slate-600 mt-0.5">Команда <code class="font-mono">9%</code>, расчет <code class="font-mono">6</code> = <code class="font-mono text-scada-700">с_3_на_5 * _9_ / 100</code></div>
+                </div>
+                <div class="bg-white p-2.5 rounded-lg border border-slate-200">
+                  <span class="font-mono font-bold text-rose-600">Порядок 2 → Блок 7:</span>
+                  <div class="text-slate-600 mt-0.5">Расчет <code class="font-mono">с 5 на 7</code> = <code class="font-mono text-scada-700">с_3_на_5 - _6</code></div>
+                </div>
+                <div class="bg-white p-2.5 rounded-lg border border-slate-200">
+                  <span class="font-mono font-bold text-rose-600">Порядок 3 и 4 → Блоки 8, 9:</span>
+                  <div class="text-slate-600 mt-0.5"><code class="font-mono">8</code> (<code class="font-mono">10%</code> от 6) и <code class="font-mono">9</code> (<code class="font-mono">11%</code> от 7)</div>
+                </div>
+                <div class="bg-white p-2.5 rounded-lg border border-slate-200">
+                  <span class="font-mono font-bold text-rose-600">Порядок 5, 6, 7 → 10, 11, 12:</span>
+                  <div class="text-slate-600 mt-0.5">Слияние <code class="font-mono">10</code>, затем <code class="font-mono">11</code> (<code class="font-mono">12%</code>) и <code class="font-mono">с 10 на 12</code></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Интерактивное дерево проекта MasterSCADA (19 элементов) -->
+            <div class="mt-4 grid grid-cols-1 lg:grid-cols-12 gap-4">
+              <!-- Левая колонка: Дерево MasterSCADA -->
+              <div class="lg:col-span-5 bg-white rounded-xl border-2 border-slate-300 overflow-hidden flex flex-col">
+                <div class="bg-slate-100 px-3 py-2 border-b border-slate-300 flex items-center justify-between">
+                  <span class="text-xs font-bold text-slate-700 flex items-center gap-1.5">
+                    <svg class="w-4 h-4 text-amber-600" fill="currentColor" viewBox="0 0 20 20"><path d="M2 6a2 2 0 012-2h5l2 2h5a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"/></svg>
+                    Объект → Схема (19 элементов)
+                  </span>
+                  <span class="text-[11px] font-mono text-slate-500">Кликните элемент</span>
+                </div>
+                <div id="masterscada-tree-list" class="p-2 max-h-80 overflow-y-auto divide-y divide-slate-100 font-mono text-xs">
+                  <!-- Генерируется через JS -->
+                </div>
+              </div>
+
+              <!-- Правая колонка: Свойства выбранного элемента дерева -->
+              <div class="lg:col-span-7 bg-slate-900 text-slate-100 rounded-xl p-5 flex flex-col justify-between border border-slate-800">
+                <div id="tree-inspector-content" class="space-y-4">
+                  <!-- Заполняется через JS -->
+                </div>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <!-- ЭТАП 7 -->
+        <article id="step-card-7" class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden transition-all">
+          <div class="p-5 sm:p-6">
+            <div class="flex items-start justify-between gap-4">
+              <div class="flex items-start gap-3.5">
+                <span class="flex-shrink-0 w-9 h-9 rounded-xl bg-scada-600 text-white font-mono font-bold flex items-center justify-center shadow-sm">07</span>
+                <div>
+                  <h3 class="text-lg font-bold text-slate-900">Построение и привязка мнемосхемы</h3>
+                  <p class="text-sm text-slate-500 mt-0.5">Объект <code class="font-mono text-xs bg-slate-100 px-1.5 py-0.5 rounded">Схема</code> → вкладка <code class="font-mono text-xs bg-slate-100 px-1.5 py-0.5 rounded">Окна</code> → строка <code class="font-mono text-xs bg-slate-100 px-1.5 py-0.5 rounded">Мнемосхема</code> → кнопка <strong>Создать</strong></p>
+                </div>
+              </div>
+              <label class="inline-flex items-center gap-2 cursor-pointer select-none bg-slate-50 hover:bg-slate-100 px-3 py-1.5 rounded-xl border border-slate-200 transition">
+                <input type="checkbox" data-step="7" onchange="toggleStep(7)" class="w-4 h-4 rounded text-scada-600 focus:ring-scada-500" />
+                <span class="text-xs font-semibold text-slate-700">Выполнено</span>
+              </label>
+            </div>
+
+            <div class="mt-4 grid grid-cols-1 lg:grid-cols-2 gap-4">
+              <!-- Левая карточка: Примитивы и трубы -->
+              <div class="bg-slate-50 rounded-xl p-4 border border-slate-200 space-y-3 text-sm">
+                <div class="font-bold text-slate-800">1. Размещение элементов из Палитры:</div>
+                <ul class="space-y-1.5 text-slate-600 text-xs sm:text-sm">
+                  <li>• <strong>Текст и Часы:</strong> из раздела <em>Окна / Управление</em> добавляем элемент <strong>Текст</strong> (ПКМ → Свойства → Текст → выравнивание по центру, пишем «Схема Фамилия И.О.») и элемент <strong>Часы</strong>.</li>
+                  <li>• <strong>12 Цилиндров:</strong> из раздела <em>Объёмные элементы</em> перетаскиваем 12 цилиндров (Блок 10 делаем шире по горизонтали).</li>
+                  <li>• <strong>Трубопроводы:</strong> из раздела <em>Объёмные элементы</em> добавляем <strong>Трубопровод</strong>. Для поворота: <code class="font-mono text-xs bg-white px-1 rounded border">ПКМ → Свойства → Параметры → Контрольные точки</code>, выделяем вторую точку <code class="font-mono text-xs">{0, 90}</code>, вводим координаты и жмем <strong>Присвоить → ОК</strong>:</li>
+                </ul>
+
+                <!-- Таблица координат труб -->
+                <div class="overflow-hidden rounded-lg border border-slate-300 bg-white">
+                  <table class="w-full text-xs font-mono text-left">
+                    <thead class="bg-slate-100 text-slate-700 border-b border-slate-200">
+                      <tr>
+                        <th class="py-1.5 px-3">Направление трубы</th>
+                        <th class="py-1.5 px-3">Точка 1</th>
+                        <th class="py-1.5 px-3">Точка 2 (X, Y)</th>
+                      </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-200">
+                      <tr>
+                        <td class="py-1.5 px-3 font-sans">Вертикально вниз (3 → 5)</td>
+                        <td class="py-1.5 px-3">{0, 0}</td>
+                        <td class="py-1.5 px-3 font-bold text-scada-700">X = 0, Y = 90</td>
+                      </tr>
+                      <tr>
+                        <td class="py-1.5 px-3 font-sans">Диагональ влево-вниз</td>
+                        <td class="py-1.5 px-3">{0, 0}</td>
+                        <td class="py-1.5 px-3 font-bold text-scada-700">X = -20, Y = 20</td>
+                      </tr>
+                      <tr>
+                        <td class="py-1.5 px-3 font-sans">Диагональ вправо-вниз</td>
+                        <td class="py-1.5 px-3">{0, 0}</td>
+                        <td class="py-1.5 px-3 font-bold text-scada-700">X = 20, Y = 20</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              <!-- Правая карточка: Привязка динамики -->
+              <div class="bg-slate-50 rounded-xl p-4 border border-slate-200 space-y-3 text-sm">
+                <div class="font-bold text-slate-800">2. Привязка слайдеров, цифр и заливки:</div>
+                <ul class="space-y-2 text-slate-600 text-xs sm:text-sm">
+                  <li>
+                    <span class="font-semibold text-slate-800">• Слайдеры процентов:</span> перетащите команды (<code class="font-mono text-xs">8%</code>, <code class="font-mono text-xs">9%</code>, <code class="font-mono text-xs">10%</code>, <code class="font-mono text-xs">11%</code>, <code class="font-mono text-xs">12%</code>) на мнемосхему <strong>ПРАВОЙ кнопкой мыши</strong> и в меню выберите <strong>Слайдер</strong>.
+                  </li>
+                  <li>
+                    <span class="font-semibold text-slate-800">• Индикаторы значений:</span> перетащите значения и расчеты к каждому из 12 цилиндров. Чтобы убрать лишнее название перед цифрами (например, <code class="font-mono text-xs">300-350кг 0.00 кг</code>), откройте <code class="font-mono text-xs bg-white px-1 rounded border">ПКМ → Свойства → Значение</code> и <strong>очистите поле «Текст до значения»</strong>.
+                  </li>
+                  <li>
+                    <span class="font-semibold text-slate-800">• Анимация заливки цилиндров:</span> выделите цилиндр → внизу справа откройте вкладку <strong>Свойства</strong> → кнопка входов (синяя стрелка) → раздел <strong>Заливка</strong> → перетащите нужный расчет/значение из дерева на строки <strong>«Процент заливки»</strong> и <strong>«Цвет заливки»</strong>.
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <!-- ЭТАП 8 -->
+        <article id="step-card-8" class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden transition-all">
+          <div class="p-5 sm:p-6">
+            <div class="flex items-start justify-between gap-4">
+              <div class="flex items-start gap-3.5">
+                <span class="flex-shrink-0 w-9 h-9 rounded-xl bg-emerald-600 text-white font-mono font-bold flex items-center justify-center shadow-sm">08</span>
+                <div>
+                  <h3 class="text-lg font-bold text-slate-900">Запуск режима исполнения и проверка на нулях</h3>
+                  <p class="text-sm text-slate-500 mt-0.5">Проверка баланса потоков перед сдачей работы преподавателю</p>
+                </div>
+              </div>
+              <label class="inline-flex items-center gap-2 cursor-pointer select-none bg-slate-50 hover:bg-slate-100 px-3 py-1.5 rounded-xl border border-slate-200 transition">
+                <input type="checkbox" data-step="8" onchange="toggleStep(8)" class="w-4 h-4 rounded text-emerald-600 focus:ring-emerald-500" />
+                <span class="text-xs font-semibold text-slate-700">Выполнено</span>
+              </label>
+            </div>
+
+            <div class="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+              <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                <div class="font-bold text-slate-800 mb-1">1. Старт проекта</div>
+                <p class="text-xs text-slate-600">Нажмите иконку <strong>«Рука / Запуск»</strong> (режим исполнения) на верхней панели инструментов MasterSCADA.</p>
+              </div>
+              <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                <div class="font-bold text-slate-800 mb-1">2. Отключение сообщений</div>
+                <p class="text-xs text-slate-600">При появлении окна «Сообщения» (<em>Минимальное предупреждающее</em>) нажмите <strong>Запретить → Все сообщения → Закрыть</strong>. Затем ПКМ на <code class="font-mono">Схема → Перейти на → Мнемосхема</code>.</p>
+              </div>
+              <div class="bg-emerald-50/70 p-4 rounded-xl border border-emerald-200">
+                <div class="font-bold text-emerald-900 mb-1">3. Контрольный тест «Все % = 0»</div>
+                <p class="text-xs text-emerald-800">Опустите все 5 слайдеров в <code class="font-mono font-bold">0.00</code>. Все боковые отводы (<code class="font-mono font-bold">4, 6, 8, 9, 11</code>) должны показать <code class="font-mono font-bold">0.00 кг</code>, а магистральные узлы (<code class="font-mono font-bold">3, 5, 7, 10, 12</code>) — <strong>одинаковую сумму входов</strong>!</p>
+              </div>
+            </div>
+          </div>
+        </article>
+
+      </div>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- РАЗДЕЛ 2: ИНТЕРАКТИВНЫЙ СИМУЛЯТОР МНЕМОСХЕМЫ                         -->
+    <!-- ===================================================================== -->
+    <section id="section-simulator" class="hidden space-y-5">
+      <!-- Панель управления симулятором -->
+      <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 sm:p-5">
+        <div class="flex flex-col xl:flex-row xl:items-center justify-between gap-4">
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+              <h2 class="text-lg sm:text-xl font-bold text-slate-900">Интерактивный симулятор мнемосхемы MasterSCADA</h2>
+            </div>
+            <p class="text-xs sm:text-sm text-slate-500 mt-0.5">
+              Двигайте слайдеры процентов или нажмите на любой цилиндр / трубу для просмотра формулы и телеметрии.
+            </p>
+          </div>
+
+          <!-- Кнопки управления режимами -->
+          <div class="flex flex-wrap items-center gap-2">
+            <button id="btn-noise-toggle" onclick="toggleNoiseMode()" class="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold bg-scada-600 text-white shadow-sm hover:bg-scada-700 transition">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+              </svg>
+              <span id="noise-btn-label">Имитация «Шум»: ВКЛ</span>
+            </button>
+
+            <button onclick="stepNoiseOnce()" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-200 transition">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+              </svg>
+              <span>Обновить шум</span>
+            </button>
+
+            <button onclick="setZeroCheck()" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold bg-amber-500 hover:bg-amber-600 text-white shadow-sm transition">
+              <span>Сбросить все % в 0 (Проверка)</span>
+            </button>
+
+            <button onclick="restoreDefaultPercentages()" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 transition">
+              <span>Вернуть % варианта</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Панель ручной корректировки входных датчиков -->
+        <div class="mt-4 pt-3 border-t border-slate-100 grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div class="flex items-center gap-3 bg-slate-50 px-3.5 py-2 rounded-xl border border-slate-200">
+            <span class="text-xs font-semibold text-slate-700 whitespace-nowrap">Вход 1 (<span id="sim-label-in1">110–300</span> кг):</span>
+            <input id="sim-input-1-range" type="range" min="110" max="300" step="0.01" value="120.84" oninput="manualInputChange(1, this.value)" class="w-full accent-scada-600 cursor-pointer" />
+            <input id="sim-input-1-num" type="number" step="0.01" value="120.84" onchange="manualInputChange(1, this.value)" class="w-24 font-mono text-xs font-bold text-right bg-white border border-slate-300 rounded-lg px-2 py-1" />
+          </div>
+          <div class="flex items-center gap-3 bg-slate-50 px-3.5 py-2 rounded-xl border border-slate-200">
+            <span class="text-xs font-semibold text-slate-700 whitespace-nowrap">Вход 2 (<span id="sim-label-in2">300–350</span> кг):</span>
+            <input id="sim-input-2-range" type="range" min="300" max="350" step="0.01" value="302.85" oninput="manualInputChange(2, this.value)" class="w-full accent-scada-600 cursor-pointer" />
+            <input id="sim-input-2-num" type="number" step="0.01" value="302.85" onchange="manualInputChange(2, this.value)" class="w-24 font-mono text-xs font-bold text-right bg-white border border-slate-300 rounded-lg px-2 py-1" />
+          </div>
+        </div>
+      </div>
+
+      <!-- Основная рабочая область: Слева Мнемосхема, Справа Инспектор узла -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+
+        <!-- Левая часть (8 колонок): Окно мнемосхемы MasterSCADA -->
+        <div class="lg:col-span-8 bg-white rounded-2xl border-2 border-slate-300 shadow-md overflow-hidden">
+          <!-- Заголовок окна мнемосхемы как в SCADA -->
+          <div class="bg-gradient-to-r from-slate-800 to-slate-900 text-white px-4 py-2.5 flex flex-wrap items-center justify-between gap-2 border-b border-slate-700">
+            <div class="flex items-center gap-2">
+              <span class="w-3 h-3 rounded-full bg-rose-500"></span>
+              <span class="w-3 h-3 rounded-full bg-amber-400"></span>
+              <span class="w-3 h-3 rounded-full bg-emerald-400"></span>
+              <span class="ml-2 text-xs sm:text-sm font-semibold tracking-wide">Схема АСУ ТП — Мнемосхема (Режим исполнения)</span>
+            </div>
+            <!-- Элемент "Часы" из методички -->
+            <div id="scada-live-clock" class="font-mono text-xs bg-slate-200 text-slate-900 font-bold px-3 py-1 rounded border border-slate-400 shadow-inner">
+              27.11.2026 11:46:00
+            </div>
+          </div>
+
+          <!-- Полотно мнемосхемы с адаптивным соотношением сторон -->
+          <div class="relative w-full bg-white select-none overflow-x-auto">
+            <div class="min-w-[660px] relative">
+              <svg id="mnemonic-svg" viewBox="0 0 760 660" class="w-full h-auto block">
+                <defs>
+                  <!-- 3D-градиенты для трубопроводов -->
+                  <linearGradient id="pipeGradH" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stop-color="#1e3a8a" />
+                    <stop offset="45%" stop-color="#3b82f6" />
+                    <stop offset="100%" stop-color="#172554" />
+                  </linearGradient>
+                  <linearGradient id="pipeGradV" x1="0" y1="0" x2="1" y2="0">
+                    <stop offset="0%" stop-color="#1e3a8a" />
+                    <stop offset="45%" stop-color="#3b82f6" />
+                    <stop offset="100%" stop-color="#172554" />
+                  </linearGradient>
+                  <!-- Блик на цилиндрах для 3D-объема как в MasterSCADA -->
+                  <radialGradient id="cylinderHighlight" cx="35%" cy="30%" r="65%">
+                    <stop offset="0%" stop-color="rgba(255,255,255,0.48)" />
+                    <stop offset="55%" stop-color="rgba(255,255,255,0.06)" />
+                    <stop offset="100%" stop-color="rgba(0,0,0,0.45)" />
+                  </radialGradient>
+                </defs>
+
+                <!-- ТРУБОПРОВОДЫ (Кликабельные для инспекции) -->
+                <g id="pipes-layer">
+                  <!-- 1 -> 3 -->
+                  <line id="pipe-1-3" onclick="selectNode('pipe_1_3')" x1="215" y1="68" x2="295" y2="145" stroke="url(#pipeGradV)" stroke-width="10" stroke-linecap="round" class="cursor-pointer hover:opacity-80" />
+                  <!-- 2 -> 3 -->
+                  <line id="pipe-2-3" onclick="selectNode('pipe_2_3')" x1="415" y1="68" x2="335" y2="145" stroke="url(#pipeGradV)" stroke-width="10" stroke-linecap="round" class="cursor-pointer hover:opacity-80" />
+                  <!-- 3 -> 4 (8%) -->
+                  <line id="pipe-3-4" onclick="selectNode('pipe_3_4')" x1="340" y1="155" x2="545" y2="155" stroke="url(#pipeGradH)" stroke-width="10" stroke-linecap="round" class="cursor-pointer hover:opacity-80" />
+                  <!-- 3 -> 5 -->
+                  <line id="pipe-3-5" onclick="selectNode('pipe_3_5')" x1="315" y1="175" x2="315" y2="255" stroke="url(#pipeGradV)" stroke-width="10" stroke-linecap="round" class="cursor-pointer hover:opacity-80" />
+                  <!-- 5 -> 6 (9%) -->
+                  <line id="pipe-5-6" onclick="selectNode('pipe_5_6')" x1="295" y1="275" x2="205" y2="355" stroke="url(#pipeGradV)" stroke-width="10" stroke-linecap="round" class="cursor-pointer hover:opacity-80" />
+                  <!-- 5 -> 7 -->
+                  <line id="pipe-5-7" onclick="selectNode('pipe_5_7')" x1="335" y1="275" x2="435" y2="355" stroke="url(#pipeGradV)" stroke-width="10" stroke-linecap="round" class="cursor-pointer hover:opacity-80" />
+                  <!-- 6 -> 8 (10%) -->
+                  <line id="pipe-6-8" onclick="selectNode('pipe_6_8')" x1="180" y1="375" x2="105" y2="455" stroke="url(#pipeGradV)" stroke-width="10" stroke-linecap="round" class="cursor-pointer hover:opacity-80" />
+                  <!-- 6 -> 10 -->
+                  <line id="pipe-6-10" onclick="selectNode('pipe_6_10')" x1="215" y1="375" x2="305" y2="475" stroke="url(#pipeGradV)" stroke-width="10" stroke-linecap="round" class="cursor-pointer hover:opacity-80" />
+                  <!-- 7 -> 10 -->
+                  <line id="pipe-7-10" onclick="selectNode('pipe_7_10')" x1="425" y1="375" x2="365" y2="475" stroke="url(#pipeGradV)" stroke-width="10" stroke-linecap="round" class="cursor-pointer hover:opacity-80" />
+                  <!-- 7 -> 9 (11%) -->
+                  <line id="pipe-7-9" onclick="selectNode('pipe_7_9')" x1="460" y1="375" x2="565" y2="455" stroke="url(#pipeGradV)" stroke-width="10" stroke-linecap="round" class="cursor-pointer hover:opacity-80" />
+                  <!-- 10 -> 11 (12%) -->
+                  <line id="pipe-10-11" onclick="selectNode('pipe_10_11')" x1="270" y1="510" x2="175" y2="590" stroke="url(#pipeGradV)" stroke-width="10" stroke-linecap="round" class="cursor-pointer hover:opacity-80" />
+                  <!-- 10 -> 12 -->
+                  <line id="pipe-10-12" onclick="selectNode('pipe_10_12')" x1="415" y1="510" x2="535" y2="590" stroke="url(#pipeGradV)" stroke-width="10" stroke-linecap="round" class="cursor-pointer hover:opacity-80" />
+                </g>
+
+                <!-- 12 ОБЪЕМНЫХ ЦИЛИНДРОВ -->
+                <g id="vessels-layer">
+                  <!-- Блок 1 (110-300кг) -->
+                  <g id="node-1" onclick="selectNode('1')" class="vessel-node">
+                    <rect id="fill-1" x="175" y="32" width="72" height="54" rx="22" fill="#0b249e" />
+                    <rect x="175" y="32" width="72" height="54" rx="22" fill="url(#cylinderHighlight)" />
+                    <text x="211" y="63" text-anchor="middle" fill="#ffffff" font-family="JetBrains Mono" font-size="13" font-weight="700">1</text>
+                  </g>
+
+                  <!-- Блок 2 (300-350кг) -->
+                  <g id="node-2" onclick="selectNode('2')" class="vessel-node">
+                    <rect id="fill-2" x="385" y="32" width="72" height="54" rx="22" fill="#0b249e" />
+                    <rect x="385" y="32" width="72" height="54" rx="22" fill="url(#cylinderHighlight)" />
+                    <text x="421" y="63" text-anchor="middle" fill="#ffffff" font-family="JetBrains Mono" font-size="13" font-weight="700">2</text>
+                  </g>
+
+                  <!-- Блок 3 (Сумма) -->
+                  <g id="node-3" onclick="selectNode('3')" class="vessel-node">
+                    <rect id="fill-3" x="279" y="128" width="72" height="54" rx="22" fill="#0b249e" />
+                    <rect x="279" y="128" width="72" height="54" rx="22" fill="url(#cylinderHighlight)" />
+                    <text x="315" y="159" text-anchor="middle" fill="#ffffff" font-family="JetBrains Mono" font-size="13" font-weight="700">3</text>
+                  </g>
+
+                  <!-- Блок 4 (8% от 3) -->
+                  <g id="node-4" onclick="selectNode('4')" class="vessel-node">
+                    <rect id="fill-4" x="520" y="128" width="72" height="54" rx="22" fill="#0b249e" />
+                    <rect x="520" y="128" width="72" height="54" rx="22" fill="url(#cylinderHighlight)" />
+                    <text x="556" y="159" text-anchor="middle" fill="#ffffff" font-family="JetBrains Mono" font-size="13" font-weight="700">4</text>
+                  </g>
+
+                  <!-- Блок 5 (с 3 на 5) -->
+                  <g id="node-5" onclick="selectNode('5')" class="vessel-node">
+                    <rect id="fill-5" x="279" y="236" width="72" height="54" rx="22" fill="#0b249e" />
+                    <rect x="279" y="236" width="72" height="54" rx="22" fill="url(#cylinderHighlight)" />
+                    <text x="315" y="267" text-anchor="middle" fill="#ffffff" font-family="JetBrains Mono" font-size="13" font-weight="700">5</text>
+                  </g>
+
+                  <!-- Блок 6 (9% от 5) -->
+                  <g id="node-6" onclick="selectNode('6')" class="vessel-node">
+                    <rect id="fill-6" x="155" y="336" width="72" height="54" rx="22" fill="#0b249e" />
+                    <rect x="155" y="336" width="72" height="54" rx="22" fill="url(#cylinderHighlight)" />
+                    <text x="191" y="367" text-anchor="middle" fill="#ffffff" font-family="JetBrains Mono" font-size="13" font-weight="700">6</text>
+                  </g>
+
+                  <!-- Блок 7 (с 5 на 7) -->
+                  <g id="node-7" onclick="selectNode('7')" class="vessel-node">
+                    <rect id="fill-7" x="405" y="336" width="72" height="54" rx="22" fill="#0b249e" />
+                    <rect x="405" y="336" width="72" height="54" rx="22" fill="url(#cylinderHighlight)" />
+                    <text x="441" y="367" text-anchor="middle" fill="#ffffff" font-family="JetBrains Mono" font-size="13" font-weight="700">7</text>
+                  </g>
+
+                  <!-- Блок 8 (10% от 6) -->
+                  <g id="node-8" onclick="selectNode('8')" class="vessel-node">
+                    <rect id="fill-8" x="58" y="436" width="72" height="54" rx="22" fill="#0b249e" />
+                    <rect x="58" y="436" width="72" height="54" rx="22" fill="url(#cylinderHighlight)" />
+                    <text x="94" y="467" text-anchor="middle" fill="#ffffff" font-family="JetBrains Mono" font-size="13" font-weight="700">8</text>
+                  </g>
+
+                  <!-- Блок 9 (11% от 7) -->
+                  <g id="node-9" onclick="selectNode('9')" class="vessel-node">
+                    <rect id="fill-9" x="545" y="436" width="72" height="54" rx="22" fill="#0b249e" />
+                    <rect x="545" y="436" width="72" height="54" rx="22" fill="url(#cylinderHighlight)" />
+                    <text x="581" y="467" text-anchor="middle" fill="#ffffff" font-family="JetBrains Mono" font-size="13" font-weight="700">9</text>
+                  </g>
+
+                  <!-- Блок 10 (Широкий накопитель слияния) -->
+                  <g id="node-10" onclick="selectNode('10')" class="vessel-node">
+                    <rect id="fill-10" x="235" y="456" width="215" height="68" rx="34" fill="#0b249e" />
+                    <rect x="235" y="456" width="215" height="68" rx="34" fill="url(#cylinderHighlight)" />
+                    <text x="342" y="495" text-anchor="middle" fill="#ffffff" font-family="JetBrains Mono" font-size="15" font-weight="700">10</text>
+                  </g>
+
+                  <!-- Блок 11 (12% от 10) -->
+                  <g id="node-11" onclick="selectNode('11')" class="vessel-node">
+                    <rect id="fill-11" x="128" y="566" width="72" height="54" rx="22" fill="#0b249e" />
+                    <rect x="128" y="566" width="72" height="54" rx="22" fill="url(#cylinderHighlight)" />
+                    <text x="164" y="597" text-anchor="middle" fill="#ffffff" font-family="JetBrains Mono" font-size="13" font-weight="700">11</text>
+                  </g>
+
+                  <!-- Блок 12 (с 10 на 12) -->
+                  <g id="node-12" onclick="selectNode('12')" class="vessel-node">
+                    <rect id="fill-12" x="515" y="566" width="72" height="54" rx="22" fill="#0b249e" />
+                    <rect x="515" y="566" width="72" height="54" rx="22" fill="url(#cylinderHighlight)" />
+                    <text x="551" y="597" text-anchor="middle" fill="#ffffff" font-family="JetBrains Mono" font-size="13" font-weight="700">12</text>
+                  </g>
+                </g>
+
+                <!-- ДИНАМИЧЕСКИЕ ТЕКСТОВЫЕ ИНДИКАТОРЫ (0.00 кг) -->
+                <g font-family="JetBrains Mono" font-size="14" font-weight="700">
+                  <text id="val-label-1" x="162" y="63" text-anchor="end" fill="#0f172a">120.84 кг</text>
+                  <text id="val-label-2" x="470" y="63" text-anchor="start" fill="#0f172a">302.85 кг</text>
+                  <text id="val-label-3" x="266" y="160" text-anchor="end" fill="#0f172a">423.69 кг</text>
+                  <text id="val-label-4" x="604" y="160" text-anchor="start" fill="#0f172a">33.90 кг</text>
+                  <text id="val-label-5" x="364" y="275" text-anchor="start" fill="#0f172a">389.79 кг</text>
+                  <text id="val-label-6" x="142" y="352" text-anchor="end" fill="#0f172a">35.08 кг</text>
+                  <text id="val-label-7" x="490" y="352" text-anchor="start" fill="#0f172a">354.71 кг</text>
+                  <text id="val-label-8" x="94" y="512" text-anchor="middle" fill="#0f172a">3.51 кг</text>
+                  <text id="val-label-9" x="581" y="512" text-anchor="middle" fill="#0f172a">39.02 кг</text>
+                  <text id="val-label-10" x="342" y="546" text-anchor="middle" fill="#0f172a">347.26 кг</text>
+                  <text id="val-label-11" x="164" y="640" text-anchor="middle" fill="#0f172a">41.67 кг</text>
+                  <text id="val-label-12" x="551" y="640" text-anchor="middle" fill="#0f172a">305.59 кг</text>
+                </g>
+              </svg>
+
+              <!-- 5 ВЕРТИКАЛЬНЫХ СЛАЙДЕРОВ MASTER-SCADA ПОВЕРХ ВЕТВЕЙ -->
+              <!-- Слайдер 8% (3 -> 4) -->
+              <div style="left: 55.5%; top: 16%;" class="absolute bg-slate-100/95 border border-slate-400 rounded shadow px-1.5 py-1 flex flex-col items-center">
+                <span id="slider-title-p1" class="font-mono text-[10px] font-bold text-slate-800">8%</span>
+                <input id="slider-p1" type="range" min="0" max="100" step="1" value="8" oninput="updatePercent(1, this.value)" class="scada-vslider" />
+                <span id="slider-val-p1" class="font-mono text-[10px] bg-white border border-slate-300 px-1 rounded text-slate-900 mt-0.5">8.00</span>
+              </div>
+
+              <!-- Слайдер 9% (5 -> 6) -->
+              <div style="left: 31.5%; top: 38.5%;" class="absolute bg-slate-100/95 border border-slate-400 rounded shadow px-1.5 py-1 flex flex-col items-center">
+                <span id="slider-title-p2" class="font-mono text-[10px] font-bold text-slate-800">9%</span>
+                <input id="slider-p2" type="range" min="0" max="100" step="1" value="9" oninput="updatePercent(2, this.value)" class="scada-vslider" />
+                <span id="slider-val-p2" class="font-mono text-[10px] bg-white border border-slate-300 px-1 rounded text-slate-900 mt-0.5">9.00</span>
+              </div>
+
+              <!-- Слайдер 10% (6 -> 8) -->
+              <div style="left: 16.5%; top: 53.5%;" class="absolute bg-slate-100/95 border border-slate-400 rounded shadow px-1.5 py-1 flex flex-col items-center">
+                <span id="slider-title-p3" class="font-mono text-[10px] font-bold text-slate-800">10%</span>
+                <input id="slider-p3" type="range" min="0" max="100" step="1" value="10" oninput="updatePercent(3, this.value)" class="scada-vslider" />
+                <span id="slider-val-p3" class="font-mono text-[10px] bg-white border border-slate-300 px-1 rounded text-slate-900 mt-0.5">10.00</span>
+              </div>
+
+              <!-- Слайдер 11% (7 -> 9) -->
+              <div style="left: 65.5%; top: 53.5%;" class="absolute bg-slate-100/95 border border-slate-400 rounded shadow px-1.5 py-1 flex flex-col items-center">
+                <span id="slider-title-p4" class="font-mono text-[10px] font-bold text-slate-800">11%</span>
+                <input id="slider-p4" type="range" min="0" max="100" step="1" value="11" oninput="updatePercent(4, this.value)" class="scada-vslider" />
+                <span id="slider-val-p4" class="font-mono text-[10px] bg-white border border-slate-300 px-1 rounded text-slate-900 mt-0.5">11.00</span>
+              </div>
+
+              <!-- Слайдер 12% (10 -> 11) -->
+              <div style="left: 25.5%; top: 73.5%;" class="absolute bg-slate-100/95 border border-slate-400 rounded shadow px-1.5 py-1 flex flex-col items-center">
+                <span id="slider-title-p5" class="font-mono text-[10px] font-bold text-slate-800">12%</span>
+                <input id="slider-p5" type="range" min="0" max="100" step="1" value="12" oninput="updatePercent(5, this.value)" class="scada-vslider" />
+                <span id="slider-val-p5" class="font-mono text-[10px] bg-white border border-slate-300 px-1 rounded text-slate-900 mt-0.5">12.00</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Легенда заливки внизу окна мнемосхемы -->
+          <div class="bg-slate-50 px-4 py-2.5 border-t border-slate-200 flex flex-wrap items-center justify-between gap-2 text-xs text-slate-600">
+            <div class="flex items-center gap-3">
+              <span class="font-semibold">Цветовая индикация заливки шкалы:</span>
+              <span class="inline-flex items-center gap-1"><span class="w-3 h-3 rounded-sm bg-[#0b249e] inline-block"></span> 0% (Пусто)</span>
+              <span class="inline-flex items-center gap-1"><span class="w-3 h-3 rounded-sm bg-[#5b1668] inline-block"></span> ~50%</span>
+              <span class="inline-flex items-center gap-1"><span class="w-3 h-3 rounded-sm bg-[#8f0c0c] inline-block"></span> 100% (Макс. шкалы)</span>
+            </div>
+            <span class="font-mono text-[11px] text-slate-500">Кликните на любой цилиндр или трубу</span>
+          </div>
+        </div>
+
+        <!-- Правая часть (4 колонки): Инспектор выбранного узла -->
+        <div class="lg:col-span-4 space-y-4">
+          <div class="bg-slate-900 text-slate-100 rounded-2xl border border-slate-800 shadow-lg p-5 space-y-4">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+              <div class="flex items-center gap-2">
+                <svg class="w-5 h-5 text-cyan-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+                <h3 class="font-bold text-base text-white">Инспектор узла SCADA</h3>
+              </div>
+              <span id="inspector-badge" class="px-2 py-0.5 rounded text-xs font-mono font-bold bg-cyan-950 text-cyan-300 border border-cyan-800">
+                Блок 3
+              </span>
+            </div>
+
+            <div id="node-inspector-body" class="space-y-3.5 text-sm">
+              <!-- Динамически обновляется при клике по схеме и пересчете -->
+            </div>
+          </div>
+
+          <!-- Сводная таблица баланса масс -->
+          <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 space-y-3">
+            <div class="flex items-center justify-between">
+              <h4 class="text-xs font-bold uppercase tracking-wider text-slate-600">Баланс потоков (Проверка закона сохранения)</h4>
+              <span class="text-[11px] font-mono text-emerald-600 font-bold">OK</span>
+            </div>
+            <div class="space-y-1.5 text-xs font-mono">
+              <div class="flex justify-between py-1 border-b border-slate-100">
+                <span class="text-slate-500">Вход (1 + 2 = 3):</span>
+                <span id="balance-in" class="font-bold text-slate-900">423.69 кг</span>
+              </div>
+              <div class="flex justify-between py-1 border-b border-slate-100">
+                <span class="text-slate-500">Отводы (4+8+9+11):</span>
+                <span id="balance-branches" class="font-bold text-scada-700">118.10 кг</span>
+              </div>
+              <div class="flex justify-between py-1 border-b border-slate-100">
+                <span class="text-slate-500">Выход (Блок 12):</span>
+                <span id="balance-out" class="font-bold text-slate-900">305.59 кг</span>
+              </div>
+              <div class="flex justify-between pt-1 text-emerald-700 font-bold">
+                <span>Итого (Отводы + 12):</span>
+                <span id="balance-total">423.69 кг</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- РАЗДЕЛ 3: КАЛЬКУЛЯТОР СВОЕГО ВАРИАНТА                                 -->
+    <!-- ===================================================================== -->
+    <section id="section-calculator" class="hidden space-y-6">
+      <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 sm:p-6">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-100 pb-4">
+          <div>
+            <h2 class="text-xl font-bold text-slate-900">Генератор шкал, формул и контрольных значений для вашего варианта</h2>
+            <p class="text-sm text-slate-500 mt-0.5">Введите диапазоны двух верхних блоков и 5 процентов со своего бланка задания.</p>
+          </div>
+          <button onclick="applyVariantToSimulator()" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold shadow-sm transition">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+              <path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <span>Загрузить вариант в Симулятор</span>
+          </button>
+        </div>
+
+        <!-- Форма ввода параметров варианта -->
+        <div class="mt-5 grid grid-cols-1 md:grid-cols-3 gap-5">
+          <!-- Блок 1 -->
+          <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-3">
+            <div class="text-xs font-bold uppercase tracking-wider text-scada-700">1. Входной Блок 1</div>
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="block text-xs text-slate-500 mb-1">Минимум 1</label>
+                <input id="calc-min1" type="number" value="110" oninput="recalculateVariant()" class="w-full font-mono text-sm font-bold bg-white border border-slate-300 rounded-lg px-3 py-2" />
+              </div>
+              <div>
+                <label class="block text-xs text-slate-500 mb-1">Максимум 1</label>
+                <input id="calc-max1" type="number" value="300" oninput="recalculateVariant()" class="w-full font-mono text-sm font-bold bg-white border border-slate-300 rounded-lg px-3 py-2" />
+              </div>
+            </div>
+          </div>
+
+          <!-- Блок 2 -->
+          <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-3">
+            <div class="text-xs font-bold uppercase tracking-wider text-scada-700">2. Входной Блок 2</div>
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="block text-xs text-slate-500 mb-1">Минимум 2</label>
+                <input id="calc-min2" type="number" value="300" oninput="recalculateVariant()" class="w-full font-mono text-sm font-bold bg-white border border-slate-300 rounded-lg px-3 py-2" />
+              </div>
+              <div>
+                <label class="block text-xs text-slate-500 mb-1">Максимум 2</label>
+                <input id="calc-max2" type="number" value="350" oninput="recalculateVariant()" class="w-full font-mono text-sm font-bold bg-white border border-slate-300 rounded-lg px-3 py-2" />
+              </div>
+            </div>
+          </div>
+
+          <!-- 5 процентов ответвлений -->
+          <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-3">
+            <div class="text-xs font-bold uppercase tracking-wider text-indigo-700">3. Проценты ответвлений (%)</div>
+            <div class="grid grid-cols-5 gap-2">
+              <div>
+                <label class="block text-[11px] font-mono text-slate-500 mb-1">3→4</label>
+                <input id="calc-p1" type="number" value="8" oninput="recalculateVariant()" class="w-full font-mono text-xs font-bold text-center bg-white border border-slate-300 rounded-lg py-2" />
+              </div>
+              <div>
+                <label class="block text-[11px] font-mono text-slate-500 mb-1">5→6</label>
+                <input id="calc-p2" type="number" value="9" oninput="recalculateVariant()" class="w-full font-mono text-xs font-bold text-center bg-white border border-slate-300 rounded-lg py-2" />
+              </div>
+              <div>
+                <label class="block text-[11px] font-mono text-slate-500 mb-1">6→8</label>
+                <input id="calc-p3" type="number" value="10" oninput="recalculateVariant()" class="w-full font-mono text-xs font-bold text-center bg-white border border-slate-300 rounded-lg py-2" />
+              </div>
+              <div>
+                <label class="block text-[11px] font-mono text-slate-500 mb-1">7→9</label>
+                <input id="calc-p4" type="number" value="11" oninput="recalculateVariant()" class="w-full font-mono text-xs font-bold text-center bg-white border border-slate-300 rounded-lg py-2" />
+              </div>
+              <div>
+                <label class="block text-[11px] font-mono text-slate-500 mb-1">10→11</label>
+                <input id="calc-p5" type="number" value="12" oninput="recalculateVariant()" class="w-full font-mono text-xs font-bold text-center bg-white border border-slate-300 rounded-lg py-2" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Результаты генерации: Шкалы + Формулы + Контрольные значения -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <!-- Шкалы и контрольные расчеты (5 колонок) -->
+        <div class="lg:col-span-5 space-y-5">
+          <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 space-y-3">
+            <h3 class="font-bold text-slate-900">1. Шкалы для вкладки «Система → Шкалы»</h3>
+            <div id="calc-scales-output" class="space-y-2 font-mono text-xs">
+              <!-- Генерируется JS -->
+            </div>
+          </div>
+
+          <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 space-y-3">
+            <div class="flex items-center justify-between">
+              <h3 class="font-bold text-slate-900">2. Контрольная таблица проверки</h3>
+              <span class="text-xs text-slate-500">Для средних значений входов</span>
+            </div>
+            <div id="calc-verification-output" class="overflow-x-auto">
+              <!-- Генерируется JS -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Готовые формулы для всех 19 элементов (7 колонок) -->
+        <div class="lg:col-span-7 bg-white rounded-2xl border border-slate-200 shadow-sm p-5 space-y-3">
+          <div class="flex items-center justify-between">
+            <h3 class="font-bold text-slate-900">3. Полный список элементов и формул вашего варианта</h3>
+            <span class="text-xs font-mono text-scada-700">Нажмите для копирования</span>
+          </div>
+          <div class="overflow-x-auto rounded-xl border border-slate-200">
+            <table class="w-full text-left border-collapse text-xs">
+              <thead>
+                <tr class="bg-slate-100 text-slate-700 border-b border-slate-200">
+                  <th class="py-2 px-3">№</th>
+                  <th class="py-2 px-3">Тип</th>
+                  <th class="py-2 px-3">Имя в дереве</th>
+                  <th class="py-2 px-3">Шкала</th>
+                  <th class="py-2 px-3">Формула / Значение до опроса</th>
+                </tr>
+              </thead>
+              <tbody id="calc-formulas-tbody" class="divide-y divide-slate-200 font-mono">
+                <!-- Генерируется JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- РАЗДЕЛ 4: ШПАРГАЛКА И ЧАСТЫЕ ОШИБКИ                                   -->
+    <!-- ===================================================================== -->
+    <section id="section-cheatsheet" class="hidden space-y-5">
+      <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 sm:p-6">
+        <h2 class="text-xl font-bold text-slate-900">Шпаргалка по MasterSCADA и разбор частых ошибок</h2>
+        <p class="text-sm text-slate-500 mt-1">Ключевые нюансы интерфейса MasterSCADA 3.x, на которых чаще всего теряют баллы при сборке схемы.</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+        <!-- Карточка 1 -->
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 space-y-3">
+          <div class="w-10 h-10 rounded-xl bg-rose-100 text-rose-700 flex items-center justify-center font-mono font-bold text-lg">_x_</div>
+          <h3 class="font-bold text-slate-900">Почему в формулах появляются нижние подчеркивания?</h3>
+          <p class="text-sm text-slate-600 leading-relaxed">
+            MasterSCADA не допускает имена переменных, начинающиеся с цифры или содержащие дефисы, пробелы и знак <code class="font-mono text-xs">%</code>. При перетаскивании элемента в таблицу формул система автоматически преобразует:
+          </p>
+          <div class="bg-slate-900 text-cyan-300 font-mono text-xs p-3 rounded-xl space-y-1">
+            <div>110-300кг → <span class="text-amber-300">_110_300кг</span></div>
+            <div>8% → <span class="text-amber-300">_8_</span></div>
+            <div>с 3 на 5 → <span class="text-amber-300">с_3_на_5</span></div>
+          </div>
+          <p class="text-xs text-slate-500"><strong>Правило:</strong> Никогда не вписывайте имена переменных руками! Перетащите элемент в таблицу внизу вкладки «Формула» и <strong>дважды кликните</strong> по строке в таблице.</p>
+        </div>
+
+        <!-- Карточка 2 -->
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 space-y-3">
+          <div class="w-10 h-10 rounded-xl bg-indigo-100 text-indigo-700 flex items-center justify-center font-mono font-bold text-lg">➔</div>
+          <h3 class="font-bold text-slate-900">Команда vs Значение vs Расчет</h3>
+          <p class="text-sm text-slate-600 leading-relaxed">
+            Для каждого элемента дерева важно выбрать правильный тип объекта:
+          </p>
+          <ul class="space-y-2 text-xs text-slate-700">
+            <li class="p-2 rounded-lg bg-slate-50 border border-slate-200">
+              <strong class="text-scada-700">Значение (⇄):</strong> Только для входных датчиков (<code class="font-mono">110-300кг</code>, <code class="font-mono">300-350кг</code>). Настраивается во вкладке <em>Опрос → Имитация → Шум</em>.
+            </li>
+            <li class="p-2 rounded-lg bg-slate-50 border border-slate-200">
+              <strong class="text-indigo-700">Команда (➔):</strong> Только для процентов (<code class="font-mono">8%..12%</code>). Настраивается во вкладке <em>Опрос выхода → Значение до опроса</em>, чтобы имитация не перезаписывала число.
+            </li>
+            <li class="p-2 rounded-lg bg-slate-50 border border-slate-200">
+              <strong class="text-emerald-700">Расчет (±×÷):</strong> Для всех остальных узлов (<code class="font-mono">3, 4, 6, 8, 9, 10, 11</code>) и стрелок остатка (<code class="font-mono">с 3 на 5</code> и т.д.).
+            </li>
+          </ul>
+        </div>
+
+        <!-- Карточка 3 -->
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 space-y-3">
+          <div class="w-10 h-10 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center font-mono font-bold text-lg">0.00</div>
+          <h3 class="font-bold text-slate-900">Лишний текст перед значением на мнемосхеме</h3>
+          <p class="text-sm text-slate-600 leading-relaxed">
+            При перетаскивании элемента на мнемосхему MasterSCADA по умолчанию подписывает его именем: <code class="font-mono text-xs bg-slate-100 px-1 rounded">300-350кг 0.00 кг</code>.
+          </p>
+          <div class="bg-amber-50 border border-amber-200 rounded-xl p-3 text-xs text-amber-900 space-y-1">
+            <div class="font-bold">Как исправить:</div>
+            <div>1. ПКМ по элементу значения на мнемосхеме → <strong>Свойства</strong>.</div>
+            <div>2. Вкладка <strong>Значение</strong>.</div>
+            <div>3. Сотрите всё в поле <strong>«Текст до значения»</strong> → <strong>Применить → ОК</strong>.</div>
+          </div>
+        </div>
+
+        <!-- Карточка 4 -->
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 space-y-3">
+          <div class="w-10 h-10 rounded-xl bg-cyan-100 text-cyan-700 flex items-center justify-center font-mono font-bold text-lg">/{}</div>
+          <h3 class="font-bold text-slate-900">Поворот трубопроводов по координатам</h3>
+          <p class="text-sm text-slate-600 leading-relaxed">
+            Трубопровод из палитры изначально горизонтальный. Чтобы повернуть его под нужным углом, откройте <code class="font-mono text-xs bg-slate-100 px-1 rounded">ПКМ → Свойства → Параметры</code>, выделите вторую точку в списке <strong>Контрольные точки</strong> и нажмите <strong>Присвоить</strong>:
+          </p>
+          <div class="grid grid-cols-3 gap-2 text-center font-mono text-xs">
+            <div class="p-2 bg-slate-50 rounded-lg border border-slate-200">
+              <div class="font-bold text-scada-700">↓ Вниз</div>
+              <div class="mt-1">X: 0</div>
+              <div>Y: 90</div>
+            </div>
+            <div class="p-2 bg-slate-50 rounded-lg border border-slate-200">
+              <div class="font-bold text-scada-700">↙ Влево</div>
+              <div class="mt-1">X: -20</div>
+              <div>Y: 20</div>
+            </div>
+            <div class="p-2 bg-slate-50 rounded-lg border border-slate-200">
+              <div class="font-bold text-scada-700">↘ Вправо</div>
+              <div class="mt-1">X: 20</div>
+              <div>Y: 20</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Карточка 5 -->
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 space-y-3">
+          <div class="w-10 h-10 rounded-xl bg-purple-100 text-purple-700 flex items-center justify-center font-mono font-bold text-lg">?.??</div>
+          <h3 class="font-bold text-slate-900">Почему на схеме отображается «?.?? кг»?</h3>
+          <p class="text-sm text-slate-600 leading-relaxed">
+            Знак <code class="font-mono text-xs bg-slate-100 px-1 rounded">?.??</code> означает недостоверный признак качества сигнала (например, значение вышло за пределы выбранной шкалы или не запущен опрос).
+          </p>
+          <ul class="text-xs text-slate-600 space-y-1.5">
+            <li>• Проверьте, что у всех расчетов выставлена суммарная шкала <code class="font-mono font-bold">0-650</code> (а не <code class="font-mono">110-300</code>).</li>
+            <li>• Убедитесь, что у входных значений включена <strong>Имитация → Шум</strong>, а у команд — <strong>Опрос выхода → Значение до опроса</strong>.</li>
+          </ul>
+        </div>
+
+        <!-- Карточка 6 -->
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 space-y-3">
+          <div class="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center font-mono font-bold text-lg">✓0</div>
+          <h3 class="font-bold text-slate-900">Метод быстрой самопроверки перед сдачей</h3>
+          <p class="text-sm text-slate-600 leading-relaxed">
+            В режиме исполнения переведите все 5 слайдеров процентов в <code class="font-mono text-xs bg-slate-100 px-1 rounded">0.00</code>:
+          </p>
+          <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-3 text-xs text-emerald-900 space-y-1">
+            <div>• Тупиковые узлы (<strong>4, 6, 8, 9, 11</strong>) обязаны стать <code class="font-mono font-bold">0.00 кг</code> и окраситься в синий цвет.</div>
+            <div>• Сквозные узлы (<strong>3, 5, 7, 10, 12</strong>) обязаны показывать <strong>одно и то же число</strong> (равное сумме Блока 1 и Блока 2). Если хоть один отличается — в формуле вычитания перепутан источник!</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Подвал -->
+  <footer class="bg-white border-t border-slate-200 mt-10 py-4 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-slate-500">
+      <div>Интерактивное учебное пособие по АСУ ТП и SCADA-системам (MasterSCADA)</div>
+      <div class="font-mono">Схема: 12 блоков • 19 элементов дерева</div>
+    </div>
+  </footer>
+
+  <script>
+    // =========================================================================
+    // 1. УТИЛИТЫ (Уведомления и безопасное копирование в буфер обмена)
+    // =========================================================================
+    function showToast(message, type = 'info') {
+      const container = document.getElementById('toast-container');
+      const toast = document.createElement('div');
+      const colors = type === 'success'
+        ? 'bg-emerald-900 text-emerald-100 border-emerald-700'
+        : 'bg-slate-900 text-white border-slate-700';
+
+      toast.className = `pointer-events-auto flex items-center gap-2 px-4 py-2.5 rounded-xl border shadow-lg text-xs font-medium transition-all duration-300 transform translate-y-2 opacity-0 ${colors}`;
+      toast.innerHTML = `
+        <svg class="w-4 h-4 text-cyan-400 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+        </svg>
+        <span>${message}</span>
+      `;
+      container.appendChild(toast);
+
+      requestAnimationFrame(() => {
+        toast.classList.remove('translate-y-2', 'opacity-0');
+      });
+
+      setTimeout(() => {
+        toast.classList.add('opacity-0', 'translate-y-2');
+        setTimeout(() => toast.remove(), 300);
+      }, 2400);
+    }
+
+    function copyText(text) {
+      const textarea = document.createElement('textarea');
+      textarea.value = text;
+      textarea.style.position = 'fixed';
+      textarea.style.opacity = '0';
+      document.body.appendChild(textarea);
+      textarea.select();
+      try {
+        document.execCommand('copy');
+        showToast(`Скопировано: ${text}`, 'success');
+      } catch (err) {
+        showToast('Не удалось скопировать текст', 'info');
+      }
+      document.body.removeChild(textarea);
+    }
+
+    // =========================================================================
+    // 2. НАВИГАЦИЯ И ТРЕКЕР ПРОГРЕССА (localStorage)
+    // =========================================================================
+    const TOTAL_STEPS = 8;
+    let completedSteps = JSON.parse(localStorage.getItem('masterscada_guide_steps') || '[]');
+
+    function switchTab(tabName) {
+      const tabs = ['guide', 'simulator', 'calculator', 'cheatsheet'];
+      tabs.forEach(t => {
+        const section = document.getElementById(`section-${t}`);
+        const btn = document.getElementById(`tab-btn-${t}`);
+        if (t === tabName) {
+          section.classList.remove('hidden');
+          btn.classList.remove('bg-slate-100', 'text-slate-700', 'hover:bg-slate-200');
+          btn.classList.add('bg-scada-600', 'text-white', 'shadow-sm');
+        } else {
+          section.classList.add('hidden');
+          btn.classList.add('bg-slate-100', 'text-slate-700', 'hover:bg-slate-200');
+          btn.classList.remove('bg-scada-600', 'text-white', 'shadow-sm');
+        }
+      });
+    }
+
+    function updateProgressUI() {
+      const count = completedSteps.length;
+      const pct = Math.round((count / TOTAL_STEPS) * 100);
+
+      document.getElementById('desktop-progress-text').textContent = `${count} из ${TOTAL_STEPS} этапов (${pct}%)`;
+      document.getElementById('desktop-progress-bar').style.width = `${pct}%`;
+      document.getElementById('mobile-progress-text').textContent = `${count}/${TOTAL_STEPS}`;
+
+      for (let i = 1; i <= TOTAL_STEPS; i++) {
+        const cb = document.querySelector(`input[data-step="${i}"]`);
+        const card = document.getElementById(`step-card-${i}`);
+        const isDone = completedSteps.includes(i);
+        if (cb) cb.checked = isDone;
+        if (card) {
+          if (isDone) {
+            card.classList.add('border-emerald-300', 'bg-emerald-50/15');
+            card.classList.remove('border-slate-200');
+          } else {
+            card.classList.remove('border-emerald-300', 'bg-emerald-50/15');
+            card.classList.add('border-slate-200');
+          }
+        }
+      }
+    }
+
+    function toggleStep(stepNum) {
+      if (completedSteps.includes(stepNum)) {
+        completedSteps = completedSteps.filter(s => s !== stepNum);
+      } else {
+        completedSteps.push(stepNum);
+        showToast(`Этап ${stepNum} отмечен как выполненный`, 'success');
+      }
+      localStorage.setItem('masterscada_guide_steps', JSON.stringify(completedSteps));
+      updateProgressUI();
+    }
+
+    function resetProgress() {
+      completedSteps = [];
+      localStorage.setItem('masterscada_guide_steps', JSON.stringify(completedSteps));
+      updateProgressUI();
+      showToast('Прогресс выполнения сброшен');
+    }
+
+    // =========================================================================
+    // 3. ИНТЕРАКТИВНОЕ ДЕРЕВО ПРОЕКТА (19 ЭЛЕМЕНТОВ В ЭТАПЕ 6)
+    // =========================================================================
+    const TREE_ELEMENTS_19 = [
+      { id: 1, name: '110-300кг', type: 'Значение', icon: '⇄', color: 'text-blue-600', scale: '110-300', tab: 'Опрос → Имитация → Шум', formula: 'Генератор шума в диапазоне [110 .. 300] кг', desc: 'Входной аналоговый сигнал Блока 1.' },
+      { id: 2, name: '300-350кг', type: 'Значение', icon: '⇄', color: 'text-blue-600', scale: '300-350', tab: 'Опрос → Имитация → Шум', formula: 'Генератор шума в диапазоне [300 .. 350] кг', desc: 'Входной аналоговый сигнал Блока 2.' },
+      { id: 3, name: '3', type: 'Расчет', icon: '±×', color: 'text-rose-600', scale: '0-650', tab: 'Формула', formula: '_110_300кг + _300_350кг', desc: 'Главный суммирующий узел (Блок 3). Складывает оба входных потока.' },
+      { id: 4, name: '8%', type: 'Команда', icon: '➔', color: 'text-indigo-600', scale: 'Проценты', tab: 'Опрос выхода → Значение до опроса = 8,00', formula: '8,00 %', desc: 'Уставка процентного отбора из Блока 3 в Блок 4.' },
+      { id: 5, name: '4', type: 'Расчет', icon: '±×', color: 'text-rose-600', scale: '0-650', tab: 'Формула', formula: '_3 * _8_ / 100', desc: 'Расчет массы, уходящей в боковой Блок 4 (8% от Блока 3).' },
+      { id: 6, name: 'с 3 на 5', type: 'Расчет', icon: '±×', color: 'text-rose-600', scale: '0-650', tab: 'Формула', formula: '_3 - _4', desc: 'Остаток потока из Блока 3, поступающий в Блок 5.' },
+      { id: 7, name: '9%', type: 'Команда', icon: '➔', color: 'text-indigo-600', scale: 'Проценты', tab: 'Опрос выхода → Значение до опроса = 9,00', formula: '9,00 %', desc: 'Уставка процентного отбора из Блока 5 в Блок 6.' },
+      { id: 8, name: '6', type: 'Расчет', icon: '±×', color: 'text-rose-600', scale: '0-650', tab: 'Формула', formula: 'с_3_на_5 * _9_ / 100', desc: 'Расчет массы в Блоке 6 (9% от потока Блока 5).' },
+      { id: 9, name: 'с 5 на 7', type: 'Расчет', icon: '±×', color: 'text-rose-600', scale: '0-650', tab: 'Формула', formula: 'с_3_на_5 - _6', desc: 'Остаток потока из Блока 5, поступающий в Блок 7.' },
+      { id: 10, name: '10%', type: 'Команда', icon: '➔', color: 'text-indigo-600', scale: 'Проценты', tab: 'Опрос выхода → Значение до опроса = 10,00', formula: '10,00 %', desc: 'Уставка процентного отбора из Блока 6 в Блок 8.' },
+      { id: 11, name: '8', type: 'Расчет', icon: '±×', color: 'text-rose-600', scale: '0-650', tab: 'Формула', formula: '_6 * _10_ / 100', desc: 'Расчет массы в боковом Блоке 8 (10% от Блока 6).' },
+      { id: 12, name: '11%', type: 'Команда', icon: '➔', color: 'text-indigo-600', scale: 'Проценты', tab: 'Опрос выхода → Значение до опроса = 11,00', formula: '11,00 %', desc: 'Уставка процентного отбора из Блока 7 в Блок 9.' },
+      { id: 13, name: '9', type: 'Расчет', icon: '±×', color: 'text-rose-600', scale: '0-650', tab: 'Формула', formula: 'с_5_на_7 * _11_ / 100', desc: 'Расчет массы в боковом Блоке 9 (11% от Блока 7).' },
+      { id: 14, name: 'с 6 на 10', type: 'Расчет', icon: '±×', color: 'text-rose-600', scale: '0-650', tab: 'Формула', formula: '_6 - _8', desc: 'Остаток потока из Блока 6, идущий на слияние в Блок 10.' },
+      { id: 15, name: 'с 7 на 10', type: 'Расчет', icon: '±×', color: 'text-rose-600', scale: '0-650', tab: 'Формула', formula: 'с_5_на_7 - _9', desc: 'Остаток потока из Блока 7, идущий на слияние в Блок 10.' },
+      { id: 16, name: '10', type: 'Расчет', icon: '±×', color: 'text-rose-600', scale: '0-650', tab: 'Формула', formula: 'с_6_на_10 + с_7_на_10', desc: 'Узел слияния (Блок 10): сумма потоков с ветвей 6 и 7.' },
+      { id: 17, name: '12%', type: 'Команда', icon: '➔', color: 'text-indigo-600', scale: 'Проценты', tab: 'Опрос выхода → Значение до опроса = 12,00', formula: '12,00 %', desc: 'Уставка процентного отбора из Блока 10 в Блок 11.' },
+      { id: 18, name: '11', type: 'Расчет', icon: '±×', color: 'text-rose-600', scale: '0-650', tab: 'Формула', formula: '_10 * _12_ / 100', desc: 'Расчет массы в выходном Блоке 11 (12% от Блока 10).' },
+      { id: 19, name: 'с 10 на 12', type: 'Расчет', icon: '±×', color: 'text-rose-600', scale: '0-650', tab: 'Формула', formula: '_10 - _11', desc: 'Финальный остаток потока из Блока 10, поступающий в Блок 12.' }
+    ];
+
+    let selectedTreeId = 3;
+
+    function renderMasterScadaTree() {
+      const container = document.getElementById('masterscada-tree-list');
+      container.innerHTML = TREE_ELEMENTS_19.map(item => {
+        const active = item.id === selectedTreeId;
+        return `
+          <button onclick="selectTreeElement(${item.id})" class="w-full text-left px-2.5 py-1.5 rounded-lg flex items-center justify-between transition ${active ? 'bg-scada-600 text-white font-bold' : 'hover:bg-slate-100 text-slate-800'}">
+            <span class="flex items-center gap-2">
+              <span class="text-[11px] opacity-60 w-4">${item.id}.</span>
+              <span class="${active ? 'text-cyan-200' : item.color} font-bold w-5 text-center">${item.icon}</span>
+              <span>${item.name}</span>
+            </span>
+            <span class="text-[10px] px-1.5 py-0.5 rounded ${active ? 'bg-scada-700 text-cyan-100' : 'bg-slate-100 text-slate-500'}">${item.type}</span>
+          </button>
+        `;
+      }).join('');
+
+      const el = TREE_ELEMENTS_19.find(x => x.id === selectedTreeId);
+      const inspector = document.getElementById('tree-inspector-content');
+      inspector.innerHTML = `
+        <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+          <div>
+            <span class="text-[11px] font-mono uppercase tracking-wider text-cyan-400">Элемент дерева #${el.id} из 19</span>
+            <h4 class="text-lg font-mono font-bold text-white mt-0.5">${el.name}</h4>
+          </div>
+          <span class="px-2.5 py-1 rounded-lg bg-slate-800 border border-slate-700 text-xs font-semibold text-cyan-300">
+            ${el.type}
+          </span>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+          <div class="bg-slate-800/70 p-3 rounded-xl border border-slate-700/70">
+            <div class="text-slate-400 mb-1">Диапазон изменения (Шкала)</div>
+            <div class="font-mono font-bold text-amber-300 text-sm">${el.scale}</div>
+          </div>
+          <div class="bg-slate-800/70 p-3 rounded-xl border border-slate-700/70">
+            <div class="text-slate-400 mb-1">Вкладка настройки</div>
+            <div class="font-semibold text-slate-200">${el.tab}</div>
+          </div>
+        </div>
+
+        <div class="space-y-1.5">
+          <div class="text-xs text-slate-400">Формула / Параметр в MasterSCADA:</div>
+          <div class="flex items-center justify-between bg-slate-950 border border-slate-800 px-3.5 py-2.5 rounded-xl font-mono text-sm text-emerald-400">
+            <span>${el.formula}</span>
+            <button onclick="copyText('${el.formula}')" class="text-xs bg-slate-800 hover:bg-slate-700 text-white px-2.5 py-1 rounded-lg border border-slate-700 transition">
+              Копировать
+            </button>
+          </div>
+        </div>
+
+        <p class="text-xs text-slate-300 leading-relaxed bg-slate-800/40 p-3 rounded-xl border border-slate-800">
+          ${el.desc}
+        </p>
+      `;
+    }
+
+    function selectTreeElement(id) {
+      selectedTreeId = id;
+      renderMasterScadaTree();
+    }
+
+    // =========================================================================
+    // 4. ЖИВОЙ ИНТЕРАКТИВНЫЙ СИМУЛЯТОР МНЕМОСХЕМЫ
+    // =========================================================================
+    const simState = {
+      min1: 110,
+      max1: 300,
+      min2: 300,
+      max2: 350,
+      in1: 120.84,
+      in2: 302.85,
+      p1: 8,   // 3 -> 4
+      p2: 9,   // 5 -> 6
+      p3: 10,  // 6 -> 8
+      p4: 11,  // 7 -> 9
+      p5: 12,  // 10 -> 11
+      defaultP: [8, 9, 10, 11, 12],
+      noiseActive: true,
+      selectedNode: '3'
+    };
+
+    // Вычисление цвета заливки цилиндра от синего (#0b249e) к темно-красному (#8f0c0c)
+    function getVesselColor(value, minScale, maxScale) {
+      if (value <= 0.001) return '#0b249e';
+      const ratio = Math.max(0, Math.min(1, (value - minScale) / (maxScale - minScale || 1)));
+      // Интерполяция RGB: от (11, 36, 158) к (148, 12, 12)
+      const r = Math.round(11 + ratio * (148 - 11));
+      const g = Math.round(36 + ratio * (12 - 36));
+      const b = Math.round(158 + ratio * (12 - 158));
+      return `rgb(${r}, ${g}, ${b})`;
+    }
+
+    function computeMnemonicValues() {
+      const v1 = simState.in1;
+      const v2 = simState.in2;
+      const v3 = v1 + v2;
+      const v4 = v3 * simState.p1 / 100;
+      const v5 = v3 - v4; // с 3 на 5
+      const v6 = v5 * simState.p2 / 100;
+      const v7 = v5 - v6; // с 5 на 7
+      const v8 = v6 * simState.p3 / 100;
+      const v9 = v7 * simState.p4 / 100;
+      const v6_10 = v6 - v8; // с 6 на 10
+      const v7_10 = v7 - v9; // с 7 на 10
+      const v10 = v6_10 + v7_10;
+      const v11 = v10 * simState.p5 / 100;
+      const v12 = v10 - v11; // с 10 на 12
+
+      return {
+        1: v1, 2: v2, 3: v3, 4: v4, 5: v5, 6: v6,
+        7: v7, 8: v8, 9: v9, 10: v10, 11: v11, 12: v12,
+        v6_10, v7_10
+      };
+    }
+
+    function updateSimulatorUI() {
+      const vals = computeMnemonicValues();
+      const maxTotal = simState.max1 + simState.max2;
+
+      // Обновляем цилиндры и текстовые метки
+      for (let i = 1; i <= 12; i++) {
+        const val = vals[i];
+        const fillEl = document.getElementById(`fill-${i}`);
+        const labelEl = document.getElementById(`val-label-${i}`);
+        if (fillEl) {
+          let minS = 0, maxS = maxTotal;
+          if (i === 1) { minS = simState.min1; maxS = simState.max1; }
+          if (i === 2) { minS = simState.min2; maxS = simState.max2; }
+          fillEl.setAttribute('fill', getVesselColor(val, minS, maxS));
+        }
+        if (labelEl) {
+          labelEl.textContent = `${val.toFixed(2)} кг`;
+          // Как на скриншоте проверки: нулевые значения подсвечиваются красным
+          labelEl.setAttribute('fill', val <= 0.005 ? '#dc2626' : '#0f172a');
+        }
+      }
+
+      // Обновляем поля ручного ввода
+      document.getElementById('sim-input-1-range').value = simState.in1.toFixed(2);
+      document.getElementById('sim-input-1-num').value = simState.in1.toFixed(2);
+      document.getElementById('sim-input-2-range').value = simState.in2.toFixed(2);
+      document.getElementById('sim-input-2-num').value = simState.in2.toFixed(2);
+
+      // Обновляем 5 слайдеров
+      for (let idx = 1; idx <= 5; idx++) {
+        const pVal = simState[`p${idx}`];
+        document.getElementById(`slider-p${idx}`).value = pVal;
+        document.getElementById(`slider-title-p${idx}`).textContent = `${pVal}%`;
+        document.getElementById(`slider-val-p${idx}`).textContent = Number(pVal).toFixed(2);
+      }
+
+      // Обновляем баланс потоков
+      const sumBranches = vals[4] + vals[8] + vals[9] + vals[11];
+      const totalCheck = sumBranches + vals[12];
+      document.getElementById('balance-in').textContent = `${vals[3].toFixed(2)} кг`;
+      document.getElementById('balance-branches').textContent = `${sumBranches.toFixed(2)} кг`;
+      document.getElementById('balance-out').textContent = `${vals[12].toFixed(2)} кг`;
+      document.getElementById('balance-total').textContent = `${totalCheck.toFixed(2)} кг`;
+
+      // Обновляем инспектор выбранного узла
+      renderNodeInspector(vals);
+    }
+
+    function selectNode(nodeKey) {
+      simState.selectedNode = nodeKey;
+      // Подсветка выбранного цилиндра
+      for (let i = 1; i <= 12; i++) {
+        const el = document.getElementById(`node-${i}`);
+        if (el) {
+          if (String(i) === String(nodeKey)) el.classList.add('vessel-selected');
+          else el.classList.remove('vessel-selected');
+        }
+      }
+      updateSimulatorUI();
+    }
+
+    function renderNodeInspector(vals) {
+      const key = simState.selectedNode;
+      const maxTotal = simState.max1 + simState.max2;
+      const s1Name = `${simState.min1}-${simState.max1}кг`;
+      const s2Name = `${simState.min2}-${simState.max2}кг`;
+      const s1Var = `_${simState.min1}_${simState.max1}кг`;
+      const s2Var = `_${simState.min2}_${simState.max2}кг`;
+
+      const nodeMeta = {
+        '1': {
+          badge: 'Блок 1',
+          title: `Значение «${s1Name}»`,
+          type: 'Значение (Аналоговое • Имитация Шум)',
+          scale: `${simState.min1}-${simState.max1}`,
+          formula: `Генератор шума [${simState.min1} .. ${simState.max1}]`,
+          calc: `${vals[1].toFixed(2)} кг`,
+          val: vals[1],
+          min: simState.min1,
+          max: simState.max1
+        },
+        '2': {
+          badge: 'Блок 2',
+          title: `Значение «${s2Name}»`,
+          type: 'Значение (Аналоговое • Имитация Шум)',
+          scale: `${simState.min2}-${simState.max2}`,
+          formula: `Генератор шума [${simState.min2} .. ${simState.max2}]`,
+          calc: `${vals[2].toFixed(2)} кг`,
+          val: vals[2],
+          min: simState.min2,
+          max: simState.max2
+        },
+        '3': {
+          badge: 'Блок 3',
+          title: 'Расчет «3» (Главный сумматор)',
+          type: 'Расчет',
+          scale: `0-${maxTotal}`,
+          formula: `${s1Var} + ${s2Var}`,
+          calc: `${vals[1].toFixed(2)} + ${vals[2].toFixed(2)} = ${vals[3].toFixed(2)} кг`,
+          val: vals[3],
+          min: 0,
+          max: maxTotal
+        },
+        '4': {
+          badge: 'Блок 4',
+          title: `Расчет «4» (Ответвление ${simState.p1}%)`,
+          type: 'Расчет',
+          scale: `0-${maxTotal}`,
+          formula: `_3 * _${simState.p1}_ / 100`,
+          calc: `${vals[3].toFixed(2)} × ${simState.p1} / 100 = ${vals[4].toFixed(2)} кг`,
+          val: vals[4],
+          min: 0,
+          max: maxTotal
+        },
+        '5': {
+          badge: 'Блок 5',
+          title: 'Расчет «с 3 на 5» (Остаток из Блока 3)',
+          type: 'Расчет',
+          scale: `0-${maxTotal}`,
+          formula: '_3 - _4',
+          calc: `${vals[3].toFixed(2)} - ${vals[4].toFixed(2)} = ${vals[5].toFixed(2)} кг`,
+          val: vals[5],
+          min: 0,
+          max: maxTotal
+        },
+        '6': {
+          badge: 'Блок 6',
+          title: `Расчет «6» (Ответвление ${simState.p2}%)`,
+          type: 'Расчет',
+          scale: `0-${maxTotal}`,
+          formula: `с_3_на_5 * _${simState.p2}_ / 100`,
+          calc: `${vals[5].toFixed(2)} × ${simState.p2} / 100 = ${vals[6].toFixed(2)} кг`,
+          val: vals[6],
+          min: 0,
+          max: maxTotal
+        },
+        '7': {
+          badge: 'Блок 7',
+          title: 'Расчет «с 5 на 7» (Остаток из Блока 5)',
+          type: 'Расчет',
+          scale: `0-${maxTotal}`,
+          formula: 'с_3_на_5 - _6',
+          calc: `${vals[5].toFixed(2)} - ${vals[6].toFixed(2)} = ${vals[7].toFixed(2)} кг`,
+          val: vals[7],
+          min: 0,
+          max: maxTotal
+        },
+        '8': {
+          badge: 'Блок 8',
+          title: `Расчет «8» (Ответвление ${simState.p3}%)`,
+          type: 'Расчет',
+          scale: `0-${maxTotal}`,
+          formula: `_6 * _${simState.p3}_ / 100`,
+          calc: `${vals[6].toFixed(2)} × ${simState.p3} / 100 = ${vals[8].toFixed(2)} кг`,
+          val: vals[8],
+          min: 0,
+          max: maxTotal
+        },
+        '9': {
+          badge: 'Блок 9',
+          title: `Расчет «9» (Ответвление ${simState.p4}%)`,
+          type: 'Расчет',
+          scale: `0-${maxTotal}`,
+          formula: `с_5_на_7 * _${simState.p4}_ / 100`,
+          calc: `${vals[7].toFixed(2)} × ${simState.p4} / 100 = ${vals[9].toFixed(2)} кг`,
+          val: vals[9],
+          min: 0,
+          max: maxTotal
+        },
+        '10': {
+          badge: 'Блок 10',
+          title: 'Расчет «10» (Узел слияния потоков)',
+          type: 'Расчет',
+          scale: `0-${maxTotal}`,
+          formula: 'с_6_на_10 + с_7_на_10',
+          calc: `${vals.v6_10.toFixed(2)} + ${vals.v7_10.toFixed(2)} = ${vals[10].toFixed(2)} кг`,
+          val: vals[10],
+          min: 0,
+          max: maxTotal
+        },
+        '11': {
+          badge: 'Блок 11',
+          title: `Расчет «11» (Ответвление ${simState.p5}%)`,
+          type: 'Расчет',
+          scale: `0-${maxTotal}`,
+          formula: `_10 * _${simState.p5}_ / 100`,
+          calc: `${vals[10].toFixed(2)} × ${simState.p5} / 100 = ${vals[11].toFixed(2)} кг`,
+          val: vals[11],
+          min: 0,
+          max: maxTotal
+        },
+        '12': {
+          badge: 'Блок 12',
+          title: 'Расчет «с 10 на 12» (Финальный выход)',
+          type: 'Расчет',
+          scale: `0-${maxTotal}`,
+          formula: '_10 - _11',
+          calc: `${vals[10].toFixed(2)} - ${vals[11].toFixed(2)} = ${vals[12].toFixed(2)} кг`,
+          val: vals[12],
+          min: 0,
+          max: maxTotal
+        },
+        'pipe_6_10': {
+          badge: 'Поток 6 → 10',
+          title: 'Промежуточный расчет «с 6 на 10»',
+          type: 'Расчет (Ветвь без %)',
+          scale: `0-${maxTotal}`,
+          formula: '_6 - _8',
+          calc: `${vals[6].toFixed(2)} - ${vals[8].toFixed(2)} = ${vals.v6_10.toFixed(2)} кг`,
+          val: vals.v6_10,
+          min: 0,
+          max: maxTotal
+        },
+        'pipe_7_10': {
+          badge: 'Поток 7 → 10',
+          title: 'Промежуточный расчет «с 7 на 10»',
+          type: 'Расчет (Ветвь без %)',
+          scale: `0-${maxTotal}`,
+          formula: 'с_5_на_7 - _9',
+          calc: `${vals[7].toFixed(2)} - ${vals[9].toFixed(2)} = ${vals.v7_10.toFixed(2)} кг`,
+          val: vals.v7_10,
+          min: 0,
+          max: maxTotal
+        }
+      };
+
+      // Маппинг кликов по остальным трубам на их целевой узел
+      const fallbackMap = {
+        'pipe_1_3': '1',
+        'pipe_2_3': '2',
+        'pipe_3_4': '4',
+        'pipe_3_5': '5',
+        'pipe_5_6': '6',
+        'pipe_5_7': '7',
+        'pipe_6_8': '8',
+        'pipe_7_9': '9',
+        'pipe_10_11': '11',
+        'pipe_10_12': '12'
+      };
+
+      const info = nodeMeta[key] || nodeMeta[fallbackMap[key]] || nodeMeta['3'];
+      const fillPct = Math.max(0, Math.min(100, ((info.val - info.min) / (info.max - info.min || 1)) * 100));
+
+      document.getElementById('inspector-badge').textContent = info.badge;
+      document.getElementById('node-inspector-body').innerHTML = `
+        <div>
+          <div class="text-xs text-slate-400">Элемент в MasterSCADA</div>
+          <div class="text-base font-bold text-white mt-0.5">${info.title}</div>
+          <div class="text-xs text-cyan-400 mt-0.5">${info.type}</div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-2.5 text-xs">
+          <div class="bg-slate-800/80 p-2.5 rounded-xl border border-slate-700">
+            <div class="text-slate-400">Текущее значение</div>
+            <div class="font-mono text-base font-bold text-emerald-400 mt-0.5">${info.val.toFixed(2)} кг</div>
+          </div>
+          <div class="bg-slate-800/80 p-2.5 rounded-xl border border-slate-700">
+            <div class="text-slate-400">Шкала / Заливка</div>
+            <div class="font-mono text-sm font-bold text-amber-300 mt-0.5">${info.scale} (${fillPct.toFixed(0)}%)</div>
+          </div>
+        </div>
+
+        <div class="space-y-1">
+          <div class="text-xs text-slate-400">Формула в MasterSCADA:</div>
+          <div class="flex items-center justify-between bg-slate-950 border border-slate-800 px-3 py-2 rounded-xl font-mono text-xs text-cyan-300">
+            <span>${info.formula}</span>
+            <button onclick="copyText('${info.formula}')" class="bg-slate-800 hover:bg-slate-700 text-white px-2 py-0.5 rounded text-[11px]">Копия</button>
+          </div>
+        </div>
+
+        <div class="bg-slate-800/50 p-3 rounded-xl border border-slate-800 text-xs">
+          <div class="text-slate-400 mb-1">Подстановка текущих чисел:</div>
+          <div class="font-mono text-slate-200">${info.calc}</div>
+        </div>
+      `;
+    }
+
+    function updatePercent(idx, val) {
+      simState[`p${idx}`] = Number(val);
+      updateSimulatorUI();
+    }
+
+    function manualInputChange(idx, val) {
+      // Отключаем автошум, если пользователь вручную двигает ползунок
+      if (simState.noiseActive) {
+        simState.noiseActive = false;
+        updateNoiseBtnUI();
+      }
+      const num = Number(val);
+      if (idx === 1) {
+        simState.in1 = Math.max(simState.min1, Math.min(simState.max1, num));
+      } else {
+        simState.in2 = Math.max(simState.min2, Math.min(simState.max2, num));
+      }
+      updateSimulatorUI();
+    }
+
+    function stepNoiseOnce() {
+      simState.in1 = simState.min1 + Math.random() * (simState.max1 - simState.min1);
+      simState.in2 = simState.min2 + Math.random() * (simState.max2 - simState.min2);
+      updateSimulatorUI();
+    }
+
+    function toggleNoiseMode() {
+      simState.noiseActive = !simState.noiseActive;
+      updateNoiseBtnUI();
+    }
+
+    function updateNoiseBtnUI() {
+      const btn = document.getElementById('btn-noise-toggle');
+      const lbl = document.getElementById('noise-btn-label');
+      if (simState.noiseActive) {
+        btn.classList.remove('bg-slate-600', 'hover:bg-slate-700');
+        btn.classList.add('bg-scada-600', 'hover:bg-scada-700');
+        lbl.textContent = 'Имитация «Шум»: ВКЛ';
+      } else {
+        btn.classList.remove('bg-scada-600', 'hover:bg-scada-700');
+        btn.classList.add('bg-slate-600', 'hover:bg-slate-700');
+        lbl.textContent = 'Имитация «Шум»: ПАУЗА';
+      }
+    }
+
+    function setZeroCheck() {
+      simState.p1 = 0;
+      simState.p2 = 0;
+      simState.p3 = 0;
+      simState.p4 = 0;
+      simState.p5 = 0;
+      updateSimulatorUI();
+      showToast('Все проценты установлены в 0.00% — проверьте равенство узлов 3, 5, 7, 10, 12', 'info');
+    }
+
+    function restoreDefaultPercentages() {
+      [simState.p1, simState.p2, simState.p3, simState.p4, simState.p5] = simState.defaultP;
+      updateSimulatorUI();
+      showToast('Проценты варианта восстановлены', 'success');
+    }
+
+    // =========================================================================
+    // 5. КАЛЬКУЛЯТОР СВОЕГО ВАРИАНТА
+    // =========================================================================
+    function getVariantParams() {
+      const min1 = Number(document.getElementById('calc-min1').value) || 0;
+      const max1 = Number(document.getElementById('calc-max1').value) || 100;
+      const min2 = Number(document.getElementById('calc-min2').value) || 0;
+      const max2 = Number(document.getElementById('calc-max2').value) || 100;
+      const p1 = Number(document.getElementById('calc-p1').value) || 0;
+      const p2 = Number(document.getElementById('calc-p2').value) || 0;
+      const p3 = Number(document.getElementById('calc-p3').value) || 0;
+      const p4 = Number(document.getElementById('calc-p4').value) || 0;
+      const p5 = Number(document.getElementById('calc-p5').value) || 0;
+      return { min1, max1, min2, max2, p1, p2, p3, p4, p5 };
+    }
+
+    function recalculateVariant() {
+      const { min1, max1, min2, max2, p1, p2, p3, p4, p5 } = getVariantParams();
+      const maxSum = max1 + max2;
+      const scale1 = `${min1}-${max1}`;
+      const scale2 = `${min2}-${max2}`;
+      const scaleSum = `0-${maxSum}`;
+
+      const name1 = `${min1}-${max1}кг`;
+      const name2 = `${min2}-${max2}кг`;
+      const var1 = `_${min1}_${max1}кг`;
+      const var2 = `_${min2}_${max2}кг`;
+
+      // 1. Вывод шкал
+      document.getElementById('calc-scales-output').innerHTML = `
+        <div class="flex items-center justify-between bg-slate-50 px-3 py-2 rounded-lg border border-slate-200">
+          <span>Интервал 1: <strong class="text-scada-700">${scale1}</strong></span>
+          <span>Начало: <strong>${min1}</strong> | Конец: <strong>${max1}</strong></span>
+        </div>
+        <div class="flex items-center justify-between bg-slate-50 px-3 py-2 rounded-lg border border-slate-200">
+          <span>Интервал 2: <strong class="text-scada-700">${scale2}</strong></span>
+          <span>Начало: <strong>${min2}</strong> | Конец: <strong>${max2}</strong></span>
+        </div>
+        <div class="flex items-center justify-between bg-amber-50 px-3 py-2 rounded-lg border border-amber-200">
+          <span>Сумма шкал: <strong class="text-amber-800">${scaleSum}</strong></span>
+          <span>Начало: <strong>0</strong> | Конец: <strong>${maxSum}</strong></span>
+        </div>
+      `;
+
+      // 2. Список 19 элементов
+      const rows = [
+        { type: 'Значение', name: name1, scale: scale1, formula: 'Имитация → Шум' },
+        { type: 'Значение', name: name2, scale: scale2, formula: 'Имитация → Шум' },
+        { type: 'Расчет', name: '3', scale: scaleSum, formula: `${var1} + ${var2}` },
+        { type: 'Команда', name: `${p1}%`, scale: 'Проценты', formula: `Опрос выхода → ${p1},00` },
+        { type: 'Расчет', name: '4', scale: scaleSum, formula: `_3 * _${p1}_ / 100` },
+        { type: 'Расчет', name: 'с 3 на 5', scale: scaleSum, formula: '_3 - _4' },
+        { type: 'Команда', name: `${p2}%`, scale: 'Проценты', formula: `Опрос выхода → ${p2},00` },
+        { type: 'Расчет', name: '6', scale: scaleSum, formula: `с_3_на_5 * _${p2}_ / 100` },
+        { type: 'Расчет', name: 'с 5 на 7', scale: scaleSum, formula: 'с_3_на_5 - _6' },
+        { type: 'Команда', name: `${p3}%`, scale: 'Проценты', formula: `Опрос выхода → ${p3},00` },
+        { type: 'Расчет', name: '8', scale: scaleSum, formula: `_6 * _${p3}_ / 100` },
+        { type: 'Команда', name: `${p4}%`, scale: 'Проценты', formula: `Опрос выхода → ${p4},00` },
+        { type: 'Расчет', name: '9', scale: scaleSum, formula: `с_5_на_7 * _${p4}_ / 100` },
+        { type: 'Расчет', name: 'с 6 на 10', scale: scaleSum, formula: '_6 - _8' },
+        { type: 'Расчет', name: 'с 7 на 10', scale: scaleSum, formula: 'с_5_на_7 - _9' },
+        { type: 'Расчет', name: '10', scale: scaleSum, formula: 'с_6_на_10 + с_7_на_10' },
+        { type: 'Команда', name: `${p5}%`, scale: 'Проценты', formula: `Опрос выхода → ${p5},00` },
+        { type: 'Расчет', name: '11', scale: scaleSum, formula: `_10 * _${p5}_ / 100` },
+        { type: 'Расчет', name: 'с 10 на 12', scale: scaleSum, formula: '_10 - _11' }
+      ];
+
+      document.getElementById('calc-formulas-tbody').innerHTML = rows.map((r, i) => `
+        <tr class="hover:bg-scada-50/60">
+          <td class="py-2 px-3 text-slate-400">${i + 1}</td>
+          <td class="py-2 px-3 font-sans font-semibold ${r.type === 'Команда' ? 'text-indigo-700' : r.type === 'Значение' ? 'text-blue-700' : 'text-rose-700'}">${r.type}</td>
+          <td class="py-2 px-3 font-bold">
+            <button onclick="copyText('${r.name}')" class="hover:underline text-slate-900">${r.name}</button>
+          </td>
+          <td class="py-2 px-3 text-slate-600">${r.scale}</td>
+          <td class="py-2 px-3">
+            <button onclick="copyText('${r.formula}')" class="px-2 py-0.5 rounded bg-slate-100 hover:bg-scada-100 text-scada-800 border border-slate-200 transition">
+              ${r.formula}
+            </button>
+          </td>
+        </tr>
+      `).join('');
+
+      // 3. Контрольная таблица для средних входов
+      const mid1 = (min1 + max1) / 2;
+      const mid2 = (min2 + max2) / 2;
+      const n3 = mid1 + mid2;
+      const n4 = n3 * p1 / 100;
+      const n5 = n3 - n4;
+      const n6 = n5 * p2 / 100;
+      const n7 = n5 - n6;
+      const n8 = n6 * p3 / 100;
+      const n9 = n7 * p4 / 100;
+      const n10 = (n6 - n8) + (n7 - n9);
+      const n11 = n10 * p5 / 100;
+      const n12 = n10 - n11;
+
+      const checkNodes = [
+        ['Блок 1', mid1], ['Блок 2', mid2], ['Блок 3', n3], ['Блок 4', n4],
+        ['Блок 5', n5], ['Блок 6', n6], ['Блок 7', n7], ['Блок 8', n8],
+        ['Блок 9', n9], ['Блок 10', n10], ['Блок 11', n11], ['Блок 12', n12]
+      ];
+
+      document.getElementById('calc-verification-output').innerHTML = `
+        <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 font-mono text-xs">
+          ${checkNodes.map(([label, v]) => `
+            <div class="bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 flex justify-between">
+              <span class="text-slate-500">${label}:</span>
+              <span class="font-bold text-slate-900">${v.toFixed(2)}</span>
+            </div>
+          `).join('')}
+        </div>
+      `;
+    }
+
+    function applyVariantToSimulator() {
+      const { min1, max1, min2, max2, p1, p2, p3, p4, p5 } = getVariantParams();
+      simState.min1 = min1;
+      simState.max1 = max1;
+      simState.min2 = min2;
+      simState.max2 = max2;
+      simState.p1 = p1;
+      simState.p2 = p2;
+      simState.p3 = p3;
+      simState.p4 = p4;
+      simState.p5 = p5;
+      simState.defaultP = [p1, p2, p3, p4, p5];
+
+      // Обновляем пределы ползунков входов
+      const r1 = document.getElementById('sim-input-1-range');
+      const r2 = document.getElementById('sim-input-2-range');
+      r1.min = min1; r1.max = max1;
+      r2.min = min2; r2.max = max2;
+      document.getElementById('sim-label-in1').textContent = `${min1}–${max1}`;
+      document.getElementById('sim-label-in2').textContent = `${min2}–${max2}`;
+
+      stepNoiseOnce();
+      switchTab('simulator');
+      showToast('Параметры вашего варианта загружены в Симулятор!', 'success');
+    }
+
+    // =========================================================================
+    // 6. ЧАСЫ РЕАЛЬНОГО ВРЕМЕНИ И ЦИКЛ ОПРОСА СИМУЛЯТОРА
+    // =========================================================================
+    function updateClock() {
+      const now = new Date();
+      const dd = String(now.getDate()).padStart(2, '0');
+      const mm = String(now.getMonth() + 1).padStart(2, '0');
+      const yyyy = now.getFullYear();
+      const hh = String(now.getHours()).padStart(2, '0');
+      const min = String(now.getMinutes()).padStart(2, '0');
+      const ss = String(now.getSeconds()).padStart(2, '0');
+      const clockEl = document.getElementById('scada-live-clock');
+      if (clockEl) {
+        clockEl.textContent = `${dd}.${mm}.${yyyy} ${hh}:${min}:${ss}`;
+      }
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      updateProgressUI();
+      renderMasterScadaTree();
+      selectNode('3');
+      recalculateVariant();
+      updateClock();
+
+      // Обновление часов каждую секунду
+      setInterval(updateClock, 1000);
+
+      // Цикл генератора "Шум" каждые 1.8 секунды
+      setInterval(() => {
+        if (simState.noiseActive) {
+          stepNoiseOnce();
+        }
+      }, 1800);
+    });
+  </script>
+</body>
+</html>
